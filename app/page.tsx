@@ -299,7 +299,8 @@ export default function HomePage() {
       </section>
 
       {/* ============ 10. HISTORIA ============ */}
-      <section className="section">
+      {/* Oculta en móvil para una experiencia de teléfono más ágil; visible en desktop. */}
+      <section className="section hidden lg:block">
         <div className="container-page">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             {/* Tarjeta de estadísticas: solo en desktop para una experiencia
