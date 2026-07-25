@@ -91,13 +91,39 @@
   }
 }
 
-/* Marquee de la barra superior. */
-.marquee-track {
-  animation: marquee 24s linear infinite;
+/* Marquee de la barra superior (ticker en movimiento continuo). */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
+.marquee-wrap {
+  display: flex;
+  overflow: hidden;
+}
+.marquee-track {
+  animation: marquee 18s linear infinite;
+}
+/* Pausa al mantener presionado / hover, para poder leer. */
+.marquee-wrap:hover .marquee-track {
+  animation-play-state: paused;
+}
+/* En dispositivos con "reducir movimiento": en vez de congelar el texto
+   (lo que ocultaría mensajes), se permite deslizar el ticker con el dedo. */
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;
+  }
+  .marquee-wrap {
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .marquee-wrap::-webkit-scrollbar {
+    display: none;
   }
 }
 
