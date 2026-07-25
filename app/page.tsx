@@ -4,6 +4,8 @@ import { ProductGrid } from "@/components/ProductGrid";
 import { StoreCard } from "@/components/StoreCard";
 import { PromoCard } from "@/components/PromoCard";
 import { BrandLogo } from "@/components/BrandLogo";
+import { InstagramFeed } from "@/components/InstagramFeed";
+import { instagramPosts } from "@/data/social";
 import { IconByName, WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
 import { brands } from "@/data/brands";
@@ -300,7 +302,9 @@ export default function HomePage() {
       <section className="section">
         <div className="container-page">
           <div className="grid items-center gap-10 lg:grid-cols-2">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-gradient-to-br from-graphite-800 to-graphite-950 p-8 text-white">
+            {/* Tarjeta de estadísticas: solo en desktop para una experiencia
+                móvil más limpia y fluida. */}
+            <div className="relative hidden aspect-[4/3] overflow-hidden rounded-3xl bg-gradient-to-br from-graphite-800 to-graphite-950 p-8 text-white lg:block">
               <div className="flex h-full flex-col justify-between">
                 <StoreIcon className="h-10 w-10 text-brand-400" />
                 <div>
@@ -329,26 +333,19 @@ export default function HomePage() {
       {/* ============ 11. REDES SOCIALES ============ */}
       <section className="section bg-graphite-50">
         <div className="container-page">
-          <SectionHeader eyebrow="Síguenos" title="Calzatodos Group en redes" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <a
-                key={i}
-                href={site.socials.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex aspect-square items-center justify-center rounded-xl bg-gradient-to-br from-graphite-200 to-graphite-100 text-xs font-medium text-graphite-400 transition hover:from-brand-100 hover:to-brand-50"
-                aria-label="Ver contenido en Instagram"
-              >
-                Contenido social
-              </a>
-            ))}
-          </div>
-          <p className="mt-4 text-center text-sm text-graphite-500">
-            Contenido de ejemplo. Reemplazable con publicaciones reales de{" "}
+          <SectionHeader
+            eyebrow="Síguenos"
+            title="Calzatodos Group en redes"
+            href={site.socials.instagram}
+            hrefLabel="Ver en Instagram"
+          />
+          <InstagramFeed posts={instagramPosts} />
+          <p className="mt-6 text-center text-sm text-graphite-500">
+            Síguenos en{" "}
             <a href={site.socials.instagram} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-700 hover:underline">
               @calzatodos_group
-            </a>.
+            </a>{" "}
+            para ver todas nuestras novedades.
           </p>
         </div>
       </section>
