@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-graphite-900 antialiased;
+    font-family: var(--font-sans);
+  }
+  /* Foco visible y accesible en toda interacción por teclado. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-white rounded-sm;
+  }
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5
+           text-sm font-semibold transition-all duration-200 focus-visible:ring-2
+           focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-sm hover:shadow;
+  }
+  .btn-whatsapp {
+    @apply btn bg-[#25D366] text-white hover:bg-[#1ebe5b] shadow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-graphite-900 text-white hover:bg-graphite-800;
+  }
+  .btn-outline {
+    @apply btn border border-graphite-300 bg-white text-graphite-900 hover:border-graphite-900;
+  }
+  .btn-ghost {
+    @apply btn text-graphite-700 hover:bg-graphite-50;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .tag-new {
+    @apply tag bg-graphite-900 text-white;
+  }
+  .tag-sale {
+    @apply tag bg-brand-600 text-white;
+  }
+  .tag-exclusive {
+    @apply tag bg-white text-graphite-900 ring-1 ring-graphite-300;
+  }
+
+  .link-underline {
+    @apply relative after:absolute after:-bottom-0.5 after:left-0 after:h-0.5
+           after:w-0 after:bg-brand-600 after:transition-all hover:after:w-full;
+  }
+
+  .section {
+    @apply py-14 sm:py-20;
+  }
+  .section-title {
+    @apply text-2xl sm:text-3xl font-bold text-graphite-900;
+  }
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-widest text-brand-600;
+  }
+}
+
+/* Respeto por prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Marquee de la barra superior. */
+.marquee-track {
+  animation: marquee 24s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Ocultar scrollbar en carruseles horizontales. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

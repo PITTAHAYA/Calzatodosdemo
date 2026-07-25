@@ -1,0 +1,61 @@
+// =========================================================================
+// EQUIPO — Calzatodos Group
+// -------------------------------------------------------------------------
+// Cuando existan fotografías reales, agrega la ruta en "photo"
+// (/public/team/...). Mientras tanto se muestra un bloque con iniciales.
+// No usar fotografías generadas de personas que puedan confundirse con el
+// equipo real.
+// =========================================================================
+
+export interface TeamMember {
+  name: string;
+  role: string;
+  photo?: string; // /public/team/...
+}
+
+export const founder = {
+  name: "Marco Alcides Acuña Herrera",
+  role: "Fundador",
+  bio:
+    "Su conocimiento del mercado, su experiencia de más de 30 años en el sector y su decisión de emprender hicieron posible el crecimiento de la empresa.",
+};
+
+export const team: TeamMember[] = [
+  { name: "Marco Acuña", role: "Gerente General" },
+  { name: "Tania Chiluisa", role: "Contadora" },
+  { name: "Alex Acuña", role: "Jefe de Compras" },
+  { name: "Marco Alban", role: "Administrador Zonal" },
+  { name: "Edgar Arias", role: "Vendedor Senior" },
+  { name: "Gustavo Osorio", role: "Vendedor Senior" },
+  { name: "Janeth Chavez", role: "Vendedora Junior" },
+  { name: "Ived Castro", role: "Vendedora Junior" },
+  { name: "Jonathan Jimenez", role: "Vendedor Junior" },
+  { name: "Hugo De la Cruz", role: "Vendedor Junior" },
+  { name: "Shirley Yungan", role: "Vendedora Junior" },
+  { name: "Susana Ruiz", role: "Vendedora Junior" },
+];
+
+// Contenido institucional editable.
+export const about = {
+  historyShort:
+    "Calzatodos Group reúne más de 30 años de experiencia directa e indirecta en el sector del calzado. Desde su consolidación como empresa en 2015, la marca ha trabajado para ofrecer variedad, calidad y atención cercana a familias y comercios ecuatorianos.",
+  historyLong:
+    "El negocio nació tras la separación de una sociedad en 2015. Su fundador, con más de 30 años de experiencia directa e indirecta en el sector del calzado, decidió emprender un proyecto propio enfocado en la variedad, la calidad y la atención cercana. Desde entonces, Calzatodos Group se ha consolidado como una cadena presente en varias ciudades del país, atendiendo tanto a familias como a comercios mayoristas.",
+  mission:
+    "Proporcionamos a nuestros clientes productos de moda que cumplen con exigentes estándares de calidad y precios competitivos. Trabajamos para convertirnos en una de las principales opciones del mercado ecuatoriano, ofreciendo alternativas de compra confiables y una atención cercana.",
+  vision:
+    "Convertirnos en un referente reconocido del mercado de calzado, proporcionando máxima satisfacción mediante productos y servicios alineados con las tendencias de moda, la calidad y una atención excepcional.",
+  values: ["Ética", "Puntualidad", "Creatividad", "Pasión", "Calidad"],
+  // Cifra histórica adicional pendiente de confirmación (no mostrar en público
+  // hasta validar). Se mantiene aquí como referencia interna.
+  pendingHistoryNote:
+    "PENDIENTE DE CONFIRMACIÓN: cualquier cifra histórica adicional (p. ej. número exacto de años de operación de la empresa) debe validarse con el cliente antes de publicarse.",
+};
+
+// Experiencia comercial mencionada para la sección mayorista.
+// Presentar con sobriedad, SIN logotipos sin autorización.
+export const wholesaleExperience = {
+  intro:
+    "A lo largo de su trayectoria, la empresa ha trabajado con cadenas y comercios reconocidos del país.",
+  partners: ["De Prati", "Etafashion", "RM", "Súper Éxito"],
+};
