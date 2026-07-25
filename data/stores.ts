@@ -51,6 +51,9 @@ export const stores: Store[] = [
     days: [0, 1, 2, 3, 4, 5, 6],
     mapsQuery:
       "Panamericana Sur Km 1.5, diagonal al Paradero La Finca, Latacunga, Ecuador",
+    // Coordenadas exactas: 0°57'01.7"S 78°36'54.0"W
+    lat: -0.9504722,
+    lng: -78.615,
   },
   {
     slug: "quito-centro-historico",
@@ -64,6 +67,9 @@ export const stores: Store[] = [
     days: [0, 1, 2, 3, 4, 5, 6],
     mapsQuery:
       "Calle Venezuela entre Eugenio Espejo y Sucre, Centro Histórico, Quito, Ecuador",
+    // Coordenadas exactas: 0°13'10.2"S 78°30'38.6"W
+    lat: -0.2195,
+    lng: -78.5107222,
   },
   {
     slug: "riobamba",
@@ -84,15 +90,28 @@ export function getStore(slug: string): Store | undefined {
   return stores.find((s) => s.slug === slug);
 }
 
-// Genera un enlace de Google Maps a partir de la consulta de dirección.
+// ¿Tiene coordenadas exactas confirmadas?
+export function hasExactLocation(store: Store): boolean {
+  return typeof store.lat === "number" && typeof store.lng === "number";
+}
+
+// Enlace de Google Maps: usa coordenadas exactas si existen (pin preciso),
+// de lo contrario busca por dirección.
 export function storeMapsUrl(store: Store): string {
+  if (hasExactLocation(store)) {
+    return `https://www.google.com/maps/search/?api=1&query=${store.lat}%2C${store.lng}`;
+  }
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     store.mapsQuery
   )}`;
 }
 
-// Enlace embebido (iframe) por consulta — carga diferida en el cliente.
+// Enlace embebido (iframe) — coordenadas exactas cuando existen (con zoom
+// cercano para un mapa más premium), o búsqueda por dirección como respaldo.
 export function storeMapsEmbedUrl(store: Store): string {
+  if (hasExactLocation(store)) {
+    return `https://maps.google.com/maps?q=${store.lat},${store.lng}&z=17&output=embed`;
+  }
   return `https://maps.google.com/maps?q=${encodeURIComponent(
     store.mapsQuery
   )}&output=embed`;
