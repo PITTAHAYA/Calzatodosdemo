@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
-import { ProductGrid } from "@/components/ProductGrid";
+import { ProductRail } from "@/components/ProductRail";
 import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -100,7 +100,7 @@ export default function HomePage() {
             href="/catalogo"
             hrefLabel="Ver catálogo completo"
           />
-          <ProductGrid products={featured} />
+          <ProductRail products={featured} />
         </div>
       </section>
 
@@ -146,10 +146,14 @@ export default function HomePage() {
             href="/marcas"
             hrefLabel="Ver todas las marcas"
           />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {/* Móvil: tira deslizable · Desktop: cuadrícula */}
+          <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 no-scrollbar sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
             {visibleBrands.map((b, i) => (
-              <Reveal key={b.slug} delay={i * 0.04}>
-                <Link href={`/marcas/${b.slug}`} className="block transition hover:-translate-y-0.5">
+              <Reveal key={b.slug} delay={i * 0.04} className="w-40 shrink-0 snap-start sm:w-auto">
+                <Link
+                  href={`/marcas/${b.slug}`}
+                  className="block transition active:scale-[0.98] hover:-translate-y-0.5"
+                >
                   <BrandLogo brand={b} className="h-28" />
                 </Link>
               </Reveal>

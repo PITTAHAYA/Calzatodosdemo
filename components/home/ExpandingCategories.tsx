@@ -100,26 +100,31 @@ export function ExpandingCategories({ panels }: { panels: CategoryPanel[] }) {
         })}
       </div>
 
-      {/* ===== MÓVIL: tarjetas apiladas ===== */}
-      <div className="grid grid-cols-2 gap-3 sm:hidden">
-        {panels.map((p) => (
+      {/* ===== MÓVIL: carrusel deslizable con snap ===== */}
+      <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 no-scrollbar sm:hidden">
+        {panels.map((p, i) => (
           <Link
             key={p.name}
             href={p.href}
-            className="group relative flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-2xl p-4 text-white"
+            className="group relative flex aspect-[3/4] w-[74vw] max-w-[300px] shrink-0 snap-center flex-col justify-end overflow-hidden rounded-3xl p-5 text-white shadow-card-hover transition-transform active:scale-[0.98]"
           >
             <Image
               src={p.image}
               alt={p.name}
               fill
-              sizes="50vw"
+              sizes="74vw"
               className="object-cover"
+              priority={i < 2}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+            <span className="absolute left-5 top-5 text-xs font-bold tracking-widest text-white/60">
+              0{i + 1}
+            </span>
             <div className="relative">
-              <h3 className="text-lg font-black">{p.name}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-white/85">
-                Ver más <ArrowRightIcon className="h-3.5 w-3.5" />
+              <h3 className="text-2xl font-black leading-none">{p.name}</h3>
+              <p className="mt-2 text-sm text-white/85">{p.text}</p>
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold backdrop-blur">
+                Explorar <ArrowRightIcon className="h-3.5 w-3.5" />
               </span>
             </div>
           </Link>
