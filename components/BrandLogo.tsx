@@ -29,13 +29,12 @@ export function BrandLogo({
           className="h-14 w-auto max-w-[85%] object-contain"
         />
       ) : (
+        // Wordmark tipográfico cuando aún no hay logo oficial.
         <div className="text-center">
-          <div className="text-lg font-extrabold tracking-tight text-graphite-800">
+          <div className="text-2xl font-black uppercase tracking-tight text-graphite-900">
             {brand.name}
           </div>
-          <div className="mt-0.5 text-[10px] uppercase tracking-widest text-graphite-400">
-            Logo próximamente
-          </div>
+          <div className="mx-auto mt-1 h-0.5 w-8 rounded-full bg-brand-600" />
         </div>
       )}
     </div>

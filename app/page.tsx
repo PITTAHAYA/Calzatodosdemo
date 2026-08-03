@@ -26,10 +26,10 @@ const categoryCards = [
 ];
 
 const styleBlocks = [
-  { name: "Sneakers", href: "/catalogo?categoria=sneakers" },
-  { name: "Deportivo", href: "/deportivo" },
-  { name: "Formal", href: "/formal" },
-  { name: "Escolar", href: "/escolar" },
+  { name: "Sneakers", href: "/catalogo?categoria=sneakers", image: "/lifestyle/zapatos-1.jpg" },
+  { name: "Deportivo", href: "/deportivo", image: "/lifestyle/zapatos-4.jpg" },
+  { name: "Formal", href: "/formal", image: "/lifestyle/zapatos-5.jpg" },
+  { name: "Escolar", href: "/escolar", image: "/lifestyle/zapatos-3.jpg" },
 ];
 
 export default function HomePage() {
@@ -175,14 +175,25 @@ export default function HomePage() {
       <section className="section bg-graphite-50">
         <div className="container-page">
           <SectionHeader eyebrow="Estilos" title="Explora por estilo" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {styleBlocks.map((s, i) => (
               <Reveal key={s.name} delay={i * 0.04}>
                 <Link
                   href={s.href}
-                  className="group flex h-24 items-center justify-center rounded-xl border border-graphite-100 bg-white px-4 text-center text-sm font-semibold text-graphite-800 shadow-card transition hover:border-brand-300 hover:text-brand-700"
+                  className="group relative flex aspect-[4/5] items-end overflow-hidden rounded-2xl p-4"
                 >
-                  {s.name}
+                  <Image
+                    src={s.image}
+                    alt={s.name}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 22vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="relative flex w-full items-center justify-between">
+                    <span className="text-base font-bold text-white">{s.name}</span>
+                    <ArrowRightIcon className="h-4 w-4 text-white transition-transform group-hover:translate-x-1" />
+                  </div>
                 </Link>
               </Reveal>
             ))}
@@ -207,6 +218,39 @@ export default function HomePage() {
                 </Link>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ 6.5 BANDA EDITORIAL ============ */}
+      <section className="relative isolate flex min-h-[420px] items-center overflow-hidden sm:min-h-[520px]">
+        <Image
+          src="/lifestyle/editorial-family.jpg"
+          alt="Familia en una tienda Calzatodos Group"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
+        <div className="container-page relative py-20 text-white">
+          <div className="max-w-xl">
+            <p className="eyebrow text-brand-400">Calzatodos Group</p>
+            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-5xl">
+              Calidad que se siente en cada paso
+            </h2>
+            <p className="mt-4 text-lg text-graphite-100">{brandCopy.valueProp}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/catalogo" className="btn-primary !px-6 !py-3">
+                Explorar catálogo
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/nosotros"
+                className="btn !border !border-white/50 !text-white hover:!bg-white/10 !px-6 !py-3"
+              >
+                Conócenos
+              </Link>
+            </div>
           </div>
         </div>
       </section>

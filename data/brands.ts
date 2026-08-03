@@ -79,6 +79,7 @@ export const brands: Brand[] = [
     description:
       "Marca propia de Calzatodos Group, con diseños coloridos y resistentes pensados para los niños.",
     logo: "/brands/bumixgumer.jpg",
+    gallery: ["/brand-gallery/bumixgumer-1.jpg", "/brand-gallery/bumixgumer-2.jpg"],
   },
   {
     slug: "cotti",
@@ -88,6 +89,11 @@ export const brands: Brand[] = [
     description:
       "Marca propia de Calzatodos Group enfocada en calzado masculino elegante, con estilo y comodidad.",
     logo: "/brands/cotti.jpg",
+    gallery: [
+      "/brand-gallery/cotti-mood.jpg",
+      "/lifestyle/zapatos-5.jpg",
+      "/lifestyle/botas-2.jpg",
+    ],
   },
   {
     slug: "my-athletic",
@@ -97,15 +103,24 @@ export const brands: Brand[] = [
     description:
       "Marca propia de Calzatodos Group orientada al calzado deportivo y de rendimiento para toda la familia.",
     logo: "/brands/my-athletic.png",
+    gallery: [
+      "/brand-gallery/my-athletic-1.jpg",
+      "/lifestyle/zapatos-1.jpg",
+      "/lifestyle/zapatos-4.jpg",
+    ],
   },
   {
     slug: "kaloa",
     name: "Kaloa",
     type: "propia",
-    tagline: "Marca propia de Calzatodos Group",
+    tagline: "Frescura para toda la familia",
     description:
-      "Diseños frescos y versátiles para acompañar cada etapa de la familia.",
-    // Logo pendiente de entrega por el cliente.
+      "Diseños frescos y versátiles para acompañar cada etapa de la familia, con estilo y comodidad.",
+    gallery: [
+      "/lifestyle/zapatos-2.jpg",
+      "/lifestyle/zapatos-1.jpg",
+      "/lifestyle/zapatos-3.jpg",
+    ],
   },
   {
     // Marca de la casa: agrupa el catálogo con precios. No se muestra en la

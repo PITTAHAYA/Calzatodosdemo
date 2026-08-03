@@ -111,28 +111,33 @@ export default function NosotrosPage() {
           </div>
 
           <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {team.map((m) => (
-              <div key={m.name} className="text-center">
-                <div className="relative mx-auto aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-graphite-200 to-graphite-100">
+            {team.map((m, i) => (
+              <div
+                key={m.name}
+                className="group rounded-2xl border border-graphite-100 bg-white p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
+              >
+                <div className="relative mx-auto aspect-square w-full overflow-hidden rounded-xl">
                   {m.photo ? (
                     <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="200px" />
                   ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <span className="text-3xl font-black text-graphite-400">
+                    <div
+                      className={`flex h-full items-center justify-center bg-gradient-to-br ${
+                        i % 3 === 0
+                          ? "from-brand-600 to-brand-800"
+                          : "from-graphite-800 to-graphite-950"
+                      }`}
+                    >
+                      <span className="text-4xl font-black tracking-tight text-white/95">
                         {initials(m.name)}
                       </span>
                     </div>
                   )}
                 </div>
                 <h3 className="mt-3 text-sm font-bold text-graphite-900">{m.name}</h3>
-                <p className="text-xs text-graphite-500">{m.role}</p>
+                <p className="text-xs font-medium text-brand-600">{m.role}</p>
               </div>
             ))}
           </div>
-          <p className="mt-8 text-center text-xs text-graphite-400">
-            Espacios preparados para fotografías del equipo. Se muestran las iniciales
-            mientras se incorporan las fotos reales.
-          </p>
         </div>
       </section>
     </div>
