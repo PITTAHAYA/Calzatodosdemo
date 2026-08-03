@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WholesaleForm } from "@/components/forms/WholesaleForm";
 import { IconByName, WhatsAppIcon } from "@/components/Icons";
@@ -26,16 +27,25 @@ export default function MayoristasPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-graphite-950 text-white">
-        <div className="container-page py-12 sm:py-16">
-          <div className="[&_a]:text-graphite-400 [&_a:hover]:text-white [&_span]:text-graphite-200">
+      <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
+        <Image
+          src="/lifestyle/mayoristas-hero.jpg"
+          alt="Distribución mayorista de calzado"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
+        <div className="container-page relative py-16 sm:py-28">
+          <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
             <Breadcrumbs items={[{ name: "Mayoristas", path: "/mayoristas" }]} />
           </div>
           <p className="eyebrow mt-6 text-brand-400">Mayoristas</p>
-          <h1 className="mt-2 max-w-3xl text-4xl font-black sm:text-5xl">
+          <h1 className="mt-2 max-w-3xl text-4xl font-black sm:text-6xl">
             Calzado y marcas para hacer crecer tu negocio
           </h1>
-          <p className="mt-4 max-w-2xl text-graphite-300">
+          <p className="mt-4 max-w-2xl text-lg text-graphite-100">
             Calzatodos Group atiende a comercios y compradores mayoristas que buscan
             variedad, respaldo, atención cercana y productos para diferentes segmentos del
             mercado.

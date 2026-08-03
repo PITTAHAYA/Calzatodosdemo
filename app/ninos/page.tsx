@@ -21,6 +21,7 @@ export default function NinosPage() {
       description="Escolar, con luces, sneakers, sandalias y más para niño, niña e infantil. Filtra por público y consulta por WhatsApp."
       products={kids}
       crumbs={[{ name: "Niños", path: "/ninos" }]}
+      heroImage="/brand-gallery/bubble-gummers-2.jpg"
     />
   );
 }

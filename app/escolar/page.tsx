@@ -18,6 +18,7 @@ export default function EscolarPage() {
       description="Resistencia y comodidad para el día a día en clases. Modelos pensados para niños y niñas."
       products={getProductsByCategory("escolar")}
       crumbs={[{ name: "Escolar", path: "/escolar" }]}
+      heroImage="/lifestyle/zapatos-3.jpg"
       hideCategory
     />
   );

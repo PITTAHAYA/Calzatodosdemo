@@ -21,6 +21,7 @@ export default function UrbanoPage() {
       description="Sneakers y casuales de líneas limpias para el día a día. Lo urbano que no pasa de moda."
       products={items}
       crumbs={[{ name: "Urbano", path: "/urbano" }]}
+      heroImage="/brand-gallery/north-star-2.jpg"
       hideCategory
     />
   );

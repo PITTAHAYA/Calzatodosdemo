@@ -39,6 +39,7 @@ export const promotions: Promotion[] = [
     brands: ["bubble-gummers"],
     termsSummary:
       "Promoción de demostración. Aplica a productos seleccionados. Consulta condiciones y disponibilidad en tienda.",
+    image: "/brand-gallery/bumixgumer-2.jpg",
     expiredBehavior: "keep",
     demo: true,
   },
@@ -54,6 +55,7 @@ export const promotions: Promotion[] = [
     brands: ["power", "north-star"],
     termsSummary:
       "Promoción de demostración. Aplica a modelos seleccionados mientras dure el inventario.",
+    image: "/lifestyle/zapatos-1.jpg",
     expiredBehavior: "keep",
     demo: true,
   },
@@ -68,6 +70,7 @@ export const promotions: Promotion[] = [
     brands: [],
     termsSummary:
       "Promoción de demostración ya finalizada, mostrada como ejemplo de estado 'finalizada'.",
+    image: "/lifestyle/zapatos-5.jpg",
     expiredBehavior: "keep",
     demo: true,
   },

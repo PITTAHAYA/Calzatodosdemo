@@ -1,88 +1,103 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { StoreIcon } from "@/components/Icons";
-import { about, founder, team } from "@/data/team";
-import { initials } from "@/lib/utils";
+import { IconByName, WhatsAppIcon, ArrowRightIcon } from "@/components/Icons";
+import { about, founder, leadership } from "@/data/team";
+import { whatsappGeneral } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "Nosotros",
   description:
-    "Conoce la historia de Calzatodos Group: más de 30 años de experiencia en el sector del calzado y consolidada desde 2015. Misión, visión, valores y equipo.",
+    "Conoce la historia de Calzatodos Group: más de 30 años de experiencia en el sector del calzado y consolidada desde 2015. Misión, visión, valores y liderazgo.",
   path: "/nosotros",
 });
 
 export default function NosotrosPage() {
   return (
     <div>
-      {/* Hero historia */}
-      <section className="bg-graphite-950 text-white">
-        <div className="container-page py-12 sm:py-16">
-          <div className="[&_a]:text-graphite-400 [&_a:hover]:text-white [&_span]:text-graphite-200">
+      {/* ===== HERO con foto real del equipo ===== */}
+      <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
+        <Image
+          src="/team/equipo-calzatodos.jpg"
+          alt="El equipo de Calzatodos Group"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover [object-position:center_30%]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-graphite-950 via-graphite-950/35 to-black/10" />
+        <div className="container-page relative flex min-h-[60vh] flex-col justify-end py-14">
+          <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
             <Breadcrumbs items={[{ name: "Nosotros", path: "/nosotros" }]} />
           </div>
           <p className="eyebrow mt-6 text-brand-400">Nuestra historia</p>
-          <h1 className="mt-2 max-w-3xl text-4xl font-black sm:text-5xl">
+          <h1 className="mt-2 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
             Más de 30 años acompañando cada paso
           </h1>
-          <div className="mt-6 flex flex-wrap gap-8">
-            <div>
-              <p className="text-4xl font-black text-brand-400">+30</p>
-              <p className="text-sm text-graphite-300">años de experiencia en el sector</p>
-            </div>
-            <div>
-              <p className="text-4xl font-black text-brand-400">2015</p>
-              <p className="text-sm text-graphite-300">Calzatodos Group consolidado</p>
-            </div>
-            <div>
-              <p className="text-4xl font-black text-brand-400">4</p>
-              <p className="text-sm text-graphite-300">locales en Ecuador</p>
-            </div>
-          </div>
+          <p className="mt-4 max-w-2xl text-lg text-graphite-100">{about.historyShort}</p>
         </div>
       </section>
 
-      {/* Historia */}
+      {/* ===== Franja de cifras ===== */}
+      <section className="border-b border-graphite-100 bg-white">
+        <div className="container-page grid grid-cols-3 divide-x divide-graphite-100 py-8 text-center">
+          {[
+            { n: "+30", l: "años de experiencia" },
+            { n: "2015", l: "consolidados como empresa" },
+            { n: "4", l: "locales en Ecuador" },
+          ].map((s) => (
+            <div key={s.l} className="px-2">
+              <p className="text-3xl font-black text-brand-600 sm:text-5xl">{s.n}</p>
+              <p className="mt-1 text-xs text-graphite-500 sm:text-sm">{s.l}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== Historia + fundador ===== */}
       <section className="section">
-        <div className="container-page grid gap-10 lg:grid-cols-2">
+        <div className="container-page grid gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="section-title">Cómo empezamos</h2>
+            <p className="eyebrow">Cómo empezamos</p>
+            <h2 className="section-title mt-2">Una empresa familiar ecuatoriana</h2>
             <p className="mt-4 text-graphite-600">{about.historyLong}</p>
           </div>
-          <div className="rounded-2xl border border-graphite-100 bg-graphite-50 p-6">
-            <h3 className="text-sm font-bold uppercase tracking-wide text-brand-600">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white sm:p-10">
+            <p className="text-sm font-bold uppercase tracking-widest text-white/80">
               Fundador
-            </h3>
-            <p className="mt-2 text-xl font-bold text-graphite-900">{founder.name}</p>
-            <p className="mt-3 text-graphite-600">{founder.bio}</p>
+            </p>
+            <p className="mt-3 text-2xl font-bold">{founder.name}</p>
+            <p className="mt-4 text-white/90">{founder.bio}</p>
           </div>
         </div>
       </section>
 
-      {/* Misión / Visión */}
+      {/* ===== Misión / Visión ===== */}
       <section className="section bg-graphite-50">
         <div className="container-page grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-graphite-100 bg-white p-8 shadow-card">
+          <div className="rounded-3xl border border-graphite-100 bg-white p-8 shadow-card sm:p-10">
             <p className="eyebrow">Misión</p>
-            <p className="mt-3 text-lg text-graphite-700">{about.mission}</p>
+            <p className="mt-3 text-lg leading-relaxed text-graphite-700">{about.mission}</p>
           </div>
-          <div className="rounded-2xl border border-graphite-100 bg-white p-8 shadow-card">
+          <div className="rounded-3xl border border-graphite-100 bg-white p-8 shadow-card sm:p-10">
             <p className="eyebrow">Visión</p>
-            <p className="mt-3 text-lg text-graphite-700">{about.vision}</p>
+            <p className="mt-3 text-lg leading-relaxed text-graphite-700">{about.vision}</p>
           </div>
         </div>
       </section>
 
-      {/* Valores */}
+      {/* ===== Valores ===== */}
       <section className="section">
-        <div className="container-page">
-          <h2 className="section-title text-center">Nuestros valores</h2>
+        <div className="container-page text-center">
+          <p className="eyebrow">Lo que nos define</p>
+          <h2 className="section-title mt-2">Nuestros valores</h2>
           <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-3">
             {about.values.map((v) => (
               <span
                 key={v}
-                className="rounded-full bg-brand-50 px-5 py-2.5 text-sm font-semibold text-brand-700"
+                className="rounded-full border border-graphite-200 bg-white px-5 py-2.5 text-sm font-semibold text-graphite-800 shadow-sm"
               >
                 {v}
               </span>
@@ -91,52 +106,62 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* Equipo */}
-      <section className="section bg-graphite-50">
+      {/* ===== Liderazgo (por rol) ===== */}
+      <section className="section bg-graphite-950 text-white">
         <div className="container-page">
-          <div className="text-center">
-            <p className="eyebrow">Nuestro equipo</p>
-            <h2 className="section-title mt-2">Las personas detrás de Calzatodos Group</h2>
+          <div className="max-w-2xl">
+            <p className="eyebrow text-brand-400">Nuestro equipo</p>
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
+              Un equipo que cuida cada detalle
+            </h2>
+            <p className="mt-4 text-graphite-300">
+              Detrás de Calzatodos Group hay personas comprometidas con la calidad y la
+              atención cercana. Estas son las áreas que lideran nuestra operación.
+            </p>
           </div>
-
-          {/* Foto real del equipo */}
-          <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl sm:aspect-[21/9]">
-            <Image
-              src="/team/equipo-calzatodos.jpg"
-              alt="El equipo de Calzatodos Group"
-              fill
-              sizes="(max-width: 1024px) 100vw, 1100px"
-              className="object-cover"
-            />
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-            {team.map((m, i) => (
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {leadership.map((r) => (
               <div
-                key={m.name}
-                className="group rounded-2xl border border-graphite-100 bg-white p-4 text-center shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover"
+                key={r.role}
+                className="rounded-2xl border border-graphite-800 bg-graphite-900 p-7"
               >
-                <div className="relative mx-auto aspect-square w-full overflow-hidden rounded-xl">
-                  {m.photo ? (
-                    <Image src={m.photo} alt={m.name} fill className="object-cover" sizes="200px" />
-                  ) : (
-                    <div
-                      className={`flex h-full items-center justify-center bg-gradient-to-br ${
-                        i % 3 === 0
-                          ? "from-brand-600 to-brand-800"
-                          : "from-graphite-800 to-graphite-950"
-                      }`}
-                    >
-                      <span className="text-4xl font-black tracking-tight text-white/95">
-                        {initials(m.name)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <h3 className="mt-3 text-sm font-bold text-graphite-900">{m.name}</h3>
-                <p className="text-xs font-medium text-brand-600">{m.role}</p>
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600/15 text-brand-400">
+                  <IconByName name={r.icon} className="h-6 w-6" />
+                </span>
+                <h3 className="mt-4 text-lg font-semibold">{r.role}</h3>
+                <p className="mt-2 text-sm text-graphite-400">{r.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CTA ===== */}
+      <section className="section">
+        <div className="container-page">
+          <div className="flex flex-col items-center justify-between gap-6 rounded-3xl bg-graphite-50 px-8 py-12 text-center sm:flex-row sm:text-left">
+            <div>
+              <h2 className="text-2xl font-bold text-graphite-900">
+                Visítanos o escríbenos
+              </h2>
+              <p className="mt-2 text-graphite-600">
+                Te ayudamos a encontrar el calzado ideal para ti y tu familia.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={whatsappGeneral()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-whatsapp !px-6 !py-3"
+              >
+                <WhatsAppIcon className="h-5 w-5" /> Hablar por WhatsApp
+              </a>
+              <Link href="/tiendas" className="btn-outline !px-6 !py-3">
+                Encontrar una tienda
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

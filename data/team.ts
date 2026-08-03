@@ -22,17 +22,36 @@ export const founder = {
 
 export const team: TeamMember[] = [
   { name: "Marco Acuña", role: "Gerente General" },
-  { name: "Tania Chiluisa", role: "Contadora" },
   { name: "Alex Acuña", role: "Jefe de Compras" },
   { name: "Marco Alban", role: "Administrador Zonal" },
-  { name: "Edgar Arias", role: "Vendedor Senior" },
-  { name: "Gustavo Osorio", role: "Vendedor Senior" },
-  { name: "Janeth Chavez", role: "Vendedora Junior" },
-  { name: "Ived Castro", role: "Vendedora Junior" },
-  { name: "Jonathan Jimenez", role: "Vendedor Junior" },
-  { name: "Hugo De la Cruz", role: "Vendedor Junior" },
-  { name: "Shirley Yungan", role: "Vendedora Junior" },
-  { name: "Susana Ruiz", role: "Vendedora Junior" },
+];
+
+// Liderazgo mostrado por rol/función (sin nombres) en la página Nosotros.
+export interface LeadershipRole {
+  role: string;
+  icon: string; // nombre de ícono (ver components/Icons.tsx)
+  description: string;
+}
+
+export const leadership: LeadershipRole[] = [
+  {
+    role: "Gerencia General",
+    icon: "badge-check",
+    description:
+      "Define la visión y la estrategia de Calzatodos Group, cuidando la calidad, el crecimiento y la atención cercana a cada cliente.",
+  },
+  {
+    role: "Jefatura de Compras",
+    icon: "truck",
+    description:
+      "Selecciona marcas y modelos, y asegura variedad y disponibilidad para toda la familia en cada temporada.",
+  },
+  {
+    role: "Administración Zonal",
+    icon: "store",
+    description:
+      "Coordina la operación de nuestros locales para brindar una experiencia consistente y un servicio de excelencia.",
+  },
 ];
 
 // Contenido institucional editable.

@@ -18,6 +18,7 @@ export default function HombrePage() {
       description="Calzado casual, formal, deportivo, outdoor y de seguridad. Encuentra tu modelo y consúltalo por WhatsApp."
       products={getProductsByAudience("hombre")}
       crumbs={[{ name: "Hombre", path: "/hombre" }]}
+      heroImage="/lifestyle/zapatos-2.jpg"
       hideAudience
     />
   );

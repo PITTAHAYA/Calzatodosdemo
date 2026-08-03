@@ -170,6 +170,8 @@ export function IconByName({ name, className }: { name: string; className?: stri
       return <HeadsetIcon className={className} />;
     case "truck":
       return <TruckIcon className={className} />;
+    case "store":
+      return <StoreIcon className={className} />;
     default:
       return <SparkleIcon className={className} />;
   }

@@ -21,6 +21,7 @@ export default function FormalPage() {
       description="Elegancia para la oficina, eventos y ocasiones especiales. Zapatos formales y tacones."
       products={items}
       crumbs={[{ name: "Formal", path: "/formal" }]}
+      heroImage="/lifestyle/zapatos-5.jpg"
       hideCategory
     />
   );

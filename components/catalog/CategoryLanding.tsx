@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { CatalogClient } from "./CatalogClient";
 import type { Product } from "@/data/products";
@@ -16,6 +17,7 @@ export function CategoryLanding({
   crumbs,
   hideAudience,
   hideCategory,
+  heroImage,
 }: {
   title: string;
   eyebrow: string;
@@ -24,20 +26,34 @@ export function CategoryLanding({
   crumbs: Crumb[];
   hideAudience?: boolean;
   hideCategory?: boolean;
+  heroImage?: string;
 }) {
   const hasPrices = products.some((p) => typeof p.price === "number");
 
   return (
     <div>
-      {/* Hero de categoría */}
-      <section className="bg-graphite-950 text-white">
-        <div className="container-page py-12 sm:py-16">
-          <div className="[&_a]:text-graphite-400 [&_a:hover]:text-white [&_span]:text-graphite-200">
+      {/* Hero de categoría (con fotografía de fondo) */}
+      <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
+        {heroImage && (
+          <>
+            <Image
+              src={heroImage}
+              alt={title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
+          </>
+        )}
+        <div className="container-page relative py-16 sm:py-24">
+          <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
             <Breadcrumbs items={crumbs} />
           </div>
           <p className="eyebrow mt-6 text-brand-400">{eyebrow}</p>
-          <h1 className="mt-2 text-4xl font-black sm:text-5xl">{title}</h1>
-          <p className="mt-4 max-w-2xl text-graphite-300">{description}</p>
+          <h1 className="mt-2 text-4xl font-black sm:text-6xl">{title}</h1>
+          <p className="mt-4 max-w-2xl text-lg text-graphite-100">{description}</p>
         </div>
       </section>
 
