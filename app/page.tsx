@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 import { ProductGrid } from "@/components/ProductGrid";
-import { StoreCard } from "@/components/StoreCard";
+import { ExpandingCategories } from "@/components/home/ExpandingCategories";
+import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandLogo } from "@/components/BrandLogo";
 import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
@@ -12,12 +13,11 @@ import { brandCopy } from "@/data/site-content";
 import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
 
 const categoryCards = [
-  { name: "Mujer", href: "/mujer", text: "Sneakers y calzado escolar.", image: "/brand-gallery/north-star-1.jpg" },
-  { name: "Hombre", href: "/hombre", text: "Formal y sneakers para el día a día.", image: "/lifestyle/zapatos-2.jpg" },
-  { name: "Niños", href: "/ninos", text: "Escolar y para jugar.", image: "/brand-gallery/bubble-gummers-2.jpg" },
-  { name: "Deportivo", href: "/deportivo", text: "Sneakers para toda la familia.", image: "/lifestyle/zapatos-1.jpg" },
-  { name: "Escolar", href: "/escolar", text: "Listos para el regreso a clases.", image: "/lifestyle/zapatos-3.jpg" },
-  { name: "Formal", href: "/formal", text: "Elegancia para cada ocasión.", image: "/lifestyle/zapatos-5.jpg" },
+  { name: "Mujer", href: "/mujer", text: "Sneakers y calzado escolar con estilo y comodidad.", image: "/brand-gallery/north-star-1.jpg" },
+  { name: "Hombre", href: "/hombre", text: "Formal y sneakers para acompañar tu día a día.", image: "/lifestyle/zapatos-2.jpg" },
+  { name: "Niños", href: "/ninos", text: "Escolar y para jugar, pensado para los más pequeños.", image: "/brand-gallery/bubble-gummers-2.jpg" },
+  { name: "Deportivo", href: "/deportivo", text: "Sneakers deportivos para toda la familia.", image: "/lifestyle/zapatos-1.jpg" },
+  { name: "Escolar", href: "/escolar", text: "Resistencia y comodidad para el regreso a clases.", image: "/lifestyle/zapatos-3.jpg" },
 ];
 
 export default function HomePage() {
@@ -84,33 +84,10 @@ export default function HomePage() {
             eyebrow="Compra por categoría"
             title="Calzado para cada integrante de la familia"
           />
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-            {categoryCards.map((c, i) => (
-              <Reveal key={c.name} delay={i * 0.05}>
-                <Link
-                  href={c.href}
-                  className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl p-5 text-white transition-transform hover:-translate-y-0.5"
-                >
-                  <Image
-                    src={c.image}
-                    alt={c.name}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-colors group-hover:from-black/80" />
-                  <div className="relative">
-                    <h3 className="text-xl font-bold">{c.name}</h3>
-                    <p className="mt-1 text-sm text-white/85">{c.text}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold">
-                      Ver más
-                      <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          <ExpandingCategories panels={categoryCards} />
+          <p className="mt-4 text-center text-xs uppercase tracking-widest text-graphite-400 sm:hidden">
+            Toca una categoría para explorar
+          </p>
         </div>
       </section>
 
@@ -229,11 +206,7 @@ export default function HomePage() {
             href="/tiendas"
             hrefLabel="Ver localizador de tiendas"
           />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {stores.map((s) => (
-              <StoreCard key={s.slug} store={s} />
-            ))}
-          </div>
+          <StoreCoverflow stores={stores} />
         </div>
       </section>
 
