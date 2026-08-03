@@ -41,6 +41,9 @@ export const stores: Store[] = [
     closesAt: "19:30",
     days: [0, 1, 2, 3, 4, 5, 6],
     mapsQuery: "Calzatodos Group, 2 de Mayo y Guayaquil, Latacunga, Ecuador",
+    // Coordenadas exactas confirmadas.
+    lat: -0.932144,
+    lng: -78.617485,
   },
   {
     slug: "latacunga-sur",
@@ -89,6 +92,9 @@ export const stores: Store[] = [
     days: [0, 1, 2, 3, 4, 5, 6],
     mapsQuery:
       "Calle Guayaquil entre García Moreno y Pichincha, Riobamba, Ecuador",
+    // Coordenadas exactas confirmadas.
+    lat: -1.671847,
+    lng: -78.652145,
   },
 ];
 
