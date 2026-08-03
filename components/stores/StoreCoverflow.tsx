@@ -66,9 +66,9 @@ export function StoreCoverflow({ stores }: { stores: Store[] }) {
 
   return (
     <div>
-      {/* Escenario 3D */}
+      {/* Escenario 3D (overflow-hidden evita desbordamiento horizontal de la página) */}
       <div
-        className="relative select-none"
+        className="relative select-none overflow-hidden"
         style={{ perspective: 1600, height: cardW * 1.42 + 40 }}
       >
         <motion.div

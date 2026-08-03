@@ -11,7 +11,7 @@ export function ProductCard({ product }: { product: Product }) {
   const category = getCategory(product.category)?.name ?? product.category;
 
   return (
-    <article className="group relative flex flex-col rounded-xl border border-graphite-100 bg-white shadow-card transition-shadow hover:shadow-card-hover">
+    <article className="group relative flex flex-col rounded-xl border border-graphite-100 bg-white shadow-card transition-all hover:shadow-card-hover active:scale-[0.99]">
       <Link
         href={`/productos/${product.slug}`}
         className="relative block aspect-square overflow-hidden rounded-t-xl"
