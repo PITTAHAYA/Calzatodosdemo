@@ -83,7 +83,7 @@ export function Header() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="relative w-full">
       {/* Fila principal */}
       <div className="border-b border-graphite-100 bg-white/95 backdrop-blur">
         <div className="container-page">
@@ -126,21 +126,12 @@ export function Header() {
               </div>
             </form>
 
-            {/* Derecha: acciones */}
+            {/* Derecha: acciones (el WhatsApp vive en el botón flotante para no duplicarlo) */}
             <div className="flex items-center gap-2">
-              <Link href="/tiendas" className="btn-outline hidden !px-3 sm:inline-flex">
+              <Link href="/tiendas" className="btn-outline !px-3">
                 <StoreIcon className="h-4 w-4" />
                 <span className="hidden lg:inline">Tiendas</span>
               </Link>
-              <a
-                href={whatsappGeneral()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp !px-3 sm:!px-5"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">WhatsApp</span>
-              </a>
             </div>
           </div>
         </div>

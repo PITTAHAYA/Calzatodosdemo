@@ -66,8 +66,11 @@ export default function RootLayout({
         >
           Saltar al contenido
         </a>
-        <TopBar />
-        <Header />
+        {/* Barra superior + header pegados juntos al hacer scroll */}
+        <div className="sticky top-0 z-50">
+          <TopBar />
+          <Header />
+        </div>
         <main id="contenido" className="flex-1">
           {children}
         </main>

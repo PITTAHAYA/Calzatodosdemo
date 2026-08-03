@@ -1,13 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Reveal } from "@/components/Reveal";
 import { ProductRail } from "@/components/ProductRail";
 import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
-import { visibleBrands } from "@/data/brands";
 import { stores } from "@/data/stores";
 import { brandCopy } from "@/data/site-content";
 import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
@@ -146,19 +144,8 @@ export default function HomePage() {
             href="/marcas"
             hrefLabel="Ver todas las marcas"
           />
-          {/* Móvil: tira deslizable · Desktop: cuadrícula */}
-          <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 no-scrollbar sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-            {visibleBrands.map((b, i) => (
-              <Reveal key={b.slug} delay={i * 0.04} className="w-40 shrink-0 snap-start sm:w-auto">
-                <Link
-                  href={`/marcas/${b.slug}`}
-                  className="block transition active:scale-[0.98] hover:-translate-y-0.5"
-                >
-                  <BrandLogo brand={b} className="h-28" />
-                </Link>
-              </Reveal>
-            ))}
-          </div>
+          {/* Marquee de marcas que se desplaza solo */}
+          <BrandMarquee />
         </div>
       </section>
 
