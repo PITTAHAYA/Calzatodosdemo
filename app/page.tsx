@@ -250,7 +250,7 @@ export default function HomePage() {
               <a href={whatsappGeneral()} target="_blank" rel="noopener noreferrer" className="btn-whatsapp !px-6 !py-3">
                 <WhatsAppIcon className="h-5 w-5" /> Hablar por WhatsApp
               </a>
-              <Link href="/tiendas" className="btn-outline !border-white/40 !text-white hover:!bg-white/10 !px-6 !py-3">
+              <Link href="/tiendas" className="btn-outline !border-white/40 !bg-transparent !text-white hover:!bg-white/10 !px-6 !py-3">
                 <StoreIcon className="h-5 w-5" /> Encontrar una tienda
               </Link>
             </div>

@@ -10,6 +10,7 @@
 export interface TeamMember {
   name: string;
   role: string;
+  description?: string;
   photo?: string; // /public/team/...
 }
 
@@ -21,9 +22,24 @@ export const founder = {
 };
 
 export const team: TeamMember[] = [
-  { name: "Marco Acuña", role: "Gerente General" },
-  { name: "Alex Acuña", role: "Jefe de Compras" },
-  { name: "Marco Alban", role: "Administrador Zonal" },
+  {
+    name: "Marco Acuña",
+    role: "Gerente General",
+    description:
+      "Lidera la visión y la estrategia de Calzatodos Group, cuidando la calidad y la atención cercana a cada cliente.",
+  },
+  {
+    name: "Alex Acuña",
+    role: "Jefe de Compras",
+    description:
+      "Selecciona marcas y modelos para asegurar variedad y disponibilidad para toda la familia en cada temporada.",
+  },
+  {
+    name: "Marco Alban",
+    role: "Administrador Zonal",
+    description:
+      "Coordina la operación de nuestros locales para brindar una experiencia consistente y un servicio de excelencia.",
+  },
 ];
 
 // Liderazgo mostrado por rol/función (sin nombres) en la página Nosotros.
