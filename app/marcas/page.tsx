@@ -50,7 +50,7 @@ function BrandSection({
             <p className="text-sm font-medium text-brand-600">{b.tagline}</p>
             <p className="mt-2 text-sm text-graphite-600">{b.description}</p>
             <span className="mt-3 inline-flex text-sm font-semibold text-brand-700 group-hover:underline">
-              Ver productos →
+              Ver marca →
             </span>
           </Link>
         ))}

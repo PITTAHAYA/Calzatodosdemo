@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import type { Product } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { categories, audiences, styles } from "@/data/categories";
-import { brands } from "@/data/brands";
+import { getBrand } from "@/data/brands";
 import { SearchIcon, CloseIcon, WhatsAppIcon } from "@/components/Icons";
 import { whatsappGeneral } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -75,10 +75,33 @@ export function CatalogClient({
   }, [params]);
 
   const priceCeiling = useMemo(() => {
-    const prices = products
-      .map((p) => p.price)
-      .filter((p): p is number => typeof p === "number");
+    const prices = products.flatMap((p) =>
+      [p.price, p.priceMax].filter((v): v is number => typeof v === "number")
+    );
     return prices.length ? Math.ceil(Math.max(...prices)) : 0;
+  }, [products]);
+
+  // Facetas derivadas de los productos presentes (evita filtros vacíos).
+  const facets = useMemo(() => {
+    const catSet = new Set(products.map((p) => p.category));
+    const styleSet = new Set(products.map((p) => p.style));
+    const brandSet = new Set(products.map((p) => p.brand));
+    const sizeSet = new Set<number>();
+    const colorSet = new Set<string>();
+    products.forEach((p) => {
+      p.availableSizes.forEach((s) => sizeSet.add(s));
+      p.colors.forEach((c) => colorSet.add(c));
+    });
+    const presentBrands = Array.from(brandSet)
+      .map((slug) => getBrand(slug))
+      .filter((b): b is NonNullable<typeof b> => Boolean(b));
+    return {
+      categories: categories.filter((c) => catSet.has(c.slug)),
+      styles: styles.filter((s) => styleSet.has(s.slug)),
+      brands: presentBrands,
+      sizes: Array.from(sizeSet).sort((a, b) => a - b),
+      colors: Array.from(colorSet).sort(),
+    };
   }, [products]);
 
   const toggle = <T,>(arr: T[], value: T, setter: (v: T[]) => void) => {
@@ -193,9 +216,9 @@ export function CatalogClient({
         </FilterGroup>
       )}
 
-      {!hideCategory && (
+      {!hideCategory && facets.categories.length > 1 && (
         <FilterGroup title="Categoría">
-          {categories.map((c) => (
+          {facets.categories.map((c) => (
             <CheckRow
               key={c.slug}
               label={c.name}
@@ -206,31 +229,35 @@ export function CatalogClient({
         </FilterGroup>
       )}
 
-      <FilterGroup title="Marca">
-        {brands.map((b) => (
-          <CheckRow
-            key={b.slug}
-            label={b.name}
-            checked={selBrands.includes(b.slug)}
-            onChange={() => toggle(selBrands, b.slug, setSelBrands)}
-          />
-        ))}
-      </FilterGroup>
+      {facets.brands.length > 1 && (
+        <FilterGroup title="Marca">
+          {facets.brands.map((b) => (
+            <CheckRow
+              key={b.slug}
+              label={b.name}
+              checked={selBrands.includes(b.slug)}
+              onChange={() => toggle(selBrands, b.slug, setSelBrands)}
+            />
+          ))}
+        </FilterGroup>
+      )}
 
-      <FilterGroup title="Estilo">
-        {styles.map((s) => (
-          <CheckRow
-            key={s.slug}
-            label={s.name}
-            checked={selStyles.includes(s.slug)}
-            onChange={() => toggle(selStyles, s.slug, setSelStyles)}
-          />
-        ))}
-      </FilterGroup>
+      {facets.styles.length > 1 && (
+        <FilterGroup title="Estilo">
+          {facets.styles.map((s) => (
+            <CheckRow
+              key={s.slug}
+              label={s.name}
+              checked={selStyles.includes(s.slug)}
+              onChange={() => toggle(selStyles, s.slug, setSelStyles)}
+            />
+          ))}
+        </FilterGroup>
+      )}
 
       <FilterGroup title="Talla">
         <div className="flex flex-wrap gap-2">
-          {sizes.map((s) => (
+          {facets.sizes.map((s) => (
             <button
               key={s}
               type="button"
@@ -250,7 +277,7 @@ export function CatalogClient({
       </FilterGroup>
 
       <FilterGroup title="Color">
-        {colors.map((c) => (
+        {facets.colors.map((c) => (
           <CheckRow
             key={c}
             label={c}

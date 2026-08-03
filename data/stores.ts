@@ -25,11 +25,14 @@ export interface Store {
   // Coordenadas opcionales (rellenar cuando se confirmen).
   lat?: number;
   lng?: number;
+  // Foto del local (/public/stores/...).
+  photo?: string;
 }
 
 export const stores: Store[] = [
   {
     slug: "latacunga-centro",
+    photo: "/stores/latacunga-centro.jpg",
     city: "Latacunga",
     name: "Latacunga Centro",
     address: "2 de Mayo y Guayaquil, Latacunga, Ecuador",
@@ -41,6 +44,7 @@ export const stores: Store[] = [
   },
   {
     slug: "latacunga-sur",
+    photo: "/stores/latacunga-sur.jpg",
     city: "Latacunga",
     name: "Latacunga Sur",
     address:
@@ -57,6 +61,7 @@ export const stores: Store[] = [
   },
   {
     slug: "quito-centro-historico",
+    photo: "/stores/quito-centro-historico.jpg",
     city: "Quito",
     name: "Quito — Centro Histórico",
     address:
@@ -73,6 +78,7 @@ export const stores: Store[] = [
   },
   {
     slug: "riobamba",
+    photo: "/stores/riobamba.jpg",
     city: "Riobamba",
     name: "Riobamba",
     address:

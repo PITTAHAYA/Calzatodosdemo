@@ -12,6 +12,7 @@ export function ProductImage({
   className,
   sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
   priority = false,
+  fit = "cover",
 }: {
   images: string[];
   name: string;
@@ -19,19 +20,29 @@ export function ProductImage({
   className?: string;
   sizes?: string;
   priority?: boolean;
+  fit?: "cover" | "contain";
 }) {
   const hasImage = images && images.length > 0;
 
   if (hasImage) {
     return (
-      <div className={cn("relative overflow-hidden bg-graphite-50", className)}>
+      <div
+        className={cn(
+          "relative overflow-hidden",
+          fit === "contain" ? "bg-white" : "bg-graphite-50",
+          className
+        )}
+      >
         <Image
           src={images[0]}
           alt={name}
           fill
           sizes={sizes}
           priority={priority}
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className={cn(
+            "transition-transform duration-500 group-hover:scale-105",
+            fit === "contain" ? "object-contain p-3" : "object-cover"
+          )}
         />
         {images[1] && (
           <Image
@@ -39,7 +50,10 @@ export function ProductImage({
             alt={`${name} — vista alternativa`}
             fill
             sizes={sizes}
-            className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            className={cn(
+              "opacity-0 transition-opacity duration-500 group-hover:opacity-100",
+              fit === "contain" ? "object-contain p-3" : "object-cover"
+            )}
           />
         )}
       </div>

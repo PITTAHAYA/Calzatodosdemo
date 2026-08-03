@@ -13,6 +13,15 @@ export function formatPrice(value?: number): string {
   }).format(value);
 }
 
+// Etiqueta de precio: valor único, rango ("$34,00 – $37,00") o "Consulta el precio".
+export function priceLabel(p: { price?: number; priceMax?: number }): string {
+  if (typeof p.price !== "number") return "Consulta el precio";
+  if (typeof p.priceMax === "number" && p.priceMax !== p.price) {
+    return `${formatPrice(p.price)} – ${formatPrice(p.priceMax)}`;
+  }
+  return formatPrice(p.price);
+}
+
 export function initials(name: string): string {
   return name
     .split(" ")

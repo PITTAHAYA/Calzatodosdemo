@@ -7,8 +7,9 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { InstagramFeed } from "@/components/InstagramFeed";
 import { instagramPosts } from "@/data/social";
 import { IconByName, WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
+import Image from "next/image";
 import { getFeaturedProducts } from "@/data/products";
-import { brands } from "@/data/brands";
+import { visibleBrands } from "@/data/brands";
 import { stores } from "@/data/stores";
 import { getVisiblePromotions } from "@/data/promotions";
 import { brandCopy, valueProps, site } from "@/data/site-content";
@@ -16,23 +17,27 @@ import { about } from "@/data/team";
 import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
 
 const categoryCards = [
-  { name: "Mujer", href: "/mujer", text: "Sneakers, sandalias, tacones y más.", tone: "from-brand-600 to-brand-800" },
-  { name: "Hombre", href: "/hombre", text: "Casual, formal, deportivo y outdoor.", tone: "from-graphite-800 to-graphite-950" },
-  { name: "Niños", href: "/ninos", text: "Escolar, con luces y para jugar.", tone: "from-brand-500 to-brand-700" },
-  { name: "Deportivo", href: "/deportivo", text: "Rendimiento para toda la familia.", tone: "from-graphite-700 to-graphite-900" },
-  { name: "Escolar", href: "/escolar", text: "Resistencia para el regreso a clases.", tone: "from-brand-700 to-graphite-900" },
-  { name: "Formal", href: "/formal", text: "Elegancia para cada ocasión.", tone: "from-graphite-800 to-brand-800" },
+  { name: "Mujer", href: "/mujer", text: "Sneakers y calzado escolar.", image: "/brand-gallery/north-star-1.jpg" },
+  { name: "Hombre", href: "/hombre", text: "Formal y sneakers para el día a día.", image: "/lifestyle/zapatos-2.jpg" },
+  { name: "Niños", href: "/ninos", text: "Escolar y para jugar.", image: "/brand-gallery/bubble-gummers-2.jpg" },
+  { name: "Deportivo", href: "/deportivo", text: "Sneakers para toda la familia.", image: "/lifestyle/zapatos-1.jpg" },
+  { name: "Escolar", href: "/escolar", text: "Listos para el regreso a clases.", image: "/lifestyle/zapatos-3.jpg" },
+  { name: "Formal", href: "/formal", text: "Elegancia para cada ocasión.", image: "/lifestyle/zapatos-5.jpg" },
 ];
 
 const styleBlocks = [
-  { name: "Sneakers", href: "/catalogo?estilo=sneakers" },
-  { name: "Formal", href: "/formal" },
+  { name: "Sneakers", href: "/catalogo?categoria=sneakers" },
   { name: "Deportivo", href: "/deportivo" },
-  { name: "Outdoor", href: "/catalogo?estilo=outdoor" },
-  { name: "Sandalias", href: "/catalogo?categoria=sandalias" },
-  { name: "Botas y botines", href: "/catalogo?categoria=botas" },
+  { name: "Formal", href: "/formal" },
   { name: "Escolar", href: "/escolar" },
-  { name: "Seguridad industrial", href: "/seguridad" },
+];
+
+// Imágenes editoriales del hero (collage). El video del hero se integrará luego.
+const heroTiles = [
+  { src: "/lifestyle/zapatos-1.jpg", label: "Sneakers" },
+  { src: "/brand-gallery/north-star-1.jpg", label: "Urbano" },
+  { src: "/brand-gallery/bubble-gummers-2.jpg", label: "Niños" },
+  { src: "/brand-gallery/weinbrenner-1.jpg", label: "Outdoor" },
 ];
 
 export default function HomePage() {
@@ -81,25 +86,31 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Composición editorial (placeholder preparado para campañas) */}
+            {/* Composición editorial con fotografía real. */}
             <div className="relative hidden lg:block">
               <div className="grid grid-cols-2 gap-4">
-                {["Nueva colección", "Deportivo", "Familiar", "Regreso a clases"].map(
-                  (label, i) => (
-                    <div
-                      key={label}
-                      className={`flex aspect-[4/5] items-end rounded-2xl bg-gradient-to-br ${
-                        ["from-brand-600 to-brand-800", "from-graphite-700 to-graphite-900", "from-graphite-800 to-graphite-950", "from-brand-700 to-brand-900"][i]
-                      } p-5`}
-                    >
-                      <span className="text-sm font-semibold text-white/90">{label}</span>
-                    </div>
-                  )
-                )}
+                {heroTiles.map((tile, i) => (
+                  <div
+                    key={tile.label}
+                    className={`group relative aspect-[4/5] overflow-hidden rounded-2xl ${
+                      i % 2 === 1 ? "translate-y-6" : ""
+                    }`}
+                  >
+                    <Image
+                      src={tile.src}
+                      alt={tile.label}
+                      fill
+                      sizes="(max-width: 1024px) 0px, 22vw"
+                      priority={i < 2}
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <span className="absolute bottom-4 left-4 text-sm font-semibold text-white">
+                      {tile.label}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <p className="mt-3 text-center text-xs text-graphite-400">
-                Espacio para campañas de temporada (editable).
-              </p>
             </div>
           </div>
         </div>
@@ -117,12 +128,19 @@ export default function HomePage() {
               <Reveal key={c.name} delay={i * 0.05}>
                 <Link
                   href={c.href}
-                  className={`group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl bg-gradient-to-br ${c.tone} p-5 text-white transition-transform hover:-translate-y-0.5`}
+                  className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden rounded-2xl p-5 text-white transition-transform hover:-translate-y-0.5"
                 >
-                  <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
+                  <Image
+                    src={c.image}
+                    alt={c.name}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-colors group-hover:from-black/80" />
                   <div className="relative">
                     <h3 className="text-xl font-bold">{c.name}</h3>
-                    <p className="mt-1 text-sm text-white/80">{c.text}</p>
+                    <p className="mt-1 text-sm text-white/85">{c.text}</p>
                     <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold">
                       Ver más
                       <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -205,7 +223,7 @@ export default function HomePage() {
             hrefLabel="Ver todas las marcas"
           />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {brands.map((b, i) => (
+            {visibleBrands.map((b, i) => (
               <Reveal key={b.slug} delay={i * 0.04}>
                 <Link href={`/marcas/${b.slug}`} className="block transition hover:-translate-y-0.5">
                   <BrandLogo brand={b} className="h-28" />

@@ -19,6 +19,10 @@ export interface Brand {
   logo?: string;
   // Imagen destacada opcional para la cabecera de la página de marca.
   cover?: string;
+  // Galería de fotos (lo que vende la marca). Sin precios ni listado de modelos.
+  gallery?: string[];
+  // Marca interna (casa): no se muestra en la vitrina de marcas ni en menús.
+  hidden?: boolean;
 }
 
 export const brands: Brand[] = [
@@ -30,6 +34,13 @@ export const brands: Brand[] = [
     description:
       "Calzado infantil pensado para el juego, el confort y el crecimiento sano de los niños.",
     logo: "/brands/bubble-gummers.gif",
+    gallery: [
+      "/brand-gallery/bubble-gummers-2.jpg",
+      "/brand-gallery/bubble-gummers-3.jpg",
+      "/brand-gallery/bubble-gummers-1.jpg",
+      "/brand-gallery/bubble-gummers-4.jpg",
+      "/brand-gallery/bubble-gummers-muneco.png",
+    ],
   },
   {
     slug: "north-star",
@@ -39,6 +50,7 @@ export const brands: Brand[] = [
     description:
       "Sneakers y casuales con actitud, ideales para el día a día de jóvenes y adultos.",
     logo: "/brands/north-star.png",
+    gallery: ["/brand-gallery/north-star-1.jpg", "/brand-gallery/north-star-2.jpg"],
   },
   {
     slug: "power",
@@ -48,6 +60,7 @@ export const brands: Brand[] = [
     description:
       "Calzado deportivo diseñado para el rendimiento, el entrenamiento y el movimiento.",
     logo: "/brands/power.png",
+    gallery: ["/brand-gallery/power-1.jpg"],
   },
   {
     slug: "weinbrenner",
@@ -56,7 +69,7 @@ export const brands: Brand[] = [
     tagline: "Resistencia y outdoor",
     description:
       "Botas y calzado outdoor construidos para durar y acompañar la aventura y el trabajo.",
-    // Logo pendiente de entrega por el cliente.
+    gallery: ["/brand-gallery/weinbrenner-1.jpg"],
   },
   {
     slug: "bumixgumer",
@@ -94,6 +107,19 @@ export const brands: Brand[] = [
       "Diseños frescos y versátiles para acompañar cada etapa de la familia.",
     // Logo pendiente de entrega por el cliente.
   },
+  {
+    // Marca de la casa: agrupa el catálogo con precios. No se muestra en la
+    // vitrina de marcas ni en los menús (hidden), pero sí como sello en los
+    // productos.
+    slug: "calzatodos",
+    name: "Calzatodos Group",
+    type: "propia",
+    tagline: "Calzado para toda la familia",
+    description:
+      "El calzado de la casa: modelos escolares, formales y sneakers para toda la familia, disponibles en nuestros locales.",
+    logo: "/logo/calzatodos-group.png",
+    hidden: true,
+  },
 ];
 
 export function getBrand(slug: string): Brand | undefined {
@@ -104,5 +130,7 @@ export function getBrandByName(name: string): Brand | undefined {
   return brands.find((b) => b.name === name);
 }
 
-export const internationalBrands = brands.filter((b) => b.type === "internacional");
-export const ownBrands = brands.filter((b) => b.type === "propia");
+// Marcas visibles en vitrina/menús (excluye la marca de la casa).
+export const visibleBrands = brands.filter((b) => !b.hidden);
+export const internationalBrands = visibleBrands.filter((b) => b.type === "internacional");
+export const ownBrands = visibleBrands.filter((b) => b.type === "propia");

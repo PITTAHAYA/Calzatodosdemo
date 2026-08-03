@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { Store } from "@/data/stores";
 import { storeMapsUrl } from "@/data/stores";
 import { getOpenState } from "@/lib/store-hours";
@@ -19,7 +20,35 @@ export function StoreCard({ store }: { store: Store }) {
   }, [store]);
 
   return (
-    <article className="flex flex-col rounded-xl border border-graphite-100 bg-white p-5 shadow-card">
+    <article className="flex flex-col overflow-hidden rounded-xl border border-graphite-100 bg-white shadow-card">
+      {store.photo && (
+        <div className="relative aspect-[16/10] w-full overflow-hidden">
+          <Image
+            src={store.photo}
+            alt={`Local ${store.name}`}
+            fill
+            sizes="(max-width: 640px) 100vw, 50vw"
+            className="object-cover transition-transform duration-500 hover:scale-105"
+          />
+          {open && (
+            <span
+              className={cn(
+                "absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow",
+                open.open ? "bg-green-500 text-white" : "bg-white/90 text-graphite-700"
+              )}
+            >
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  open.open ? "bg-white" : "bg-graphite-400"
+                )}
+              />
+              {open.label}
+            </span>
+          )}
+        </div>
+      )}
+      <div className="flex flex-1 flex-col p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-brand-600">
@@ -27,7 +56,7 @@ export function StoreCard({ store }: { store: Store }) {
           </p>
           <h3 className="mt-0.5 text-lg font-bold text-graphite-900">{store.name}</h3>
         </div>
-        {open && (
+        {!store.photo && open && (
           <span
             className={cn(
               "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
@@ -77,6 +106,7 @@ export function StoreCard({ store }: { store: Store }) {
           <WhatsAppIcon className="h-4 w-4" />
           WhatsApp
         </a>
+      </div>
       </div>
     </article>
   );

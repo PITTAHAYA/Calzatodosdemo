@@ -29,3 +29,7 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# Fuentes de imágenes originales (ya procesadas en /public)
+/fotos/
+/lista de precios.png

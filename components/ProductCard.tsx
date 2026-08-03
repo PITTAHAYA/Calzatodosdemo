@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Product } from "@/data/products";
 import { ProductImage } from "./ProductImage";
 import { WhatsAppIcon } from "./Icons";
-import { formatPrice, cn } from "@/lib/utils";
+import { priceLabel, cn } from "@/lib/utils";
 import { whatsappProduct, brandDisplayName } from "@/lib/whatsapp";
 import { getCategory } from "@/data/categories";
 
@@ -22,6 +22,7 @@ export function ProductCard({ product }: { product: Product }) {
           name={product.name}
           brand={brand}
           className="h-full w-full"
+          fit="contain"
         />
         {/* Etiquetas */}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
@@ -43,21 +44,15 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mt-0.5 text-xs text-graphite-500">{category}</div>
 
         {/* Precio */}
-        <div className="mt-2 flex items-baseline gap-2">
+        <div className="mt-2">
           <span
             className={cn(
               "text-sm font-bold",
               typeof product.price === "number" ? "text-graphite-900" : "text-graphite-500"
             )}
           >
-            {formatPrice(product.price)}
+            {priceLabel(product)}
           </span>
-          {typeof product.previousPrice === "number" &&
-            typeof product.price === "number" && (
-              <span className="text-xs text-graphite-400 line-through">
-                {formatPrice(product.previousPrice)}
-              </span>
-            )}
         </div>
 
         {/* Acciones */}

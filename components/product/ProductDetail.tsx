@@ -6,7 +6,7 @@ import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/ProductImage";
 import { WhatsAppIcon, StoreIcon, MapPinIcon } from "@/components/Icons";
 import { whatsappProductDetailed } from "@/lib/whatsapp";
-import { formatPrice, cn, absoluteUrl } from "@/lib/utils";
+import { priceLabel, cn, absoluteUrl } from "@/lib/utils";
 import { brandCopy } from "@/data/site-content";
 
 export function ProductDetail({
@@ -44,6 +44,7 @@ export function ProductDetail({
             brand={brandName}
             className="h-full w-full"
             priority
+            fit="contain"
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
           <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
@@ -69,6 +70,7 @@ export function ProductDetail({
                 images={img ? [img] : []}
                 name={product.name}
                 className="h-full w-full"
+                fit="contain"
                 sizes="120px"
               />
             </button>
@@ -87,19 +89,17 @@ export function ProductDetail({
         </p>
 
         {/* Precio */}
-        <div className="mt-4 flex items-baseline gap-3">
+        <div className="mt-4">
           <span
             className={cn(
               "text-2xl font-bold",
               typeof product.price === "number" ? "text-graphite-900" : "text-graphite-500"
             )}
           >
-            {formatPrice(product.price)}
+            {priceLabel(product)}
           </span>
-          {typeof product.previousPrice === "number" && typeof product.price === "number" && (
-            <span className="text-base text-graphite-400 line-through">
-              {formatPrice(product.previousPrice)}
-            </span>
+          {typeof product.priceMax === "number" && product.priceMax !== product.price && (
+            <span className="ml-2 text-sm text-graphite-500">según talla</span>
           )}
         </div>
 

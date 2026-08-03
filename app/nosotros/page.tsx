@@ -98,6 +98,18 @@ export default function NosotrosPage() {
             <p className="eyebrow">Nuestro equipo</p>
             <h2 className="section-title mt-2">Las personas detrás de Calzatodos Group</h2>
           </div>
+
+          {/* Foto real del equipo */}
+          <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl sm:aspect-[21/9]">
+            <Image
+              src="/team/equipo-calzatodos.jpg"
+              alt="El equipo de Calzatodos Group"
+              fill
+              sizes="(max-width: 1024px) 100vw, 1100px"
+              className="object-cover"
+            />
+          </div>
+
           <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
             {team.map((m) => (
               <div key={m.name} className="text-center">
