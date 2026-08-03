@@ -32,85 +32,62 @@ const styleBlocks = [
   { name: "Escolar", href: "/escolar" },
 ];
 
-// Imágenes editoriales del hero (collage). El video del hero se integrará luego.
-const heroTiles = [
-  { src: "/lifestyle/zapatos-1.jpg", label: "Sneakers" },
-  { src: "/brand-gallery/north-star-1.jpg", label: "Urbano" },
-  { src: "/brand-gallery/bubble-gummers-2.jpg", label: "Niños" },
-  { src: "/brand-gallery/weinbrenner-1.jpg", label: "Outdoor" },
-];
-
 export default function HomePage() {
   const featured = getFeaturedProducts(8);
   const featuredPromo = getVisiblePromotions()[0];
 
   return (
     <>
-      {/* ============ 1. HERO ============ */}
-      <section className="relative overflow-hidden bg-graphite-950 text-white">
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-brand-700 blur-3xl" />
-          <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-brand-900 blur-3xl" />
-        </div>
-        <div className="container-page relative">
-          <div className="grid items-center gap-10 py-16 sm:py-24 lg:grid-cols-2">
-            <div>
-              <p className="eyebrow text-brand-400">Calzatodos Group</p>
-              <h1 className="mt-3 text-4xl font-black leading-[1.05] sm:text-5xl lg:text-6xl">
-                {brandCopy.heroTitle}
-              </h1>
-              <p className="mt-5 max-w-lg text-lg text-graphite-200">
-                {brandCopy.heroText}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/catalogo" className="btn-primary !px-6 !py-3">
-                  Explorar catálogo
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Link>
-                <a
-                  href={whatsappGeneral()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-whatsapp !px-6 !py-3"
-                >
-                  <WhatsAppIcon className="h-5 w-5" />
-                  Consultar por WhatsApp
-                </a>
-              </div>
-              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-graphite-300">
-                <span>Distribuidores autorizados</span>
-                <span aria-hidden>•</span>
-                <span>Productos con garantía</span>
-                <span aria-hidden>•</span>
-                <span>4 locales en Ecuador</span>
-              </div>
-            </div>
+      {/* ============ 1. HERO (video cinemático con los muñecos reales) ============ */}
+      <section className="relative isolate flex min-h-[560px] items-center overflow-hidden bg-graphite-950 text-white sm:min-h-[80vh]">
+        {/* Video de fondo (mudo, en bucle). Poster para carga instantánea. */}
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/hero/hero-poster.jpg"
+        >
+          <source src="/hero/hero.webm" type="video/webm" />
+          <source src="/hero/hero.mp4" type="video/mp4" />
+        </video>
 
-            {/* Composición editorial con fotografía real. */}
-            <div className="relative hidden lg:block">
-              <div className="grid grid-cols-2 gap-4">
-                {heroTiles.map((tile, i) => (
-                  <div
-                    key={tile.label}
-                    className={`group relative aspect-[4/5] overflow-hidden rounded-2xl ${
-                      i % 2 === 1 ? "translate-y-6" : ""
-                    }`}
-                  >
-                    <Image
-                      src={tile.src}
-                      alt={tile.label}
-                      fill
-                      sizes="(max-width: 1024px) 0px, 22vw"
-                      priority={i < 2}
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <span className="absolute bottom-4 left-4 text-sm font-semibold text-white">
-                      {tile.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
+        {/* Degradados para legibilidad del texto */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+
+        <div className="container-page relative py-20 sm:py-28">
+          <div className="max-w-2xl">
+            <p className="eyebrow text-brand-400">Calzatodos Group</p>
+            <h1 className="mt-3 text-4xl font-black leading-[1.03] drop-shadow-sm sm:text-6xl lg:text-7xl">
+              {brandCopy.heroTitle}
+            </h1>
+            <p className="mt-5 max-w-lg text-lg text-graphite-100 sm:text-xl">
+              {brandCopy.heroText}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/catalogo" className="btn-primary !px-6 !py-3 text-base">
+                Explorar catálogo
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+              <a
+                href={whatsappGeneral()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-whatsapp !px-6 !py-3 text-base"
+              >
+                <WhatsAppIcon className="h-5 w-5" />
+                Consultar por WhatsApp
+              </a>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-graphite-200">
+              <span>Distribuidores autorizados</span>
+              <span aria-hidden>•</span>
+              <span>Productos con garantía</span>
+              <span aria-hidden>•</span>
+              <span>4 locales en Ecuador</span>
             </div>
           </div>
         </div>
