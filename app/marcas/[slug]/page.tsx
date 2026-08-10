@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WhatsAppIcon, StoreIcon } from "@/components/Icons";
 import { visibleBrands, getBrand } from "@/data/brands";
+import { getProductsByBrand } from "@/data/products";
+import { ProductRail } from "@/components/ProductRail";
 import { whatsappBrand } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
 
@@ -39,6 +41,7 @@ export default async function BrandPage({
   const gallery = brand.gallery ?? [];
   const cover = gallery[0];
   const rest = gallery.slice(1);
+  const brandProducts = getProductsByBrand(brand.slug);
 
   return (
     <div>
@@ -99,9 +102,25 @@ export default async function BrandPage({
         </div>
       </section>
 
+      {/* ===== Modelos de la marca ===== */}
+      {brandProducts.length > 0 && (
+        <section className="section">
+          <div className="container-page">
+            <div className="mx-auto mb-8 max-w-2xl text-center">
+              <p className="eyebrow">Modelos</p>
+              <h2 className="section-title mt-2">Disponibles de {brand.name}</h2>
+              <p className="mt-3 text-graphite-600">
+                Consulta tallas y disponibilidad por WhatsApp o en tu local más cercano.
+              </p>
+            </div>
+            <ProductRail products={brandProducts} />
+          </div>
+        </section>
+      )}
+
       {/* ===== Galería ===== */}
       {rest.length > 0 && (
-        <section className="section">
+        <section className="section bg-graphite-50">
           <div className="container-page">
             <div className="mx-auto mb-8 max-w-2xl text-center">
               <p className="eyebrow">Lo que ofrece {brand.name}</p>
