@@ -77,6 +77,8 @@ const DESC = {
     "Sneaker infantil de Bubble Gummers con luces en la suela y cierre de velcro. Divertido, liviano y fácil de poner.",
   bgHigh:
     "Sneaker infantil de caña alta de Bubble Gummers, con buen soporte, cierre de velcro y diseño llamativo.",
+  bgToddler:
+    "Calzado de Bubble Gummers para los más pequeños: flexible, liviano y cómodo, pensado para los primeros pasos y el juego diario.",
 };
 
 interface Seed {
@@ -157,6 +159,26 @@ const seeds: Seed[] = [
   { name: "Demian", slug: "demian", brand: "bubble-gummers", audience: "nina", category: "luces", style: "sneakers", color: "Azul", extraColors: ["Rosa"], price: 44.99, desc: DESC.bgKids, sizes: [25, 26, 27, 28, 29, 30, 31], isFeatured: true },
   { name: "Neon", slug: "neon", brand: "bubble-gummers", audience: "nina", category: "luces", style: "sneakers", color: "Rosa", extraColors: ["Blanco", "Morado"], price: 44.99, desc: DESC.bgKids, sizes: [25, 26, 27, 28, 29, 30, 31] },
   { name: "Centennial", slug: "centennial", brand: "bubble-gummers", audience: "nina", category: "sneakers", style: "sneakers", color: "Rosa", extraColors: ["Blanco"], price: 44.99, desc: DESC.bgHigh, sizes: [25, 26, 27, 28, 29, 30, 31], isNew: true },
+
+  // ===================== NORTH STAR — sneakers urbanos (2) =====================
+  { name: "Primewalk+ 300", slug: "primewalk-300", brand: "power", audience: "hombre", category: "deportivo", style: "deportivo", color: "Negro", price: 69.99, desc: DESC.powerRun, isNew: true, isFeatured: true },
+  { name: "Seoul", slug: "seoul", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Gris", "Verde"], price: 69.99, desc: DESC.nsUrban, isFeatured: true },
+  { name: "Maisy", slug: "maisy", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Negro"], price: 59.99, desc: DESC.nsUrban },
+  { name: "Silce", slug: "silce", brand: "north-star", audience: "mujer", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Gris"], price: 69.99, desc: DESC.nsUrban, isNew: true },
+  { name: "Terry", slug: "terry", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Azul", extraColors: ["Café"], price: 64.99, desc: DESC.nsSkate },
+  { name: "Fizz 300", slug: "fizz-300", brand: "power", audience: "mujer", category: "deportivo", style: "deportivo", color: "Blanco", price: 64.99, desc: DESC.powerRun, isFeatured: true },
+  { name: "Guida", slug: "guida", brand: "power", audience: "hombre", category: "deportivo", style: "deportivo", color: "Negro", price: 54.99, desc: DESC.powerRun },
+  { name: "Atletico", slug: "atletico", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Gris"], price: 54.99, desc: DESC.nsUrban },
+
+  // ===================== BUBBLE GUMMERS — infantil (2) =====================
+  { name: "Util", slug: "util", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Beige", price: 24.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25] },
+  { name: "Urbano", slug: "urbano", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Azul", extraColors: ["Rojo"], price: 24.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25], isNew: true },
+  { name: "Urgente", slug: "urgente", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Blanco", extraColors: ["Azul", "Rojo"], price: 29.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25] },
+  { name: "Ulala", slug: "ulala", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Rosa", extraColors: ["Celeste"], price: 29.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25], isNew: true },
+  { name: "Utopia", slug: "utopia", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Café", extraColors: ["Naranja"], price: 29.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25] },
+  { name: "Ukumari", slug: "ukumari", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Negro", extraColors: ["Verde"], price: 29.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25] },
+  { name: "Urna", slug: "urna", brand: "bubble-gummers", audience: "nina", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Rosa", "Celeste"], price: 24.99, desc: DESC.bgHigh, sizes: [25, 26, 27, 28, 29, 30, 31] },
+  { name: "USA", slug: "usa", brand: "bubble-gummers", audience: "nina", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Rosa"], price: 32.99, desc: DESC.bgHigh, sizes: [25, 26, 27, 28, 29, 30, 31], isNew: true },
 ];
 
 function featuresFor(s: Seed): string[] {
