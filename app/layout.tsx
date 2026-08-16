@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { CustomCursor } from "@/components/motion/CustomCursor";
 import { JsonLd, organizationJsonLd } from "@/lib/seo";
 import { site } from "@/data/site-content";
 import { siteUrl } from "@/lib/utils";
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <JsonLd data={organizationJsonLd()} />
         <ScrollProgress />
+        <CustomCursor />
         {/* Salto al contenido para accesibilidad por teclado */}
         <a
           href="#contenido"

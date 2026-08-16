@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { CatalogClient } from "./CatalogClient";
 import type { Product } from "@/data/products";
@@ -36,14 +37,7 @@ export function CategoryLanding({
       <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
         {heroImage && (
           <>
-            <Image
-              src={heroImage}
-              alt={title}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
+            <ParallaxImage src={heroImage} alt={title} priority />
             <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
           </>
         )}

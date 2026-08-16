@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WholesaleForm } from "@/components/forms/WholesaleForm";
 import { IconByName, WhatsAppIcon } from "@/components/Icons";
@@ -28,14 +28,7 @@ export default function MayoristasPage() {
     <div>
       {/* Hero */}
       <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
-        <Image
-          src="/lifestyle/mayoristas-hero.jpg"
-          alt="Distribución mayorista de calzado"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <ParallaxImage src="/lifestyle/mayoristas-hero.jpg" alt="Distribución mayorista de calzado" priority />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
         <div className="container-page relative py-16 sm:py-28">
           <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">

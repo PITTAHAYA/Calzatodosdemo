@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WhatsAppIcon, ArrowRightIcon } from "@/components/Icons";
@@ -21,14 +22,7 @@ export default function NosotrosPage() {
     <div>
       {/* ===== HERO (interior de tienda premium) ===== */}
       <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
-        <Image
-          src="/lifestyle/nosotros-hero.jpg"
-          alt="Interior de una tienda Calzatodos Group"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <ParallaxImage src="/lifestyle/nosotros-hero.jpg" alt="Interior de una tienda Calzatodos Group" priority />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/25" />
         <div className="container-page relative flex min-h-[56vh] flex-col justify-end py-16">
           <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">

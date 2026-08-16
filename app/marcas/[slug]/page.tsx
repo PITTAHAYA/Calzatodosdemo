@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WhatsAppIcon, StoreIcon } from "@/components/Icons";
 import { visibleBrands, getBrand } from "@/data/brands";
@@ -49,14 +50,7 @@ export default async function BrandPage({
       <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
         {cover && (
           <>
-            <Image
-              src={cover}
-              alt={brand.name}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
+            <ParallaxImage src={cover} alt={brand.name} priority />
             <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
           </>
         )}
