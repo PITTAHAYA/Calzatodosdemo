@@ -90,9 +90,9 @@ export const brands: Brand[] = [
       "Marca propia de Calzatodos Group enfocada en calzado masculino elegante, con estilo y comodidad.",
     logo: "/brands/cotti.jpg",
     gallery: [
+      "/brand-gallery/cotti-2.jpg",
       "/brand-gallery/cotti-mood.jpg",
       "/lifestyle/zapatos-5.jpg",
-      "/lifestyle/botas-2.jpg",
     ],
   },
   {
@@ -104,9 +104,9 @@ export const brands: Brand[] = [
       "Marca propia de Calzatodos Group orientada al calzado deportivo y de rendimiento para toda la familia.",
     logo: "/brands/my-athletic.png",
     gallery: [
+      "/brand-gallery/my-athletic-2.jpg",
       "/brand-gallery/my-athletic-1.jpg",
-      "/lifestyle/zapatos-1.jpg",
-      "/lifestyle/zapatos-4.jpg",
+      "/brand-gallery/my-athletic-3.jpg",
     ],
   },
   {
@@ -117,9 +117,9 @@ export const brands: Brand[] = [
     description:
       "Diseños frescos y versátiles para acompañar cada etapa de la familia, con estilo y comodidad.",
     gallery: [
-      "/lifestyle/zapatos-2.jpg",
-      "/lifestyle/zapatos-1.jpg",
-      "/lifestyle/zapatos-3.jpg",
+      "/brand-gallery/kaloa-1.jpg",
+      "/brand-gallery/kaloa-3.jpg",
+      "/brand-gallery/kaloa-2.jpg",
     ],
   },
   {
