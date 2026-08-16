@@ -4,7 +4,6 @@ import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { KineticMarquee } from "@/components/home/KineticMarquee";
-import { StoreWalk } from "@/components/home/StoreWalk";
 import { RevealText } from "@/components/motion/RevealText";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
@@ -125,9 +124,6 @@ export default function HomePage() {
           "Consulta por WhatsApp",
         ]}
       />
-
-      {/* ============ RECORRIDO CINEMÁTICO POR LA TIENDA (scroll-scrub) ============ */}
-      <StoreWalk />
 
       {/* ============ 3. PRODUCTOS DESTACADOS ============ */}
       <section className="section bg-graphite-50">
