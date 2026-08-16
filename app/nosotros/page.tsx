@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WhatsAppIcon, ArrowRightIcon } from "@/components/Icons";
+import { Counter } from "@/components/motion/Counter";
 import { about, founder, team } from "@/data/team";
 import { initials } from "@/lib/utils";
 import { whatsappGeneral } from "@/lib/whatsapp";
@@ -41,16 +42,21 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* ===== Cifras ===== */}
+      {/* ===== Cifras (con contador animado) ===== */}
       <section className="border-b border-graphite-100 bg-white">
         <div className="container-page grid grid-cols-3 divide-x divide-graphite-100 py-8 text-center">
           {[
-            { n: "+30", l: "años de experiencia" },
-            { n: "2015", l: "consolidados como empresa" },
-            { n: "4", l: "locales en Ecuador" },
+            { value: 30, prefix: "+", suffix: "", l: "años de experiencia" },
+            { value: 2015, prefix: "", suffix: "", l: "consolidados como empresa" },
+            { value: 4, prefix: "", suffix: "", l: "locales en Ecuador" },
           ].map((s) => (
             <div key={s.l} className="px-2">
-              <p className="text-3xl font-black text-brand-600 sm:text-5xl">{s.n}</p>
+              <Counter
+                value={s.value}
+                prefix={s.prefix}
+                suffix={s.suffix}
+                className="text-3xl font-black text-brand-600 sm:text-5xl"
+              />
               <p className="mt-1 text-xs text-graphite-500 sm:text-sm">{s.l}</p>
             </div>
           ))}

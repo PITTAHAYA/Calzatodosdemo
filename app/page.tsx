@@ -4,6 +4,9 @@ import { ProductRail } from "@/components/ProductRail";
 import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
+import { KineticMarquee } from "@/components/home/KineticMarquee";
+import { RevealText } from "@/components/motion/RevealText";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
 import { stores } from "@/data/stores";
@@ -57,26 +60,32 @@ export default function HomePage() {
         <div className="container-page relative py-20 sm:py-28">
           <div className="max-w-2xl">
             <p className="eyebrow text-brand-400">Calzatodos Group</p>
-            <h1 className="mt-3 text-4xl font-black leading-[1.03] drop-shadow-sm sm:text-6xl lg:text-7xl">
-              {brandCopy.heroTitle}
-            </h1>
+            <RevealText
+              as="h1"
+              text={brandCopy.heroTitle}
+              className="mt-3 text-4xl font-black leading-[1.03] drop-shadow-sm sm:text-6xl lg:text-7xl"
+            />
             <p className="mt-5 max-w-lg text-lg text-graphite-100 sm:text-xl">
               {brandCopy.heroText}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/catalogo" className="btn-primary !px-6 !py-3 text-base">
-                Explorar catálogo
-                <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-              <a
-                href={whatsappGeneral()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp !px-6 !py-3 text-base"
-              >
-                <WhatsAppIcon className="h-5 w-5" />
-                Consultar por WhatsApp
-              </a>
+              <Magnetic>
+                <Link href="/catalogo" className="btn-primary !px-6 !py-3 text-base">
+                  Explorar catálogo
+                  <ArrowRightIcon className="h-4 w-4" />
+                </Link>
+              </Magnetic>
+              <Magnetic>
+                <a
+                  href={whatsappGeneral()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-whatsapp !px-6 !py-3 text-base"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
+                  Consultar por WhatsApp
+                </a>
+              </Magnetic>
             </div>
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-graphite-200">
               <span>Distribuidores autorizados</span>
@@ -102,6 +111,16 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* ============ BANDA CINÉTICA ============ */}
+      <KineticMarquee
+        items={[
+          "Calzado para toda la familia",
+          "Productos originales",
+          "4 locales en Ecuador",
+          "Consulta por WhatsApp",
+        ]}
+      />
 
       {/* ============ 3. PRODUCTOS DESTACADOS ============ */}
       <section className="section bg-graphite-50">
@@ -281,7 +300,7 @@ function SectionHeader({
     <div className="mb-8 flex items-end justify-between gap-4">
       <div>
         <p className="eyebrow">{eyebrow}</p>
-        <h2 className="section-title mt-2">{title}</h2>
+        <RevealText as="h2" text={title} className="section-title mt-2 block" />
       </div>
       {href && hrefLabel && (
         <Link
