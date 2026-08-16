@@ -10,6 +10,7 @@ import { getProductsByBrand } from "@/data/products";
 import { ProductRail } from "@/components/ProductRail";
 import { whatsappBrand } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
   return visibleBrands.map((b) => ({ slug: b.slug }));
@@ -46,15 +47,17 @@ export default async function BrandPage({
 
   return (
     <div>
-      {/* ===== HERO image-forward ===== */}
-      <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
+      {/* ===== HERO editorial ===== */}
+      <section className="relative isolate flex min-h-[62vh] items-end overflow-hidden bg-graphite-950 text-white sm:min-h-[70vh]">
         {cover && (
           <>
             <ParallaxImage src={cover} alt={brand.name} priority />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
+            {/* Doble degradado: base para legibilidad + viñeta lateral */}
+            <div className="absolute inset-0 bg-gradient-to-t from-graphite-950 via-graphite-950/55 to-graphite-950/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-graphite-950/80 via-transparent to-transparent" />
           </>
         )}
-        <div className="container-page relative flex min-h-[52vh] flex-col justify-end py-14">
+        <div className="container-page relative w-full py-12 sm:py-16">
           <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
             <Breadcrumbs
               items={[
@@ -64,35 +67,56 @@ export default async function BrandPage({
             />
           </div>
 
-          {/* Logo en chip limpio (sin cuadro grande) */}
-          {brand.logo && (
-            <div className="mt-6 inline-flex w-fit items-center rounded-xl bg-white/95 px-4 py-2.5 shadow-lg">
-              <Image
-                src={brand.logo}
-                alt={brand.name}
-                width={160}
-                height={48}
-                unoptimized={brand.logo.endsWith(".gif")}
-                className="h-8 w-auto object-contain"
-              />
-            </div>
-          )}
+          <div className="mt-7 max-w-2xl">
+            {/* Logo en chip limpio */}
+            {brand.logo && (
+              <div className="inline-flex w-fit items-center rounded-2xl bg-white/95 px-4 py-2.5 shadow-xl ring-1 ring-black/5">
+                <Image
+                  src={brand.logo}
+                  alt={brand.name}
+                  width={160}
+                  height={48}
+                  unoptimized={brand.logo.endsWith(".gif")}
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
+            )}
 
-          <p className="eyebrow mt-4 text-brand-400">
-            {brand.type === "internacional" ? "Marca internacional" : "Marca propia"}
-          </p>
-          <h1 className="mt-1 text-4xl font-black sm:text-6xl">{brand.name}</h1>
-          <p className="mt-2 text-lg font-medium text-brand-300">{brand.tagline}</p>
-          <p className="mt-3 max-w-xl text-graphite-100">{brand.description}</p>
-          <a
-            href={whatsappBrand(brand.name)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp mt-6 w-fit"
-          >
-            <WhatsAppIcon className="h-5 w-5" />
-            Consultar por {brand.name}
-          </a>
+            <h1 className="mt-5 text-5xl font-black leading-[0.95] tracking-tight sm:text-7xl">
+              {brand.name}
+            </h1>
+            <p className="mt-3 text-lg font-semibold text-brand-300 sm:text-xl">
+              {brand.tagline}
+            </p>
+            <p className="mt-4 max-w-xl text-graphite-100">{brand.description}</p>
+
+            {/* Chips de detalle */}
+            <div className="mt-6 flex flex-wrap items-center gap-2 text-xs font-medium">
+              <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 uppercase tracking-wider text-white/85">
+                {brand.type === "internacional" ? "Marca internacional" : "Marca propia"}
+              </span>
+              {brand.type === "internacional" && (
+                <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 uppercase tracking-wider text-white/85">
+                  Distribución autorizada
+                </span>
+              )}
+              {brandProducts.length > 0 && (
+                <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 uppercase tracking-wider text-white/85">
+                  {brandProducts.length} modelo{brandProducts.length === 1 ? "" : "s"} disponibles
+                </span>
+              )}
+            </div>
+
+            <a
+              href={whatsappBrand(brand.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-whatsapp mt-7 w-fit"
+            >
+              <WhatsAppIcon className="h-5 w-5" />
+              Consultar por {brand.name}
+            </a>
+          </div>
         </div>
       </section>
 
@@ -112,32 +136,50 @@ export default async function BrandPage({
         </section>
       )}
 
-      {/* ===== Galería ===== */}
+      {/* ===== Lookbook editorial ===== */}
       {rest.length > 0 && (
         <section className="section bg-graphite-50">
-          <div className="container-page">
-            <div className="mx-auto mb-8 max-w-2xl text-center">
-              <p className="eyebrow">Lo que ofrece {brand.name}</p>
-              <h2 className="section-title mt-2">Descubre su estilo</h2>
-              <p className="mt-3 text-graphite-600">
-                Algunas de las líneas y modelos de {brand.name} que encuentras en nuestros
-                locales. Consulta disponibilidad y precios por WhatsApp o en tienda.
+          <div className="container-page mx-auto max-w-5xl">
+            {/* Encabezado editorial (alineado a la izquierda) */}
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div className="max-w-xl">
+                <p className="eyebrow text-brand-600">Lookbook · {brand.name}</p>
+                <h2 className="mt-2 text-3xl font-black tracking-tight text-graphite-900 sm:text-4xl">
+                  {brand.tagline}
+                </h2>
+              </div>
+              <p className="max-w-sm text-sm text-graphite-500">
+                Una muestra del estilo de {brand.name}. Consulta modelos, tallas y precios
+                por WhatsApp o en tienda.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+            {/* Grilla premium moderada (hasta 3 por fila) */}
+            <div
+              className={cn(
+                "grid gap-5",
+                rest.length === 1 && "max-w-md",
+                rest.length === 2 && "sm:grid-cols-2",
+                rest.length >= 3 && "grid-cols-2 lg:grid-cols-3"
+              )}
+            >
               {rest.map((src, i) => (
-                <div
+                <figure
                   key={src}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-graphite-100 bg-graphite-50"
+                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-graphite-100 shadow-sm ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-lg"
                 >
                   <Image
                     src={src}
-                    alt={`${brand.name} — imagen ${i + 2}`}
+                    alt={`${brand.name} — ${i + 1}`}
                     fill
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <figcaption className="absolute bottom-3 left-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/95 opacity-0 drop-shadow transition-opacity duration-300 group-hover:opacity-100">
+                    {brand.name}
+                  </figcaption>
+                </figure>
               ))}
             </div>
           </div>
