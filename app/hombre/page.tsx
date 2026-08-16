@@ -15,7 +15,7 @@ export default function HombrePage() {
     <CategoryLanding
       eyebrow="Hombre"
       title="Calzado para Hombre"
-      description="Calzado casual, formal, deportivo, outdoor y de seguridad. Encuentra tu modelo y consúltalo por WhatsApp."
+      description="Sneakers, casual y deportivo para todos los días. Encuentra tu modelo y consúltalo por WhatsApp."
       products={getProductsByAudience("hombre")}
       crumbs={[{ name: "Hombre", path: "/hombre" }]}
       heroImage="/lifestyle/ppl-hombre.jpg"

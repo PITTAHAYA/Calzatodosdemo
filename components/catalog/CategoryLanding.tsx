@@ -33,21 +33,32 @@ export function CategoryLanding({
 
   return (
     <div>
-      {/* Hero de categoría (con fotografía de fondo) */}
+      {/* Hero de categoría — split: texto + foto bien encuadrada */}
       <section className="relative isolate overflow-hidden bg-graphite-950 text-white">
         {heroImage && (
-          <>
-            <ParallaxImage src={heroImage} alt={title} priority />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
-          </>
-        )}
-        <div className="container-page relative py-16 sm:py-24">
-          <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
-            <Breadcrumbs items={crumbs} />
+          <div className="relative h-[42vh] w-full sm:h-[48vh] lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:w-[52%]">
+            <Image
+              src={heroImage}
+              alt={title}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 52vw"
+              className="object-cover object-[center_28%]"
+            />
+            {/* Fundido para mezclar con el panel de texto */}
+            <div className="absolute inset-0 hidden bg-gradient-to-r from-graphite-950 via-graphite-950/20 to-transparent lg:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-graphite-950 via-graphite-950/10 to-transparent lg:hidden" />
           </div>
-          <p className="eyebrow mt-6 text-brand-400">{eyebrow}</p>
-          <h1 className="mt-2 text-4xl font-black sm:text-6xl">{title}</h1>
-          <p className="mt-4 max-w-2xl text-lg text-graphite-100">{description}</p>
+        )}
+        <div className="container-page relative">
+          <div className="flex max-w-xl flex-col justify-center py-10 lg:min-h-[62vh] lg:py-24">
+            <div className="[&_a]:text-graphite-300 [&_a:hover]:text-white [&_span]:text-white/90">
+              <Breadcrumbs items={crumbs} />
+            </div>
+            <p className="eyebrow mt-6 text-brand-400">{eyebrow}</p>
+            <h1 className="mt-2 text-4xl font-black leading-[1.05] sm:text-6xl">{title}</h1>
+            <p className="mt-4 text-lg text-graphite-100">{description}</p>
+          </div>
         </div>
       </section>
 

@@ -18,7 +18,7 @@ export default function NinosPage() {
     <CategoryLanding
       eyebrow="Niños"
       title="Calzado para Niños"
-      description="Escolar, con luces, sneakers, sandalias y más para niño, niña e infantil. Filtra por público y consulta por WhatsApp."
+      description="Escolar, deportivo y sneakers para niño, niña e infantil. Filtra por público y consulta por WhatsApp."
       products={kids}
       crumbs={[{ name: "Niños", path: "/ninos" }]}
       heroImage="/lifestyle/ppl-ninos.jpg"
