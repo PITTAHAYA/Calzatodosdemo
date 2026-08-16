@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitWholesale, type FormState } from "@/app/actions";
-import { Field, inputClass } from "./FormField";
+import { Field, ConsentField, inputClass } from "./FormField";
 import { WhatsAppIcon } from "@/components/Icons";
 import { whatsappWholesale } from "@/lib/whatsapp";
 
@@ -113,6 +113,8 @@ export function WholesaleForm() {
       <Field label="Mensaje" name="message" error={errors.message}>
         <textarea id="message" name="message" rows={4} className={inputClass(!!errors.message)} />
       </Field>
+
+      <ConsentField error={errors.consent} />
 
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <SubmitButton />

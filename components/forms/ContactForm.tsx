@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { submitContact, type FormState } from "@/app/actions";
-import { Field, inputClass } from "./FormField";
+import { Field, ConsentField, inputClass } from "./FormField";
 import { stores } from "@/data/stores";
 
 const initial: FormState = { status: "idle", message: "" };
@@ -78,6 +78,8 @@ export function ContactForm() {
           placeholder="¿En qué podemos ayudarte?"
         />
       </Field>
+
+      <ConsentField error={errors.consent} />
 
       <SubmitButton />
     </form>

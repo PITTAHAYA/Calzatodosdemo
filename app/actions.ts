@@ -12,6 +12,15 @@ export interface FormState {
   fieldErrors?: Record<string, string>;
 }
 
+// Sello de fecha/hora (Ecuador) para dejar constancia del consentimiento.
+function consentStamp(): string {
+  return new Intl.DateTimeFormat("es-EC", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "America/Guayaquil",
+  }).format(new Date());
+}
+
 async function clientKey(prefix: string): Promise<string> {
   const h = await headers();
   const ip =
@@ -69,6 +78,8 @@ export async function submitContact(
       "",
       "Mensaje:",
       d.message,
+      "",
+      `Consentimiento: aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
     ].join("\n"),
   });
 
@@ -138,6 +149,8 @@ export async function submitWholesale(
       "",
       "Mensaje:",
       d.message || "-",
+      "",
+      `Consentimiento: aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
     ].join("\n"),
   });
 

@@ -14,6 +14,12 @@ export const contactSchema = z.object({
     .or(z.literal("")),
   store: z.string().max(120).optional().or(z.literal("")),
   message: z.string().min(10, "Cuéntanos un poco más (mínimo 10 caracteres).").max(2000),
+  // Consentimiento de datos (LOPDP): la casilla debe estar marcada.
+  consent: z.literal("on", {
+    errorMap: () => ({
+      message: "Debes aceptar la Política de Privacidad para continuar.",
+    }),
+  }),
   // Honeypot anti-spam: debe llegar vacío.
   company: z.string().max(0).optional().or(z.literal("")),
 });
@@ -32,6 +38,12 @@ export const wholesaleSchema = z.object({
   quantity: z.string().max(120).optional().or(z.literal("")),
   interests: z.string().max(400).optional().or(z.literal("")),
   message: z.string().max(2000).optional().or(z.literal("")),
+  // Consentimiento de datos (LOPDP): la casilla debe estar marcada.
+  consent: z.literal("on", {
+    errorMap: () => ({
+      message: "Debes aceptar la Política de Privacidad para continuar.",
+    }),
+  }),
   // Honeypot anti-spam.
   company: z.string().max(0).optional().or(z.literal("")),
 });
