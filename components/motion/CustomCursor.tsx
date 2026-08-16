@@ -23,10 +23,10 @@ export function CustomCursor() {
     const move = (e: MouseEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
-      const t = e.target as HTMLElement | null;
-      const interactive = !!t?.closest(
-        "a, button, [role='button'], input, select, textarea, label"
-      );
+      const t = e.target;
+      const interactive =
+        t instanceof Element &&
+        !!t.closest("a, button, [role='button'], input, select, textarea, label");
       setHovering(interactive);
     };
     window.addEventListener("mousemove", move, { passive: true });
