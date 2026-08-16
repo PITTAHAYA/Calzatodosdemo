@@ -4,7 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/ProductImage";
-import { WhatsAppIcon, StoreIcon, MapPinIcon } from "@/components/Icons";
+import {
+  WhatsAppIcon,
+  StoreIcon,
+  MapPinIcon,
+  BadgeCheckIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+} from "@/components/Icons";
 import { whatsappProductDetailed } from "@/lib/whatsapp";
 import { priceLabel, cn, absoluteUrl } from "@/lib/utils";
 import { brandCopy } from "@/data/site-content";
@@ -178,41 +185,66 @@ export function ProductDetail({
           </Link>
         </div>
 
+        {/* Confianza */}
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          {[
+            { icon: BadgeCheckIcon, label: "Producto original" },
+            { icon: ShieldCheckIcon, label: "Con garantía" },
+            { icon: TruckIcon, label: "Retiro en tienda" },
+          ].map((t) => (
+            <div
+              key={t.label}
+              className="flex flex-col items-center gap-1.5 rounded-xl bg-graphite-50 px-2 py-3 text-center"
+            >
+              <t.icon className="h-5 w-5 text-brand-600" />
+              <span className="text-[11px] font-medium leading-tight text-graphite-600">
+                {t.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
         {/* Detalles */}
-        <div className="mt-8 space-y-4 border-t border-graphite-100 pt-6">
-          <DetailBlock title="Características" items={product.features} />
-          <DetailBlock title="Materiales" items={product.materials} />
-          <DetailBlock title="Cuidados" text={product.careInstructions} />
-          <DetailBlock title="Garantía" text={product.warrantyInformation} />
+        <div className="mt-8 space-y-6 border-t border-graphite-100 pt-6">
+          <ChipBlock title="Características" items={product.features} />
+          <ChipBlock title="Materiales" items={product.materials} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <TextBlock title="Cuidados" text={product.careInstructions} />
+            <TextBlock title="Garantía" text={product.warrantyInformation} />
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function DetailBlock({
-  title,
-  items,
-  text,
-}: {
-  title: string;
-  items?: string[];
-  text?: string;
-}) {
+function ChipBlock({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h2 className="text-sm font-bold uppercase tracking-wide text-graphite-900">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-graphite-500">
         {title}
       </h2>
-      {items ? (
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-graphite-600">
-          {items.map((it) => (
-            <li key={it}>{it}</li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-2 text-sm text-graphite-600">{text}</p>
-      )}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((it) => (
+          <span
+            key={it}
+            className="rounded-full border border-graphite-200 bg-white px-3.5 py-1.5 text-sm font-medium text-graphite-700"
+          >
+            {it}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TextBlock({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-xl bg-graphite-50 p-4">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-graphite-500">
+        {title}
+      </h2>
+      <p className="mt-2 text-sm text-graphite-600">{text}</p>
     </div>
   );
 }
