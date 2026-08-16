@@ -39,7 +39,6 @@ export const brands: Brand[] = [
       "/brand-gallery/bubble-gummers-3.jpg",
       "/brand-gallery/bubble-gummers-1.jpg",
       "/brand-gallery/bubble-gummers-4.jpg",
-      "/brand-gallery/bubble-gummers-muneco.png",
     ],
   },
   {

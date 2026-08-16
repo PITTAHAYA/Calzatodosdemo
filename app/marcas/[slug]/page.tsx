@@ -16,6 +16,12 @@ export function generateStaticParams() {
   return visibleBrands.map((b) => ({ slug: b.slug }));
 }
 
+// Encuadre (object-position) por imagen cuando el centro recorta un logo.
+const FOCAL: Record<string, string> = {
+  "/brand-gallery/north-star-2.jpg": "center bottom",
+  "/lifestyle/zapatos-5.jpg": "center top",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -173,6 +179,7 @@ export default async function BrandPage({
                     alt={`${brand.name} — ${i + 1}`}
                     fill
                     sizes="(max-width: 640px) 50vw, 33vw"
+                    style={{ objectPosition: FOCAL[src] ?? "center" }}
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
