@@ -8,7 +8,7 @@ const doc = getPolicy("terminos-y-condiciones")!;
 export const metadata: Metadata = pageMetadata({
   title: doc.title,
   description:
-    "Términos y condiciones de uso del sitio de Calzatodos Group. Borrador editable pendiente de aprobación legal.",
+    "Términos y condiciones de uso del sitio de Calzatodos Group, conforme a la legislación ecuatoriana (Ley Orgánica de Defensa del Consumidor, Ley de Comercio Electrónico y normativa aplicable).",
   path: "/terminos-y-condiciones",
 });
 

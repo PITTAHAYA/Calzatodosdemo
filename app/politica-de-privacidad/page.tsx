@@ -8,7 +8,7 @@ const doc = getPolicy("politica-de-privacidad")!;
 export const metadata: Metadata = pageMetadata({
   title: doc.title,
   description:
-    "Política de privacidad de Calzatodos Group: cómo tratamos tus datos. Borrador editable pendiente de aprobación legal.",
+    "Política de privacidad de Calzatodos Group: cómo tratamos y protegemos tus datos personales conforme a la Ley Orgánica de Protección de Datos Personales (LOPDP) del Ecuador.",
   path: "/politica-de-privacidad",
 });
 

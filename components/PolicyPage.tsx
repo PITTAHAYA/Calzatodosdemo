@@ -11,6 +11,11 @@ export function PolicyPage({ doc }: { doc: PolicyDoc }) {
       <div className="mt-4 grid gap-10 lg:grid-cols-[1.7fr,1fr]">
         <article className="max-w-2xl">
           <h1 className="text-3xl font-bold text-graphite-900">{doc.title}</h1>
+          {doc.updated && (
+            <p className="mt-1 text-sm text-graphite-500">
+              Última actualización: {doc.updated}
+            </p>
+          )}
           <p className="mt-3 rounded-lg bg-graphite-100 px-4 py-3 text-sm text-graphite-600">
             {doc.intro}
           </p>
@@ -34,6 +39,12 @@ export function PolicyPage({ doc }: { doc: PolicyDoc }) {
               </section>
             ))}
           </div>
+
+          {doc.note && (
+            <p className="mt-10 border-t border-graphite-100 pt-5 text-xs leading-relaxed text-graphite-500">
+              {doc.note}
+            </p>
+          )}
         </article>
 
         <aside className="h-fit rounded-2xl border border-graphite-100 bg-graphite-50 p-6">
