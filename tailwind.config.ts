@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  // Los efectos hover:/group-hover: solo se aplican en dispositivos con
+  // puntero (evita estados "pegados" al tocar en móvil).
+  future: { hoverOnlyWhenSupported: true },
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",

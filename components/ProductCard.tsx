@@ -21,7 +21,7 @@ export function ProductCard({ product }: { product: Product }) {
       aria-label={product.name}
     >
       {/* Imagen */}
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-b from-graphite-50 to-graphite-100">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-b from-white to-graphite-100 shadow-card ring-1 ring-graphite-100/70 transition-shadow duration-300 group-hover:shadow-card-hover">
         <ProductImage
           images={product.images}
           name={product.name}
