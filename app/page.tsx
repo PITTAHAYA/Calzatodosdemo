@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ProductRail } from "@/components/ProductRail";
 import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
@@ -7,6 +6,9 @@ import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { KineticMarquee } from "@/components/home/KineticMarquee";
 import { RevealText } from "@/components/motion/RevealText";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
+import { Grain } from "@/components/motion/Grain";
+import { Spotlight } from "@/components/motion/Spotlight";
 import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
 import { stores } from "@/data/stores";
@@ -56,6 +58,7 @@ export default function HomePage() {
         </video>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/15" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+        <Grain />
 
         <div className="container-page relative py-20 sm:py-28">
           <div className="max-w-2xl">
@@ -137,12 +140,9 @@ export default function HomePage() {
 
       {/* ============ 4. BANDA EDITORIAL ============ */}
       <section className="relative isolate flex min-h-[420px] items-center overflow-hidden sm:min-h-[520px]">
-        <Image
+        <ParallaxImage
           src="/lifestyle/editorial-family.jpg"
           alt="Familia en una tienda Calzatodos Group"
-          fill
-          sizes="100vw"
-          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="container-page relative py-20 text-white">
@@ -184,12 +184,9 @@ export default function HomePage() {
 
       {/* ============ 5.5 BANDA LIFESTYLE "SHOP" ============ */}
       <section className="relative isolate flex min-h-[460px] items-center justify-center overflow-hidden text-center sm:min-h-[560px]">
-        <Image
+        <ParallaxImage
           src="/lifestyle/ppl-friends.jpg"
           alt="Amigos luciendo su calzado Calzatodos Group"
-          fill
-          sizes="100vw"
-          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/40" />
         <div className="container-page relative py-20 text-white">
@@ -263,12 +260,13 @@ export default function HomePage() {
       {/* ============ 8. CTA FINAL ============ */}
       <section className="section pt-0">
         <div className="container-page">
-          <div className="rounded-3xl bg-graphite-950 px-6 py-14 text-center text-white sm:px-12">
-            <h2 className="mx-auto max-w-2xl text-3xl font-bold sm:text-4xl">
+          <Spotlight className="overflow-hidden rounded-3xl bg-graphite-950 px-6 py-14 text-center text-white sm:px-12">
+            <Grain />
+            <h2 className="relative mx-auto max-w-2xl text-3xl font-bold sm:text-4xl">
               Encuentra el calzado ideal para ti
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-graphite-300">{brandCopy.attention}</p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <p className="relative mx-auto mt-4 max-w-xl text-graphite-300">{brandCopy.attention}</p>
+            <div className="relative mt-8 flex flex-wrap justify-center gap-3">
               <Link href="/catalogo" className="btn-primary !px-6 !py-3">Explorar catálogo</Link>
               <a href={whatsappGeneral()} target="_blank" rel="noopener noreferrer" className="btn-whatsapp !px-6 !py-3">
                 <WhatsAppIcon className="h-5 w-5" /> Hablar por WhatsApp
@@ -277,7 +275,7 @@ export default function HomePage() {
                 <StoreIcon className="h-5 w-5" /> Encontrar una tienda
               </Link>
             </div>
-          </div>
+          </Spotlight>
         </div>
       </section>
     </>
