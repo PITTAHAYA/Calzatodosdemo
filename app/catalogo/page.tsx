@@ -16,11 +16,17 @@ export default function CatalogoPage() {
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ name: "Catálogo", path: "/catalogo" }]} />
-      <h1 className="mt-4 text-3xl font-bold text-graphite-900">Catálogo</h1>
-      <p className="mt-2 max-w-2xl text-graphite-600">
-        Encuentra el modelo ideal y consúltalo por WhatsApp. La disponibilidad está
-        sujeta a confirmación en tienda.
-      </p>
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow text-brand-600">Todo el calzado</p>
+          <h1 className="mt-1 text-4xl font-black tracking-tight text-graphite-900 sm:text-5xl">
+            Encuentra tu próximo par
+          </h1>
+        </div>
+        <p className="max-w-xs text-sm text-graphite-500">
+          Para mujer, hombre y niños. Consulta disponibilidad por WhatsApp.
+        </p>
+      </div>
 
       <div className="mt-8">
         <Suspense fallback={<div className="text-sm text-graphite-500">Cargando catálogo…</div>}>

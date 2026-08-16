@@ -25,8 +25,22 @@ export default function HomePage() {
     <>
       {/* ============ 1. HERO (video con los muñecos reales) ============ */}
       <section className="relative isolate flex min-h-[560px] items-center overflow-hidden bg-graphite-950 text-white sm:min-h-[82vh]">
+        {/* Video vertical para móvil */}
         <video
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover sm:hidden"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/hero/hero-mobile-poster.jpg"
+        >
+          <source src="/hero/hero-mobile.webm" type="video/webm" />
+          <source src="/hero/hero-mobile.mp4" type="video/mp4" />
+        </video>
+        {/* Video horizontal para tablet/desktop */}
+        <video
+          className="absolute inset-0 hidden h-full w-full object-cover sm:block"
           autoPlay
           muted
           loop

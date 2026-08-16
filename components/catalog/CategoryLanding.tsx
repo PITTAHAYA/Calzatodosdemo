@@ -70,19 +70,32 @@ export function CategoryLanding({
             />
           </Suspense>
         ) : (
-          <div className="rounded-2xl border border-dashed border-graphite-200 bg-graphite-50 px-6 py-16 text-center">
-            <h2 className="text-lg font-bold text-graphite-900">
-              Estamos actualizando esta sección
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm text-graphite-600">
-              Pronto encontrarás más modelos aquí. Mientras tanto, escríbenos por
-              WhatsApp o explora el catálogo completo.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link href="/catalogo" className="btn-outline">Ver catálogo</Link>
-              <a href={whatsappGeneral()} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
-                <WhatsAppIcon className="h-4 w-4" /> Consultar por WhatsApp
-              </a>
+          <div className="relative isolate flex min-h-[380px] items-center justify-center overflow-hidden rounded-3xl text-center">
+            <Image
+              src="/lifestyle/ppl-friends.jpg"
+              alt="Calzatodos Group"
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/40" />
+            <div className="relative px-6 py-14 text-white">
+              <p className="eyebrow text-brand-400">Muy pronto</p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Estamos preparando esta selección
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-graphite-100">
+                Escríbenos por WhatsApp y te decimos qué modelos tenemos disponibles hoy,
+                o explora todo el catálogo.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <a href={whatsappGeneral()} target="_blank" rel="noopener noreferrer" className="btn-whatsapp !px-6 !py-3">
+                  <WhatsAppIcon className="h-5 w-5" /> Consultar por WhatsApp
+                </a>
+                <Link href="/catalogo" className="btn-outline !border-white/50 !bg-transparent !text-white hover:!bg-white/10 !px-6 !py-3">
+                  Ver catálogo
+                </Link>
+              </div>
             </div>
           </div>
         )}
