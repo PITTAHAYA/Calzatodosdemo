@@ -11,11 +11,11 @@ import { brandCopy } from "@/data/site-content";
 import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
 
 const categoryCards = [
-  { name: "Mujer", href: "/mujer", text: "Sneakers y calzado escolar con estilo y comodidad.", image: "/brand-gallery/north-star-1.jpg" },
-  { name: "Hombre", href: "/hombre", text: "Formal y sneakers para acompañar tu día a día.", image: "/lifestyle/zapatos-2.jpg" },
-  { name: "Niños", href: "/ninos", text: "Escolar y para jugar, pensado para los más pequeños.", image: "/brand-gallery/bubble-gummers-2.jpg" },
-  { name: "Deportivo", href: "/deportivo", text: "Sneakers deportivos para toda la familia.", image: "/lifestyle/zapatos-1.jpg" },
-  { name: "Escolar", href: "/escolar", text: "Resistencia y comodidad para el regreso a clases.", image: "/lifestyle/zapatos-3.jpg" },
+  { name: "Mujer", href: "/mujer", text: "Luce increíble cada día. Sneakers y más.", image: "/lifestyle/ppl-mujer.jpg" },
+  { name: "Hombre", href: "/hombre", text: "Tu estilo, en cada paso. Casual y formal.", image: "/lifestyle/ppl-hombre.jpg" },
+  { name: "Niños", href: "/ninos", text: "Para correr, jugar y soñar en grande.", image: "/lifestyle/ppl-ninos.jpg" },
+  { name: "Deportivo", href: "/deportivo", text: "Dale energía a cada entrenamiento.", image: "/lifestyle/ppl-deportivo.jpg" },
+  { name: "Escolar", href: "/escolar", text: "Listos para el regreso a clases.", image: "/lifestyle/ppl-escolar.jpg" },
 ];
 
 export default function HomePage() {
@@ -93,10 +93,10 @@ export default function HomePage() {
       <section className="section bg-graphite-50">
         <div className="container-page">
           <SectionHeader
-            eyebrow="Selección"
-            title="Productos destacados"
+            eyebrow="Los favoritos"
+            title="Estrena tus próximos zapatos"
             href="/catalogo"
-            hrefLabel="Ver catálogo completo"
+            hrefLabel="Ver todo el catálogo"
           />
           <ProductRail products={featured} />
         </div>
@@ -146,6 +146,32 @@ export default function HomePage() {
           />
           {/* Marquee de marcas que se desplaza solo */}
           <BrandMarquee />
+        </div>
+      </section>
+
+      {/* ============ 5.5 BANDA LIFESTYLE "SHOP" ============ */}
+      <section className="relative isolate flex min-h-[460px] items-center justify-center overflow-hidden text-center sm:min-h-[560px]">
+        <Image
+          src="/lifestyle/ppl-friends.jpg"
+          alt="Amigos luciendo su calzado Calzatodos Group"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/40" />
+        <div className="container-page relative py-20 text-white">
+          <p className="eyebrow text-brand-400">Nueva temporada</p>
+          <h2 className="mx-auto mt-3 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
+            Encuentra el par que te hace sentir bien
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-graphite-100">
+            Estilos para mujer, hombre y niños. Elige el tuyo y estrénalo hoy mismo.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/mujer" className="btn-primary !px-6 !py-3">Mujer</Link>
+            <Link href="/hombre" className="btn !bg-white !text-graphite-900 hover:!bg-graphite-100 !px-6 !py-3">Hombre</Link>
+            <Link href="/ninos" className="btn !border !border-white/60 !bg-transparent !text-white hover:!bg-white/10 !px-6 !py-3">Niños</Link>
+          </div>
         </div>
       </section>
 

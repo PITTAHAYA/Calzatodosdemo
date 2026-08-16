@@ -18,7 +18,7 @@ export default function MujerPage() {
       description="Sneakers, calzado casual, sandalias, botas, tacones y más. Encuentra tu estilo y consúltalo por WhatsApp."
       products={getProductsByAudience("mujer")}
       crumbs={[{ name: "Mujer", path: "/mujer" }]}
-      heroImage="/brand-gallery/north-star-1.jpg"
+      heroImage="/lifestyle/ppl-mujer.jpg"
       hideAudience
     />
   );

@@ -21,7 +21,7 @@ export default function DeportivoPage() {
       description="Rendimiento y confort para entrenar, correr y moverte. Para mujer, hombre y niños."
       products={items}
       crumbs={[{ name: "Deportivo", path: "/deportivo" }]}
-      heroImage="/lifestyle/zapatos-1.jpg"
+      heroImage="/lifestyle/ppl-deportivo.jpg"
       hideCategory
     />
   );
