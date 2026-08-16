@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Product } from "@/data/products";
 import { ProductImage } from "./ProductImage";
 import { ArrowRightIcon } from "./Icons";
-import { priceLabel, cn } from "@/lib/utils";
+import { priceLabel, cn, colorHex } from "@/lib/utils";
 import { brandDisplayName } from "@/lib/whatsapp";
 import { getCategory } from "@/data/categories";
 
@@ -47,17 +47,27 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Info */}
       <div className="flex flex-1 flex-col px-1 pb-1 pt-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-bold text-graphite-900 group-hover:text-brand-700">
-            {product.name}
-          </h3>
-          {colorCount > 1 && (
-            <span className="shrink-0 rounded-full bg-graphite-100 px-2 py-0.5 text-[10px] font-semibold text-graphite-500">
-              {colorCount} colores
+        <h3 className="text-sm font-bold text-graphite-900 group-hover:text-brand-700">
+          {product.name}
+        </h3>
+        <p className="mt-0.5 text-xs text-graphite-500">{category}</p>
+
+        {/* Muestras de color */}
+        <div className="mt-2 flex items-center gap-1.5">
+          {product.colors.slice(0, 4).map((c) => (
+            <span
+              key={c}
+              title={c}
+              className="h-3.5 w-3.5 rounded-full ring-1 ring-inset ring-black/15"
+              style={{ backgroundColor: colorHex(c) }}
+            />
+          ))}
+          {colorCount > 4 && (
+            <span className="text-[10px] font-medium text-graphite-400">
+              +{colorCount - 4}
             </span>
           )}
         </div>
-        <p className="mt-0.5 text-xs text-graphite-500">{category}</p>
 
         <div className="mt-2 flex items-baseline gap-2">
           <span

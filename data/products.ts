@@ -257,8 +257,27 @@ export function getProduct(slugStr: string): Product | undefined {
   return products.find((p) => p.slug === slugStr);
 }
 
+// Selección curada de los modelos más atractivos (sneakers coloridos y
+// deportivos), no el calzado escolar/formal blanco y negro.
+const FEATURED_SLUGS = [
+  "fizz-500",
+  "seoul",
+  "primewalk-300",
+  "eyad",
+  "demian",
+  "energy-firefly-100",
+  "new-york",
+  "dabble",
+];
+
 export function getFeaturedProducts(limit = 8): Product[] {
-  return products.filter((p) => p.isFeatured).slice(0, limit);
+  const curated = FEATURED_SLUGS.map((s) => products.find((p) => p.slug === s)).filter(
+    (p): p is Product => Boolean(p)
+  );
+  const extra = products.filter(
+    (p) => p.isFeatured && !FEATURED_SLUGS.includes(p.slug)
+  );
+  return [...curated, ...extra].slice(0, limit);
 }
 
 export function getProductsByAudience(audience: Audience): Product[] {
