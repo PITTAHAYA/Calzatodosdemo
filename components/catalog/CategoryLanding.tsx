@@ -43,7 +43,7 @@ export function CategoryLanding({
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 52vw"
-              className="object-cover object-[center_28%]"
+              className="object-cover object-[center_18%]"
             />
             {/* Fundido para mezclar con el panel de texto */}
             <div className="absolute inset-0 hidden bg-gradient-to-r from-graphite-950 via-graphite-950/20 to-transparent lg:block" />

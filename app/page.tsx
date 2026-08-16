@@ -143,6 +143,7 @@ export default function HomePage() {
         <ParallaxImage
           src="/lifestyle/editorial-family.jpg"
           alt="Familia en una tienda Calzatodos Group"
+          objectPosition="center 15%"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="container-page relative py-20 text-white">

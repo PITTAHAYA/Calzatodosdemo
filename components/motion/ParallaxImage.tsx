@@ -10,11 +10,13 @@ export function ParallaxImage({
   alt,
   priority,
   sizes = "100vw",
+  objectPosition = "center",
 }: {
   src: string;
   alt: string;
   priority?: boolean;
   sizes?: string;
+  objectPosition?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -36,6 +38,7 @@ export function ParallaxImage({
           fill
           priority={priority}
           sizes={sizes}
+          style={{ objectPosition }}
           className="object-cover"
         />
       </motion.div>
