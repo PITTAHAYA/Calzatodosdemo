@@ -4,6 +4,7 @@ import { ExpandingCategories } from "@/components/home/ExpandingCategories";
 import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { KineticMarquee } from "@/components/home/KineticMarquee";
+import { WholesalePitch } from "@/components/home/WholesalePitch";
 import { RevealText } from "@/components/motion/RevealText";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
@@ -13,7 +14,7 @@ import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
 import { stores } from "@/data/stores";
 import { brandCopy } from "@/data/site-content";
-import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
+import { whatsappGeneral } from "@/lib/whatsapp";
 
 const categoryCards = [
   { name: "Mujer", href: "/mujer", text: "Luce increíble cada día. Sneakers y más.", image: "/lifestyle/ppl-mujer.jpg" },
@@ -207,43 +208,7 @@ export default function HomePage() {
       </section>
 
       {/* ============ 6. MAYORISTAS ============ */}
-      <section className="section bg-graphite-50">
-        <div className="container-page">
-          <div className="grid items-center gap-8 rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white sm:p-12 lg:grid-cols-2">
-            <div>
-              <p className="eyebrow text-white/80">Mayoristas</p>
-              <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                Haz crecer tu negocio con Calzatodos Group
-              </h2>
-              <p className="mt-4 max-w-lg text-white/90">
-                Accede a variedad de marcas, atención personalizada y opciones de calzado
-                para diferentes mercados y tipos de clientes.
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/mayoristas" className="btn !bg-white !text-brand-700 hover:!bg-brand-50">
-                  Solicitar información
-                </Link>
-                <a
-                  href={whatsappWholesale()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn border border-white/70 !text-white hover:!bg-white/10"
-                >
-                  <WhatsAppIcon className="h-5 w-5" />
-                  Hablar por WhatsApp
-                </a>
-              </div>
-            </div>
-            <ul className="grid gap-3 sm:grid-cols-2">
-              {["Atención personalizada", "Marcas internacionales y propias", "Experiencia en distribución", "Cobertura nacional"].map((b) => (
-                <li key={b} className="rounded-xl bg-white/10 px-4 py-3 text-sm font-medium">
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+      <WholesalePitch />
 
       {/* ============ 7. LOCALES ============ */}
       <section className="section">
