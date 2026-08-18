@@ -85,14 +85,14 @@
   }
 }
 
-/* Respeto por prefers-reduced-motion. */
+/* prefers-reduced-motion: en lugar de apagar TODAS las animaciones (lo que
+   dejaba el sitio estático en equipos con "reducir movimiento" activado),
+   solo evitamos el desplazamiento suave. Las animaciones decorativas de marca
+   se muestran siempre; los efectos que pueden marear (parallax de scroll,
+   cursor personalizado y transición de página) se desactivan desde sus
+   componentes. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+  html {
     scroll-behavior: auto !important;
   }
 }
@@ -116,21 +116,6 @@
 /* Pausa al mantener presionado / hover, para poder leer. */
 .marquee-wrap:hover .marquee-track {
   animation-play-state: paused;
-}
-/* En dispositivos con "reducir movimiento": en vez de congelar el texto
-   (lo que ocultaría mensajes), se permite deslizar el ticker con el dedo. */
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none;
-  }
-  .marquee-wrap {
-    overflow-x: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .marquee-wrap::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 /* Ocultar scrollbar en carruseles horizontales. */

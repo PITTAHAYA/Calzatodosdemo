@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
-// Animación discreta de aparición al entrar en viewport.
-// Respeta prefers-reduced-motion automáticamente.
+// Animación discreta de aparición al entrar en viewport (decorativa; se
+// muestra siempre para conservar la sensación premium del catálogo).
 export function Reveal({
   children,
   delay = 0,
@@ -14,8 +14,6 @@ export function Reveal({
   delay?: number;
   className?: string;
 }) {
-  const reduce = useReducedMotion();
-  if (reduce) return <div className={className}>{children}</div>;
   return (
     <motion.div
       className={className}

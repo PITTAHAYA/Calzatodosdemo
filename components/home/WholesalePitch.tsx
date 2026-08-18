@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Counter } from "@/components/motion/Counter";
 import { RevealText } from "@/components/motion/RevealText";
 import { Magnetic } from "@/components/motion/Magnetic";
@@ -39,7 +39,8 @@ const BENEFITS = [
 const TICKER = ["PRECIO MAYORISTA", "REPOSICIÓN CONSTANTE", "8 MARCAS", "COBERTURA NACIONAL"];
 
 export function WholesalePitch() {
-  const reduce = useReducedMotion();
+  // Animaciones decorativas: se muestran siempre (catálogo promocional).
+  const reduce = false;
 
   return (
     <section className="section bg-graphite-50">
@@ -98,10 +99,10 @@ export function WholesalePitch() {
                       key={i}
                       className="flex-1 rounded-t bg-gradient-to-t from-brand-700 to-brand-400"
                       style={{ height: `${h * 100}%`, transformOrigin: "bottom" }}
-                      initial={reduce ? undefined : { scaleY: 0 }}
-                      whileInView={reduce ? undefined : { scaleY: 1 }}
-                      viewport={{ once: true, margin: "-10%" }}
-                      transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                      initial={{ scaleY: 0 }}
+                      whileInView={{ scaleY: 1 }}
+                      viewport={{ once: true, amount: 0.4 }}
+                      transition={{ duration: 0.7, delay: i * 0.09, ease: [0.22, 1, 0.36, 1] }}
                     />
                   ))}
                 </div>

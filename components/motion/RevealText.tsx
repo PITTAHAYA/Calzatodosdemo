@@ -1,7 +1,7 @@
 "use client";
 
 import { createElement, type ElementType } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Titular que se revela palabra por palabra al entrar en viewport.
 export function RevealText({
@@ -15,8 +15,6 @@ export function RevealText({
   as?: ElementType;
   delay?: number;
 }) {
-  const reduce = useReducedMotion();
-  if (reduce) return createElement(as, { className }, text);
 
   const words = text.split(" ");
   return createElement(

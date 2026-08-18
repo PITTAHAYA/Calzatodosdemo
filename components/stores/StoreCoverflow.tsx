@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Store } from "@/data/stores";
 import { storeMapsEmbedUrl, storeMapsUrl } from "@/data/stores";
 import { getOpenState } from "@/lib/store-hours";
@@ -23,7 +23,7 @@ export function StoreCoverflow({ stores }: { stores: Store[] }) {
   const [step, setStep] = useState(300);
   const [cardW, setCardW] = useState(300);
   const dragging = useRef(false);
-  const reduce = useReducedMotion();
+  const reduce = false;
 
   // Dimensiones responsivas.
   useEffect(() => {
@@ -248,7 +248,7 @@ function StoreCard3D({
 
 // -------- Modal de mapa --------
 function MapModal({ store, onClose }: { store: Store; onClose: () => void }) {
-  const reduce = useReducedMotion();
+  const reduce = false;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);

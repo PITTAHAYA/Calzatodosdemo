@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRightIcon } from "@/components/Icons";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ export interface CategoryPanel {
 // se convierte en tarjetas apiladas fáciles de tocar.
 export function ExpandingCategories({ panels }: { panels: CategoryPanel[] }) {
   const [active, setActive] = useState(0);
-  const reduce = useReducedMotion();
+  const reduce = false;
 
   return (
     <>
