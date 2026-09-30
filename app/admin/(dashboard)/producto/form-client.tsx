@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import type { Product } from "@/data/products";
-import { uploadImageAction } from "../../actions";
-
-export interface ProductFormValues extends Partial<Product> {}
+import { audiences, categories, styles } from "@/data/categories";
+import { brands } from "@/data/brands";
+import { validateProductInput, type FieldErrors } from "@/lib/product-validation";
+import { uploadImageAction, type FormState } from "../../actions";
 
 interface Props {
   product?: Product;
-  action: (formData: FormData) => void;
+  action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel?: string;
   showSlug?: boolean;
 }
@@ -33,24 +34,75 @@ const COLOR_PRESETS = [
   "Rosado",
 ];
 
+const STYLE_OPTIONS: [string, string][] = Array.from(
+  new Map<string, string>([
+    ...styles.map((s) => [s.slug, s.name] as [string, string]),
+    ["formal", "Formal"],
+    ["escolar", "Escolar"],
+    ["deportivo", "Deportivo"],
+    ["urbano", "Urbano"],
+    ["casual", "Casual"],
+  ])
+);
+
+const toNum = (v: string) => (v.trim() === "" ? undefined : Number(v.replace(",", ".")));
+
 export function ProductForm({
   product,
   action,
   submitLabel = "Guardar cambios",
   showSlug = false,
 }: Props) {
+  const [state, formAction, pending] = useActionState(action, { ok: true });
+  const formRef = useRef<HTMLFormElement>(null);
   const [images, setImages] = useState<string[]>(product?.images ?? []);
   const [sizes, setSizes] = useState<number[]>(product?.availableSizes ?? []);
   const [colors, setColors] = useState<string[]>(product?.colors ?? []);
   const [audience, setAudience] = useState<string>(product?.audience ?? "hombre");
+  const [category, setCategory] = useState<string>(product?.category ?? "sneakers");
+  const [brand, setBrand] = useState<string>(product?.brand ?? "calzatodos");
   const [name, setName] = useState(product?.name ?? "");
-  const [price, setPrice] = useState(product?.price ?? "");
-  const [priceMax, setPriceMax] = useState(product?.priceMax ?? "");
-  const [uploading, setUploading] = useState(false);
+  const [description, setDescription] = useState(product?.description ?? "");
+  const [price, setPrice] = useState(product?.price?.toString() ?? "");
+  const [priceMax, setPriceMax] = useState(product?.priceMax?.toString() ?? "");
+  const [previousPrice, setPreviousPrice] = useState(product?.previousPrice?.toString() ?? "");
+  const [isOnSale, setIsOnSale] = useState(Boolean(product?.isOnSale));
+  const [isNew, setIsNew] = useState(Boolean(product?.isNew));
+  const [uploading, setUploading] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const [touched, setTouched] = useState(false);
+
+  // Errores: los del servidor (tras enviar) o los calculados en vivo.
+  const liveErrors: FieldErrors = useMemo(
+    () =>
+      validateProductInput({
+        name,
+        audience: audience as Product["audience"],
+        category,
+        brand,
+        description,
+        price: toNum(price),
+        priceMax: toNum(priceMax),
+        previousPrice: toNum(previousPrice),
+        images,
+        availableSizes: sizes,
+      }),
+    [name, audience, category, brand, description, price, priceMax, previousPrice, images, sizes]
+  );
+  const errors: FieldErrors = touched ? { ...liveErrors, ...(state.errors ?? {}) } : state.errors ?? {};
+  const errorCount = Object.keys(liveErrors).length;
+
+  // Si el servidor rechaza el guardado, vuelve a marcar el formulario como
+  // "con cambios" para que siga avisando al salir.
+  useEffect(() => {
+    if (!state.ok) {
+      setDirty(true);
+      setTouched(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [state]);
 
   // Avisa antes de cerrar la pestaña o recargar si hay cambios sin guardar.
   useEffect(() => {
@@ -63,37 +115,73 @@ export function ProductForm({
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
 
+  // Atajo ⌘S / Ctrl+S para guardar.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const suggestedSizes = SIZE_PRESETS[audience] ?? SIZE_PRESETS.hombre;
+  const categoryOptions = categories.filter(
+    (c) => c.audience.includes(audience as Product["audience"]) || c.slug === category
+  );
 
   const priceLabel = useMemo(() => {
     if (!price) return null;
     return priceMax ? `$${price} – $${priceMax}` : `$${price}`;
   }, [price, priceMax]);
 
-  async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
+  const discount =
+    toNum(previousPrice) && toNum(price) && toNum(previousPrice)! > toNum(price)!
+      ? Math.round((1 - toNum(price)! / toNum(previousPrice)!) * 100)
+      : null;
+
+  async function uploadFiles(files: File[]) {
+    const list = files.filter((f) => f.type.startsWith("image/"));
+    if (list.length === 0) return;
     setUploadError(null);
-    setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await uploadImageAction(fd);
-      if (!res.ok) setUploadError(res.error);
-      else {
-        setImages((prev) => [...prev, res.url]);
-        setDirty(true);
-      }
-    } catch (err) {
-      setUploadError((err as Error).message ?? "Error al subir");
-    } finally {
-      setUploading(false);
-    }
+    setUploading((n) => n + list.length);
+    const failures: string[] = [];
+    await Promise.all(
+      list.map(async (file) => {
+        try {
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await uploadImageAction(fd);
+          if (!res.ok) failures.push(`${file.name}: ${res.error}`);
+          else {
+            setImages((prev) => [...prev, res.url]);
+            setDirty(true);
+          }
+        } catch {
+          failures.push(`${file.name}: error de conexión.`);
+        } finally {
+          setUploading((n) => n - 1);
+        }
+      })
+    );
+    if (failures.length) setUploadError(failures.join(" · "));
+  }
+
+  function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    void uploadFiles(files);
   }
 
   function removeImage(i: number) {
     setImages((prev) => prev.filter((_, idx) => idx !== i));
+    setDirty(true);
+  }
+
+  function makeMain(i: number) {
+    setImages((prev) => [prev[i], ...prev.filter((_, idx) => idx !== i)]);
     setDirty(true);
   }
 
@@ -123,35 +211,30 @@ export function ProductForm({
   }
 
   return (
+    <div className="grid lg:grid-cols-[1fr_260px] gap-6 items-start">
     <form
+      ref={formRef}
+      action={formAction}
       onChange={() => setDirty(true)}
       onSubmit={(e) => {
-        e.preventDefault();
-        setFormError(null);
-        if (!name.trim()) {
-          setFormError("El nombre del producto es obligatorio.");
+        setTouched(true);
+        if (errorCount > 0) {
+          e.preventDefault();
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         }
-        if (images.length === 0) {
-          setFormError(
-            "Agrega al menos una foto antes de guardar. Sin foto, el producto se ve vacío en el catálogo."
-          );
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          return;
-        }
-        const fd = new FormData(e.currentTarget);
-        fd.set("images", images.join("\n"));
-        fd.set("availableSizes", sizes.join(","));
-        fd.set("colors", colors.join(","));
         setDirty(false);
-        startTransition(() => action(fd));
       }}
-      className="space-y-8"
+      className="space-y-8 min-w-0"
+      noValidate
     >
-      {formError && (
-        <div className="rounded-md border border-red-800 bg-red-950/40 text-red-200 px-4 py-3 text-sm">
-          {formError}
+      <input type="hidden" name="images" value={images.join("\n")} />
+      <input type="hidden" name="availableSizes" value={sizes.join(",")} />
+      <input type="hidden" name="colors" value={colors.join(",")} />
+
+      {(errors.form || (touched && errorCount > 0)) && (
+        <div role="alert" className="rounded-md border border-red-800 bg-red-950/40 text-red-200 px-4 py-3 text-sm">
+          {errors.form ?? `Revisa ${errorCount} campo${errorCount === 1 ? "" : "s"} marcado${errorCount === 1 ? "" : "s"} en rojo antes de guardar.`}
         </div>
       )}
 
@@ -163,7 +246,10 @@ export function ProductForm({
             name="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={() => setTouched(true)}
             required
+            maxLength={120}
+            error={errors.name}
             help="Como quieres que lo vea el cliente. Ej: Sneaker Blanco Urban."
           />
           {showSlug && (
@@ -171,58 +257,64 @@ export function ProductForm({
               label="Slug (URL)"
               name="slug"
               placeholder="ej. sneaker-blanco-mario"
+              error={errors.slug}
               help="Se usará en /productos/<slug>. Déjalo vacío para generarlo del nombre."
             />
           )}
-          <Field label="Marca (slug)" name="brand" defaultValue={product?.brand ?? "calzatodos"} />
+          <Select
+            label="Marca"
+            name="brand"
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            error={errors.brand}
+            options={[
+              ...brands.map((b) => [b.slug, b.hidden ? `${b.name} (oculta)` : b.name] as [string, string]),
+              ...(brands.some((b) => b.slug === brand) ? [] : [[brand, `${brand} (no existe)`] as [string, string]]),
+            ]}
+          />
           <Select
             label="Público"
             name="audience"
             value={audience}
             onChange={(e) => setAudience(e.target.value)}
-            options={[
-              ["hombre", "Hombre"],
-              ["mujer", "Mujer"],
-              ["nino", "Niño"],
-              ["nina", "Niña"],
-              ["infantil", "Infantil"],
-            ]}
+            error={errors.audience}
+            options={audiences.map((a) => [a.value, a.label] as [string, string])}
           />
           <Select
             label="Categoría"
             name="category"
-            defaultValue={product?.category}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            error={errors.category}
+            help="Solo se muestran las categorías que aplican al público elegido."
             options={[
-              ["formal", "Formal"],
-              ["escolar", "Escolar"],
-              ["sneakers", "Sneakers"],
-              ["deportivo", "Deportivo"],
-              ["luces", "Con luces"],
-              ["urbano", "Urbano"],
+              ...categoryOptions.map((c) => [c.slug, c.name] as [string, string]),
+              ...(categories.some((c) => c.slug === category) ? [] : [[category, `${category} (no existe)`] as [string, string]]),
             ]}
           />
           <Select
             label="Estilo"
             name="style"
-            defaultValue={product?.style}
-            options={[
-              ["formal", "Formal"],
-              ["escolar", "Escolar"],
-              ["deportivo", "Deportivo"],
-              ["urbano", "Urbano"],
-              ["casual", "Casual"],
-            ]}
+            defaultValue={product?.style ?? "casual"}
+            options={STYLE_OPTIONS}
           />
         </div>
         <label className="block text-sm mt-4">
           <span className="block font-medium mb-1">Descripción</span>
           <textarea
             name="description"
-            defaultValue={product?.description}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             rows={3}
+            maxLength={2000}
             placeholder="2–4 frases sencillas. Ej: Zapato cómodo y resistente para el uso diario…"
             className="w-full rounded-md bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"
           />
+          <span className={`block text-xs mt-1 ${description.trim().length < 20 ? "text-amber-400" : "text-neutral-500"}`}>
+            {description.length}/2000
+            {description.trim().length < 20 && " · Una descripción de al menos 20 caracteres ayuda a vender y a aparecer en Google."}
+          </span>
+          {errors.description && <span className="block text-xs text-red-400 mt-1">{errors.description}</span>}
         </label>
       </Section>
 
@@ -235,8 +327,11 @@ export function ProductForm({
             type="number"
             step="0.01"
             min="0"
+            inputMode="decimal"
             value={price}
-            onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) => setPrice(e.target.value)}
+            error={errors.price}
+            help="Déjalo vacío si prefieres que consulten por WhatsApp."
           />
           <Field
             label="Precio máximo ($, opcional)"
@@ -244,8 +339,10 @@ export function ProductForm({
             type="number"
             step="0.01"
             min="0"
+            inputMode="decimal"
             value={priceMax}
-            onChange={(e) => setPriceMax(e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) => setPriceMax(e.target.value)}
+            error={errors.priceMax}
             help="Solo si el precio cambia según la talla."
           />
           <Field
@@ -254,13 +351,29 @@ export function ProductForm({
             type="number"
             step="0.01"
             min="0"
-            defaultValue={product?.previousPrice ?? ""}
+            inputMode="decimal"
+            value={previousPrice}
+            onChange={(e) => setPreviousPrice(e.target.value)}
+            error={errors.previousPrice}
             help="Úsalo solo si la oferta es real."
           />
         </div>
         {priceLabel && (
           <p className="mt-3 text-sm text-neutral-400">
             Así se verá en el catálogo: <span className="text-white font-semibold">{priceLabel}</span>
+            {discount !== null && (
+              <span className="ml-2 rounded bg-red-600/20 text-red-300 px-1.5 py-0.5 text-xs font-semibold">
+                −{discount}% de descuento
+              </span>
+            )}
+          </p>
+        )}
+        {discount !== null && !isOnSale && (
+          <p className="mt-2 text-xs text-amber-400">
+            Tiene precio anterior pero no está marcado “En oferta”.{" "}
+            <button type="button" className="underline" onClick={() => { setIsOnSale(true); setDirty(true); }}>
+              Marcarlo ahora
+            </button>
           </p>
         )}
       </Section>
@@ -293,6 +406,7 @@ export function ProductForm({
                 setDirty(true);
               }}
             />
+            {errors.availableSizes && <p className="text-xs text-red-400 mt-2">{errors.availableSizes}</p>}
             <p className="text-xs text-neutral-500 mt-2">
               Toca las tallas que tienes en stock. Se sugieren según el público
               elegido arriba.
@@ -343,74 +457,69 @@ export function ProductForm({
           .
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            void uploadFiles(Array.from(e.dataTransfer.files));
+          }}
+          className={`grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-md transition ${dragOver ? "ring-2 ring-sky-500 ring-offset-4 ring-offset-neutral-950" : ""}`}
+        >
           {images.map((src, i) => (
             <div
               key={`${src}-${i}`}
               className="relative border border-neutral-800 rounded-md overflow-hidden bg-neutral-900"
             >
               <div className="relative aspect-square">
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  sizes="200px"
-                  className="object-cover"
-                  unoptimized
-                />
-                {i === 0 && (
+                <Image src={src} alt="" fill sizes="200px" className="object-cover" unoptimized />
+                {i === 0 ? (
                   <span className="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded">
                     Principal
                   </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => makeMain(i)}
+                    className="absolute top-1 left-1 bg-black/60 hover:bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded"
+                  >
+                    Hacer principal
+                  </button>
                 )}
               </div>
               <div className="flex justify-between text-xs bg-neutral-900 border-t border-neutral-800">
-                <button
-                  type="button"
-                  onClick={() => moveImage(i, -1)}
-                  disabled={i === 0}
-                  className="px-2 py-1 disabled:opacity-30 hover:bg-neutral-800"
-                  title="Mover a la izquierda"
-                >
-                  ←
-                </button>
-                <button
-                  type="button"
-                  onClick={() => moveImage(i, 1)}
-                  disabled={i === images.length - 1}
-                  className="px-2 py-1 disabled:opacity-30 hover:bg-neutral-800"
-                  title="Mover a la derecha"
-                >
-                  →
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="px-2 py-1 text-red-400 hover:bg-neutral-800"
-                >
+                <button type="button" onClick={() => moveImage(i, -1)} disabled={i === 0}
+                  className="px-2 py-1.5 disabled:opacity-30 hover:bg-neutral-800" aria-label="Mover a la izquierda">←</button>
+                <button type="button" onClick={() => moveImage(i, 1)} disabled={i === images.length - 1}
+                  className="px-2 py-1.5 disabled:opacity-30 hover:bg-neutral-800" aria-label="Mover a la derecha">→</button>
+                <button type="button" onClick={() => removeImage(i)} className="px-2 py-1.5 text-red-400 hover:bg-neutral-800">
                   Quitar
                 </button>
               </div>
             </div>
           ))}
+          {Array.from({ length: uploading }).map((_, i) => (
+            <div key={`up-${i}`} className="aspect-square rounded-md border border-neutral-800 bg-neutral-900 animate-pulse flex items-center justify-center text-xs text-neutral-500">
+              Subiendo…
+            </div>
+          ))}
           <label className="flex flex-col items-center justify-center border border-dashed border-neutral-700 rounded-md aspect-square cursor-pointer hover:bg-neutral-900 hover:border-neutral-500 text-center px-2 transition">
             <span className="text-2xl">＋</span>
-            <span className="text-xs mt-1 text-neutral-400">
-              {uploading ? "Subiendo…" : "Subir foto"}
-            </span>
+            <span className="text-xs mt-1 text-neutral-400">Subir fotos</span>
+            <span className="text-[10px] mt-0.5 text-neutral-600">o arrástralas aquí</span>
             <input
               type="file"
+              multiple
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={onPickFile}
-              disabled={uploading}
               className="hidden"
             />
           </label>
         </div>
-        {uploadError && (
-          <p className="mt-2 text-sm text-red-400">{uploadError}</p>
-        )}
-        {images.length === 0 && !uploadError && (
+        {uploadError && <p className="mt-2 text-sm text-red-400">{uploadError}</p>}
+        {errors.images && !uploadError && <p className="mt-2 text-sm text-red-400">{errors.images}</p>}
+        {images.length === 0 && !errors.images && !uploadError && (
           <p className="mt-2 text-sm text-amber-400">
             Aún no has agregado fotos. Sube al menos una antes de guardar.
           </p>
@@ -460,25 +569,92 @@ export function ProductForm({
       <Section step={5} title="Visibilidad en el sitio">
         <div className="flex flex-wrap gap-6">
           <Checkbox label="Destacado en portada" name="isFeatured" defaultChecked={product?.isFeatured} />
-          <Checkbox label="Marcar como nuevo" name="isNew" defaultChecked={product?.isNew} />
-          <Checkbox label="En oferta" name="isOnSale" defaultChecked={product?.isOnSale} />
+          <Checkbox label="Marcar como nuevo" name="isNew" checked={isNew} onChange={(e) => setIsNew(e.target.checked)} />
+          <Checkbox label="En oferta" name="isOnSale" checked={isOnSale} onChange={(e) => setIsOnSale(e.target.checked)} />
         </div>
+        {isOnSale && !toNum(previousPrice) && (
+          <p className="mt-3 text-xs text-amber-400">
+            Consejo: agrega un “precio anterior” en la sección 2 para que el cliente vea el descuento.
+          </p>
+        )}
       </Section>
 
       <div className="sticky bottom-0 bg-neutral-950/95 backdrop-blur border-t border-neutral-800 -mx-4 px-4 py-3 flex items-center justify-between gap-4">
-        <p className="text-xs text-neutral-500 hidden sm:block">
-          {images.length} foto{images.length === 1 ? "" : "s"} · {sizes.length} talla
-          {sizes.length === 1 ? "" : "s"} · {colors.length} color
-          {colors.length === 1 ? "" : "es"}
+        <p className="text-xs text-neutral-500">
+          <span className="hidden sm:inline">
+            {images.length} foto{images.length === 1 ? "" : "s"} · {sizes.length} talla
+            {sizes.length === 1 ? "" : "s"} · {colors.length} color
+            {colors.length === 1 ? "" : "es"} ·{" "}
+          </span>
+          {dirty ? (
+            <span className="text-amber-400">● Cambios sin guardar</span>
+          ) : (
+            <span>Sin cambios</span>
+          )}
+          <span className="hidden md:inline text-neutral-600"> · ⌘S para guardar</span>
         </p>
         <button
-          disabled={pending || uploading}
+          disabled={pending || uploading > 0}
           className="rounded-md bg-white text-neutral-900 font-semibold px-5 py-2 text-sm hover:bg-neutral-200 disabled:opacity-60"
         >
-          {pending ? "Guardando…" : submitLabel}
+          {pending ? "Guardando…" : uploading > 0 ? "Esperando fotos…" : submitLabel}
         </button>
       </div>
     </form>
+
+    {/* ---------- Vista previa ---------- */}
+    <aside className="hidden lg:block sticky top-20">
+      <p className="text-xs uppercase tracking-wide text-neutral-500 mb-2">Vista previa en el catálogo</p>
+      <div className="rounded-2xl bg-white text-neutral-900 overflow-hidden">
+        <div className="relative aspect-square bg-gradient-to-b from-white to-neutral-100">
+          {images[0] ? (
+            <Image src={images[0]} alt="" fill sizes="260px" className="object-contain" unoptimized />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-neutral-400">Sin foto</div>
+          )}
+          <div className="absolute left-2 top-2 flex gap-1">
+            {isNew && <span className="rounded bg-neutral-900 text-white text-[10px] font-bold px-1.5 py-0.5">Nuevo</span>}
+            {isOnSale && <span className="rounded bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5">Oferta</span>}
+          </div>
+        </div>
+        <div className="p-3">
+          <p className="text-sm font-bold leading-tight">{name || "Nombre del producto"}</p>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            {categories.find((c) => c.slug === category)?.name ?? category} ·{" "}
+            {brands.find((b) => b.slug === brand)?.name ?? brand}
+          </p>
+          <p className="mt-2 text-sm">
+            {priceLabel ? (
+              <>
+                <span className="font-bold">{priceLabel}</span>
+                {discount !== null && (
+                  <span className="ml-2 text-xs text-neutral-400 line-through">${previousPrice}</span>
+                )}
+              </>
+            ) : (
+              <span className="text-xs text-neutral-500">Consultar precio</span>
+            )}
+          </p>
+        </div>
+      </div>
+      <ul className="mt-3 space-y-1 text-xs">
+        <Check ok={name.trim().length >= 2}>Nombre</Check>
+        <Check ok={images.length > 0}>Al menos 1 foto</Check>
+        <Check ok={images.length >= 3} soft>3 o más fotos (venden más)</Check>
+        <Check ok={Boolean(price)} soft>Precio</Check>
+        <Check ok={sizes.length > 0} soft>Tallas</Check>
+        <Check ok={description.trim().length >= 20} soft>Descripción</Check>
+      </ul>
+    </aside>
+    </div>
+  );
+}
+
+function Check({ ok, soft, children }: { ok: boolean; soft?: boolean; children: React.ReactNode }) {
+  return (
+    <li className={ok ? "text-emerald-400" : soft ? "text-neutral-500" : "text-red-400"}>
+      {ok ? "✓" : soft ? "○" : "✕"} {children}
+    </li>
   );
 }
 
@@ -615,19 +791,26 @@ function TextAdder({
 function Field({
   label,
   help,
+  error,
   ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   help?: string;
+  error?: string;
 }) {
   return (
     <label className="block text-sm">
       <span className="block font-medium mb-1">{label}</span>
       <input
         {...rest}
-        className="w-full rounded-md bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"
+        aria-invalid={Boolean(error)}
+        className={`w-full rounded-md bg-neutral-900 border px-3 py-2 text-sm ${error ? "border-red-600" : "border-neutral-800"}`}
       />
-      {help && <span className="block text-xs text-neutral-500 mt-1">{help}</span>}
+      {error ? (
+        <span className="block text-xs text-red-400 mt-1">{error}</span>
+      ) : (
+        help && <span className="block text-xs text-neutral-500 mt-1">{help}</span>
+      )}
     </label>
   );
 }
@@ -657,17 +840,22 @@ function Textarea({
 function Select({
   label,
   options,
+  error,
+  help,
   ...rest
 }: React.SelectHTMLAttributes<HTMLSelectElement> & {
   label: string;
   options: [string, string][];
+  error?: string;
+  help?: string;
 }) {
   return (
     <label className="block text-sm">
       <span className="block font-medium mb-1">{label}</span>
       <select
         {...rest}
-        className="w-full rounded-md bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"
+        aria-invalid={Boolean(error)}
+        className={`w-full rounded-md bg-neutral-900 border px-3 py-2 text-sm ${error ? "border-red-600" : "border-neutral-800"}`}
       >
         {options.map(([v, l]) => (
           <option key={v} value={v}>
@@ -675,6 +863,11 @@ function Select({
           </option>
         ))}
       </select>
+      {error ? (
+        <span className="block text-xs text-red-400 mt-1">{error}</span>
+      ) : (
+        help && <span className="block text-xs text-neutral-500 mt-1">{help}</span>
+      )}
     </label>
   );
 }

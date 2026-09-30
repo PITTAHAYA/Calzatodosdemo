@@ -37,3 +37,4 @@ next-env.d.ts
 # Datos editados desde el panel /admin (viven en el servidor, no en git)
 /data/products-overrides.json
 /public/uploads/
+/data/products-history.json

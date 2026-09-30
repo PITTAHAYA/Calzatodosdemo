@@ -19,9 +19,24 @@ const CONFIGS: ToastConfig[] = [
   { key: "restored", message: () => "Producto restaurado al catálogo.", color: "green" },
   { key: "duplicated", message: () => "Producto duplicado. Edita el nombre y las fotos.", color: "green" },
   { key: "created", message: () => "Producto creado. Ya aparece en el catálogo.", color: "green" },
+  { key: "bulk", message: (v) => BULK_MSG[v] ?? "Cambios aplicados.", color: "green" },
+  { key: "undone", message: (v) => `Deshecho: ${v}`, color: "amber" },
+  { key: "imported", message: () => "Respaldo restaurado. Revisa el catálogo.", color: "green" },
+  { key: "error", message: () => "Ese producto ya no existe.", color: "amber" },
   { key: "bulkHidden", message: (v) => `${v} producto${v === "1" ? "" : "s"} quitado${v === "1" ? "" : "s"} del catálogo.`, color: "amber" },
   { key: "bulkRestored", message: (v) => `${v} producto${v === "1" ? "" : "s"} restaurado${v === "1" ? "" : "s"}.`, color: "green" },
 ];
+
+const BULK_MSG: Record<string, string> = {
+  hide: "Productos quitados del catálogo. Puedes restaurarlos abajo.",
+  restore: "Productos restaurados al catálogo.",
+  feature: "Productos destacados en portada.",
+  unfeature: "Productos quitados de destacados.",
+  sale: "Productos marcados en oferta.",
+  unsale: "Oferta quitada.",
+  new: "Productos marcados como nuevos.",
+  unnew: "Etiqueta “nuevo” quitada.",
+};
 
 export function Toast() {
   const router = useRouter();
@@ -40,6 +55,7 @@ export function Toast() {
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete(cfg.key);
+      params.delete("n");
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
       break;
@@ -67,7 +83,12 @@ export function Toast() {
       role="status"
       className={`fixed bottom-4 right-4 left-4 sm:left-auto z-50 sm:max-w-sm rounded-lg border px-4 py-3 text-sm shadow-2xl backdrop-blur animate-fade-in ${cls}`}
     >
-      {visible.message}
+      <div className="flex items-start gap-3">
+        <span className="flex-1">{visible.message}</span>
+        <button onClick={() => setVisible(null)} aria-label="Cerrar" className="opacity-60 hover:opacity-100">
+          ✕
+        </button>
+      </div>
     </div>
   );
 }

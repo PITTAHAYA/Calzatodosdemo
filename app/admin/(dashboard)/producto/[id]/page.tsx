@@ -7,6 +7,7 @@ import {
   duplicateProductAction,
 } from "../../../actions";
 import { ProductForm } from "../form-client";
+import { auditProduct } from "@/lib/product-validation";
 import { ConfirmSubmit } from "../../confirm-submit";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   const action = updateProductAction.bind(null, id);
+  const issues = auditProduct(product);
 
   return (
     <div className="space-y-6">
@@ -57,7 +59,25 @@ export default async function EditProductPage({
         </div>
       </div>
 
-      <ProductForm product={product} action={action} />
+      {issues.length > 0 && (
+        <div className="rounded-lg border border-amber-900/60 bg-amber-950/20 px-4 py-3 text-sm">
+          <p className="font-medium text-amber-200 mb-1">
+            Para que este producto venda mejor:
+          </p>
+          <ul className="space-y-0.5 text-amber-100/80">
+            {issues.map((i) => (
+              <li key={i.code}>
+                <span className={i.level === "error" ? "text-red-400" : "text-amber-400"}>
+                  {i.level === "error" ? "✕" : "•"}
+                </span>{" "}
+                {i.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <ProductForm key={JSON.stringify(product)} product={product} action={action} />
 
       <form
         action={deleteProductAction.bind(null, id)}
