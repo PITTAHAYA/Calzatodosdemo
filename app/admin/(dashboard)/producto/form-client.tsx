@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import type { Product } from "@/data/products";
-import { uploadImageAction } from "../actions";
+import { uploadImageAction } from "../../actions";
 
 export interface ProductFormValues extends Partial<Product> {}
 

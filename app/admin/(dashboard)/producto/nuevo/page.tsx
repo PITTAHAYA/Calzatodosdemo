@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createProductAction } from "../../actions";
+import { createProductAction } from "../../../actions";
 import { ProductForm } from "../form-client";
 
 export const dynamic = "force-dynamic";

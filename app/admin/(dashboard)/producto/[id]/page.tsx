@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllProducts } from "@/data/products";
-import { updateProductAction, deleteProductAction } from "../../actions";
+import { updateProductAction, deleteProductAction } from "../../../actions";
 import { ProductForm } from "../form-client";
 
 export const dynamic = "force-dynamic";

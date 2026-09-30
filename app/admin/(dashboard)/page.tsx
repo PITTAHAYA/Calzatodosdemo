@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAllProducts, getSeedProducts } from "@/data/products";
 import { getOverrides } from "@/lib/products-store";
-import { restoreProductAction, deleteProductAction } from "./actions";
+import { restoreProductAction, deleteProductAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/admin-auth";
-import { logoutAction } from "./actions";
+import { logoutAction } from "../actions";
 
 export const metadata = {
   title: "Panel Calzatodos",
