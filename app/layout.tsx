@@ -1,11 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { TopBar } from "@/components/layout/TopBar";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { SiteHeader, SiteFooterAndExtras } from "@/components/layout/SiteChrome";
 import { ScrollProgress } from "@/components/ScrollProgress";
-import { CustomCursor } from "@/components/motion/CustomCursor";
 import { JsonLd, organizationJsonLd } from "@/lib/seo";
 import { site } from "@/data/site-content";
 import { siteUrl } from "@/lib/utils";
@@ -60,7 +56,6 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <JsonLd data={organizationJsonLd()} />
         <ScrollProgress />
-        <CustomCursor />
         {/* Salto al contenido para accesibilidad por teclado */}
         <a
           href="#contenido"
@@ -68,16 +63,12 @@ export default function RootLayout({
         >
           Saltar al contenido
         </a>
-        {/* Barra superior + header pegados juntos al hacer scroll */}
-        <div className="sticky top-0 z-50">
-          <TopBar />
-          <Header />
-        </div>
+        {/* Barra superior + header (ocultos en /admin) */}
+        <SiteHeader />
         <main id="contenido" className="flex-1">
           {children}
         </main>
-        <Footer />
-        <WhatsAppFloat />
+        <SiteFooterAndExtras />
       </body>
     </html>
   );

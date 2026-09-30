@@ -17,9 +17,17 @@ const b64url = (buf) =>
   buf.toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
 
 const out = `pbkdf2$${iterations}$${b64url(salt)}$${b64url(hash)}`;
-console.log("\nAgrega esto a tu archivo .env:\n");
+console.log("\nSi vas a pegar esto en el dashboard de Vercel (Environment Variables),");
+console.log("úsalo tal cual, sin cambios:\n");
 console.log(`ADMIN_PASSWORD_HASH=${out}`);
 console.log("\nY también, si aún no lo has hecho:");
 console.log(`ADMIN_USER=admin`);
 console.log(`ADMIN_SESSION_SECRET=${b64url(randomBytes(32))}`);
+console.log(
+  "\nIMPORTANTE si en cambio lo vas a poner en un archivo .env / .env.local\n" +
+    "(desarrollo local o VPS): Next.js interpreta $ como inicio de una\n" +
+    "variable a expandir, así que hay que escaparlo como \\$ o se corrompe\n" +
+    "el hash. En ese caso usa esta línea en su lugar:\n"
+);
+console.log(`ADMIN_PASSWORD_HASH=${out.replace(/\$/g, "\\$")}`);
 console.log("");

@@ -179,23 +179,56 @@ export async function updateProductAction(id: string, formData: FormData) {
   redirect(`/admin?updated=${id}`);
 }
 
+// Oculta un producto (o lo elimina, si es uno creado desde el panel que no
+// tiene equivalente en la semilla). Función pura para reutilizar en
+// deleteProductAction y en la versión en lote.
+function hideProductInOverrides(ov: Overrides, id: string): Overrides {
+  const createdIdx = ov.created.findIndex((p) => p.id === id);
+  if (createdIdx >= 0) {
+    return { ...ov, created: ov.created.filter((p) => p.id !== id) };
+  }
+  if (ov.deleted.includes(id)) return ov;
+  const patches = { ...ov.patches };
+  delete patches[id];
+  return { ...ov, patches, deleted: [...ov.deleted, id] };
+}
+
+function restoreProductInOverrides(ov: Overrides, id: string): Overrides {
+  if (!ov.deleted.includes(id)) return ov;
+  return { ...ov, deleted: ov.deleted.filter((x) => x !== id) };
+}
+
 export async function deleteProductAction(id: string) {
   await requireAdmin();
   const ov = await getOverrides();
-  const createdIdx = ov.created.findIndex((p) => p.id === id);
-  let next: Overrides;
-  if (createdIdx >= 0) {
-    next = { ...ov, created: ov.created.filter((p) => p.id !== id) };
-  } else if (!ov.deleted.includes(id)) {
-    const patches = { ...ov.patches };
-    delete patches[id];
-    next = { ...ov, patches, deleted: [...ov.deleted, id] };
-  } else {
-    return;
+  const next = hideProductInOverrides(ov, id);
+  if (next !== ov) {
+    await saveOverrides(next);
+    bumpCaches();
   }
-  await saveOverrides(next);
-  bumpCaches();
   redirect(`/admin?deleted=${id}`);
+}
+
+export async function bulkHideAction(formData: FormData) {
+  await requireAdmin();
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (ids.length === 0) redirect("/admin");
+  let ov = await getOverrides();
+  for (const id of ids) ov = hideProductInOverrides(ov, id);
+  await saveOverrides(ov);
+  bumpCaches();
+  redirect(`/admin?bulkHidden=${ids.length}`);
+}
+
+export async function bulkRestoreAction(formData: FormData) {
+  await requireAdmin();
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (ids.length === 0) redirect("/admin");
+  let ov = await getOverrides();
+  for (const id of ids) ov = restoreProductInOverrides(ov, id);
+  await saveOverrides(ov);
+  bumpCaches();
+  redirect(`/admin?bulkRestored=${ids.length}`);
 }
 
 export async function duplicateProductAction(id: string) {
@@ -231,12 +264,11 @@ export async function duplicateProductAction(id: string) {
 export async function restoreProductAction(id: string) {
   await requireAdmin();
   const ov = await getOverrides();
-  if (!ov.deleted.includes(id)) return;
-  await saveOverrides({
-    ...ov,
-    deleted: ov.deleted.filter((x) => x !== id),
-  });
-  bumpCaches();
+  const next = restoreProductInOverrides(ov, id);
+  if (next !== ov) {
+    await saveOverrides(next);
+    bumpCaches();
+  }
   redirect(`/admin?restored=${id}`);
 }
 

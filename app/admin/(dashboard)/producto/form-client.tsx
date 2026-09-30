@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import type { Product } from "@/data/products";
 import { uploadImageAction } from "../../actions";
@@ -49,7 +49,19 @@ export function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  // Avisa antes de cerrar la pestaña o recargar si hay cambios sin guardar.
+  useEffect(() => {
+    function handler(e: BeforeUnloadEvent) {
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
 
   const suggestedSizes = SIZE_PRESETS[audience] ?? SIZE_PRESETS.hombre;
 
@@ -69,7 +81,10 @@ export function ProductForm({
       fd.append("file", file);
       const res = await uploadImageAction(fd);
       if (!res.ok) setUploadError(res.error);
-      else setImages((prev) => [...prev, res.url]);
+      else {
+        setImages((prev) => [...prev, res.url]);
+        setDirty(true);
+      }
     } catch (err) {
       setUploadError((err as Error).message ?? "Error al subir");
     } finally {
@@ -79,6 +94,7 @@ export function ProductForm({
 
   function removeImage(i: number) {
     setImages((prev) => prev.filter((_, idx) => idx !== i));
+    setDirty(true);
   }
 
   function moveImage(i: number, dir: -1 | 1) {
@@ -89,22 +105,26 @@ export function ProductForm({
       [next[i], next[j]] = [next[j], next[i]];
       return next;
     });
+    setDirty(true);
   }
 
   function toggleSize(s: number) {
     setSizes((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s].sort((a, b) => a - b)
     );
+    setDirty(true);
   }
 
   function toggleColor(c: string) {
     setColors((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
     );
+    setDirty(true);
   }
 
   return (
     <form
+      onChange={() => setDirty(true)}
       onSubmit={(e) => {
         e.preventDefault();
         setFormError(null);
@@ -124,6 +144,7 @@ export function ProductForm({
         fd.set("images", images.join("\n"));
         fd.set("availableSizes", sizes.join(","));
         fd.set("colors", colors.join(","));
+        setDirty(false);
         startTransition(() => action(fd));
       }}
       className="space-y-8"
@@ -267,7 +288,10 @@ export function ProductForm({
             </div>
             <NumberAdder
               placeholder="Otra talla…"
-              onAdd={(n) => setSizes((prev) => (prev.includes(n) ? prev : [...prev, n].sort((a, b) => a - b)))}
+              onAdd={(n) => {
+                setSizes((prev) => (prev.includes(n) ? prev : [...prev, n].sort((a, b) => a - b)));
+                setDirty(true);
+              }}
             />
             <p className="text-xs text-neutral-500 mt-2">
               Toca las tallas que tienes en stock. Se sugieren según el público
@@ -294,7 +318,10 @@ export function ProductForm({
             </div>
             <TextAdder
               placeholder="Otro color…"
-              onAdd={(c) => setColors((prev) => (prev.includes(c) ? prev : [...prev, c]))}
+              onAdd={(c) => {
+                setColors((prev) => (prev.includes(c) ? prev : [...prev, c]));
+                setDirty(true);
+              }}
             />
           </div>
         </div>

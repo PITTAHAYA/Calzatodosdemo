@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { logoutAction } from "../actions";
+import { Toast } from "./toast";
 
 export const metadata = {
   title: "Panel Calzatodos",
@@ -40,6 +42,9 @@ export default async function AdminLayout({
         </div>
       </header>
       <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+      <Suspense fallback={null}>
+        <Toast />
+      </Suspense>
     </div>
   );
 }

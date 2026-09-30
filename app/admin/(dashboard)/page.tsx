@@ -1,14 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Suspense } from "react";
 import { getAllProducts, getSeedProducts } from "@/data/products";
-import { getCategory } from "@/data/categories";
 import { getOverrides } from "@/lib/products-store";
-import {
-  restoreProductAction,
-  deleteProductAction,
-  duplicateProductAction,
-} from "../actions";
-import { ConfirmSubmit } from "./confirm-submit";
+import { restoreProductAction } from "../actions";
+import { ProductList } from "./product-list";
+import { SearchBox } from "./search-box";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +16,24 @@ const AUDIENCE_LABEL: Record<string, string> = {
   infantil: "Infantil",
 };
 
+function sortProducts<T extends { name: string; price?: number }>(
+  list: T[],
+  sort: string
+): T[] {
+  if (!sort) return list;
+  const desc = sort.startsWith("-");
+  const field = desc ? sort.slice(1) : sort;
+  const sorted = [...list].sort((a, b) => {
+    if (field === "price") {
+      const pa = a.price ?? Infinity;
+      const pb = b.price ?? Infinity;
+      return pa - pb;
+    }
+    return a.name.localeCompare(b.name, "es");
+  });
+  return desc ? sorted.reverse() : sorted;
+}
+
 export default async function AdminHome({
   searchParams,
 }: {
@@ -27,10 +41,7 @@ export default async function AdminHome({
     q?: string;
     audience?: string;
     estado?: string;
-    updated?: string;
-    deleted?: string;
-    restored?: string;
-    duplicated?: string;
+    sort?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -39,6 +50,7 @@ export default async function AdminHome({
   const q = (sp.q ?? "").trim().toLowerCase();
   const audienceFilter = sp.audience ?? "";
   const estadoFilter = sp.estado ?? "";
+  const sort = sp.sort ?? "";
 
   let list = products;
   if (q) {
@@ -62,6 +74,8 @@ export default async function AdminHome({
     list = list.filter(
       (p) => p.images.length === 0 || p.images[0].includes("/products/")
     );
+
+  list = sortProducts(list, sort);
 
   const ov = await getOverrides();
   const seeds = getSeedProducts();
@@ -105,19 +119,6 @@ export default async function AdminHome({
         </div>
       </div>
 
-      {sp.updated && <Flash color="green">Producto actualizado correctamente.</Flash>}
-      {sp.deleted && (
-        <Flash color="amber">
-          Producto marcado como fuera de stock. Puedes restaurarlo abajo.
-        </Flash>
-      )}
-      {sp.restored && <Flash color="green">Producto restaurado al catálogo.</Flash>}
-      {sp.duplicated && (
-        <Flash color="green">
-          Producto duplicado. Edita el nombre, color y fotos de la copia.
-        </Flash>
-      )}
-
       {/* ---------- Resumen ---------- */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <StatCard label="Productos" value={stats.total} href="/admin" active={!hasFilters} />
@@ -150,12 +151,7 @@ export default async function AdminHome({
 
       {/* ---------- Filtros ---------- */}
       <form className="flex flex-wrap gap-2" action="/admin" method="get">
-        <input
-          name="q"
-          defaultValue={sp.q ?? ""}
-          placeholder="Buscar por nombre, marca, slug o SKU…"
-          className="flex-1 min-w-[220px] rounded-md bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"
-        />
+        <SearchBox defaultValue={sp.q ?? ""} />
         <select
           name="audience"
           defaultValue={audienceFilter}
@@ -197,153 +193,9 @@ export default async function AdminHome({
         Mostrando {list.length} de {products.length} productos.
       </p>
 
-      {/* ---------- Tabla (desktop) ---------- */}
-      <div className="hidden md:block overflow-x-auto border border-neutral-800 rounded-lg">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-900 text-neutral-400">
-            <tr className="text-left">
-              <th className="px-3 py-2">Foto</th>
-              <th className="px-3 py-2">Producto</th>
-              <th className="px-3 py-2">Marca</th>
-              <th className="px-3 py-2">Público / Categoría</th>
-              <th className="px-3 py-2">Precio</th>
-              <th className="px-3 py-2">Estado</th>
-              <th className="px-3 py-2 text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((p) => (
-              <tr key={p.id} className="border-t border-neutral-800 align-top">
-                <td className="px-3 py-2">
-                  <div className="relative h-12 w-12 rounded-md overflow-hidden bg-neutral-900 border border-neutral-800">
-                    <Image
-                      src={p.images[0]}
-                      alt=""
-                      fill
-                      sizes="48px"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                </td>
-                <td className="px-3 py-2">
-                  <div className="font-medium">{p.name}</div>
-                  <div className="text-xs text-neutral-500">
-                    {p.id} · {p.slug}
-                  </div>
-                </td>
-                <td className="px-3 py-2 capitalize">{p.brand}</td>
-                <td className="px-3 py-2 capitalize">
-                  {AUDIENCE_LABEL[p.audience] ?? p.audience} ·{" "}
-                  {getCategory(p.category)?.name ?? p.category}
-                </td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  {typeof p.price === "number"
-                    ? p.priceMax
-                      ? `$${p.price}–$${p.priceMax}`
-                      : `$${p.price}`
-                    : <span className="text-amber-400">Sin precio</span>}
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex flex-wrap gap-1">
-                    {p.isFeatured && <Chip>Destacado</Chip>}
-                    {p.isNew && <Chip>Nuevo</Chip>}
-                    {p.isOnSale && <Chip>Oferta</Chip>}
-                  </div>
-                </td>
-                <td className="px-3 py-2 text-right whitespace-nowrap space-x-3">
-                  <Link
-                    href={`/admin/producto/${p.id}`}
-                    className="text-sky-400 hover:text-sky-300"
-                  >
-                    Editar
-                  </Link>
-                  <form action={duplicateProductAction.bind(null, p.id)} className="inline">
-                    <button
-                      className="text-neutral-400 hover:text-white"
-                      title="Crear una copia (útil para variantes de color)"
-                    >
-                      Duplicar
-                    </button>
-                  </form>
-                  <form action={deleteProductAction.bind(null, p.id)} className="inline">
-                    <ConfirmSubmit
-                      message={`¿Quitar "${p.name}" del catálogo público? Podrás restaurarlo después.`}
-                      className="text-red-400 hover:text-red-300"
-                    >
-                      Quitar
-                    </ConfirmSubmit>
-                  </form>
-                </td>
-              </tr>
-            ))}
-            {list.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-3 py-8 text-center text-neutral-500">
-                  Sin resultados para estos filtros.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ---------- Tarjetas (móvil) ---------- */}
-      <div className="md:hidden space-y-3">
-        {list.map((p) => (
-          <div key={p.id} className="border border-neutral-800 rounded-lg p-3 flex gap-3">
-            <div className="relative h-16 w-16 shrink-0 rounded-md overflow-hidden bg-neutral-900 border border-neutral-800">
-              <Image
-                src={p.images[0]}
-                alt=""
-                fill
-                sizes="64px"
-                className="object-cover"
-                unoptimized
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-medium truncate">{p.name}</div>
-              <div className="text-xs text-neutral-500 capitalize">
-                {AUDIENCE_LABEL[p.audience] ?? p.audience} ·{" "}
-                {getCategory(p.category)?.name ?? p.category}
-              </div>
-              <div className="mt-1 flex items-center gap-2 text-sm">
-                <span>
-                  {typeof p.price === "number"
-                    ? p.priceMax
-                      ? `$${p.price}–$${p.priceMax}`
-                      : `$${p.price}`
-                    : <span className="text-amber-400">Sin precio</span>}
-                </span>
-                {p.isFeatured && <Chip>Destacado</Chip>}
-                {p.isOnSale && <Chip>Oferta</Chip>}
-              </div>
-              <div className="mt-2 flex gap-4 text-sm">
-                <Link href={`/admin/producto/${p.id}`} className="text-sky-400">
-                  Editar
-                </Link>
-                <form action={duplicateProductAction.bind(null, p.id)}>
-                  <button className="text-neutral-400">Duplicar</button>
-                </form>
-                <form action={deleteProductAction.bind(null, p.id)}>
-                  <ConfirmSubmit
-                    message={`¿Quitar "${p.name}" del catálogo público?`}
-                    className="text-red-400"
-                  >
-                    Quitar
-                  </ConfirmSubmit>
-                </form>
-              </div>
-            </div>
-          </div>
-        ))}
-        {list.length === 0 && (
-          <p className="text-center text-neutral-500 py-8">
-            Sin resultados para estos filtros.
-          </p>
-        )}
-      </div>
+      <Suspense fallback={<div className="text-sm text-neutral-500">Cargando…</div>}>
+        <ProductList products={list} currentSort={sort} />
+      </Suspense>
 
       {deletedItems.length > 0 && (
         <section id="ocultos" className="border border-neutral-800 rounded-lg p-4 scroll-mt-4">
@@ -404,29 +256,5 @@ function StatCard({
       </div>
       <div className="text-xs text-neutral-400 mt-0.5">{label}</div>
     </Link>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded-full bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-[10px] uppercase tracking-wide">
-      {children}
-    </span>
-  );
-}
-
-function Flash({
-  color,
-  children,
-}: {
-  color: "green" | "amber";
-  children: React.ReactNode;
-}) {
-  const cls =
-    color === "green"
-      ? "border-emerald-800 bg-emerald-900/30 text-emerald-200"
-      : "border-amber-800 bg-amber-900/30 text-amber-200";
-  return (
-    <div className={`rounded-md border px-4 py-2 text-sm ${cls}`}>{children}</div>
   );
 }

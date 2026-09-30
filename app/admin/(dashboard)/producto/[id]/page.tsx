@@ -13,13 +13,10 @@ export const dynamic = "force-dynamic";
 
 export default async function EditProductPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ created?: string; duplicated?: string }>;
 }) {
   const { id } = await params;
-  const sp = await searchParams;
   const products = await getAllProducts();
   const product = products.find((p) => p.id === id);
   if (!product) notFound();
@@ -59,18 +56,6 @@ export default async function EditProductPage({
           </Link>
         </div>
       </div>
-
-      {sp.created && (
-        <div className="rounded-md border border-emerald-800 bg-emerald-900/30 text-emerald-200 px-4 py-2 text-sm">
-          Producto creado. Ya aparece en el catálogo.
-        </div>
-      )}
-      {sp.duplicated && (
-        <div className="rounded-md border border-emerald-800 bg-emerald-900/30 text-emerald-200 px-4 py-2 text-sm">
-          Esta es una copia de otro producto. Cambia el nombre, color y fotos
-          antes de guardar.
-        </div>
-      )}
 
       <ProductForm product={product} action={action} />
 
