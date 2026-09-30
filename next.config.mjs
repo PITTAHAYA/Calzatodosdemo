@@ -60,6 +60,8 @@ const nextConfig = {
       // Los productos de demostración usan imágenes locales en /public.
       // Agrega aquí los dominios de tu CDN cuando cargues fotografías reales.
       { protocol: "https", hostname: "images.unsplash.com" },
+      // Vercel Blob (fotos subidas desde el panel /admin en producción)
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
   async headers() {

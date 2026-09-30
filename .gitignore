@@ -33,3 +33,7 @@ next-env.d.ts
 # Fuentes de imágenes originales (ya procesadas en /public)
 /fotos/
 /lista de precios.png
+
+# Datos editados desde el panel /admin (viven en el servidor, no en git)
+/data/products-overrides.json
+/public/uploads/

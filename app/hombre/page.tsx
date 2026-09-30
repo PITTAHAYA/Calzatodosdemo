@@ -10,13 +10,14 @@ export const metadata: Metadata = pageMetadata({
   path: "/hombre",
 });
 
-export default function HombrePage() {
+export default async function HombrePage() {
+  const products = await getProductsByAudience("hombre");
   return (
     <CategoryLanding
       eyebrow="Hombre"
       title="Calzado para Hombre"
       description="Sneakers, casual y deportivo para todos los días. Encuentra tu modelo y consúltalo por WhatsApp."
-      products={getProductsByAudience("hombre")}
+      products={products}
       crumbs={[{ name: "Hombre", path: "/hombre" }]}
       heroImage="/lifestyle/ppl-hombre.jpg"
       hideAudience

@@ -49,7 +49,7 @@ export default async function BrandPage({
   const gallery = brand.gallery ?? [];
   const cover = gallery[0];
   const rest = gallery.slice(1);
-  const brandProducts = getProductsByBrand(brand.slug);
+  const brandProducts = await getProductsByBrand(brand.slug);
 
   return (
     <div>

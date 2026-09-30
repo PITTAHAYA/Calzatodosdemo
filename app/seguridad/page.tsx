@@ -10,13 +10,14 @@ export const metadata: Metadata = pageMetadata({
   path: "/seguridad",
 });
 
-export default function SeguridadPage() {
+export default async function SeguridadPage() {
+  const products = await getProductsByCategory("seguridad");
   return (
     <CategoryLanding
       eyebrow="Seguridad industrial"
       title="Calzado de Seguridad"
       description="Protección para el trabajo con puntera de seguridad y suelas resistentes. Las características de protección dependen de la especificación del fabricante."
-      products={getProductsByCategory("seguridad")}
+      products={products}
       crumbs={[{ name: "Seguridad", path: "/seguridad" }]}
       hideCategory
     />

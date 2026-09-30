@@ -5,13 +5,14 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductDetail } from "@/components/product/ProductDetail";
 import { ProductGrid } from "@/components/ProductGrid";
 import { StoreCard } from "@/components/StoreCard";
-import { products, getProduct, getRelatedProducts } from "@/data/products";
+import { getAllProducts, getProduct, getRelatedProducts } from "@/data/products";
 import { getCategory } from "@/data/categories";
 import { brandDisplayName } from "@/lib/whatsapp";
 import { stores } from "@/data/stores";
 import { pageMetadata, JsonLd, productJsonLd } from "@/lib/seo";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await getAllProducts();
   return products.map((p) => ({ slug: p.slug }));
 }
 
@@ -21,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProduct(slug);
   if (!product) return { title: "Producto no encontrado" };
   return pageMetadata({
     title: `${product.name} — ${brandDisplayName(product.brand)}`,
@@ -36,12 +37,12 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProduct(slug);
   if (!product) notFound();
 
   const brandName = brandDisplayName(product.brand);
   const categoryName = getCategory(product.category)?.name ?? product.category;
-  const related = getRelatedProducts(product, 4);
+  const related = await getRelatedProducts(product, 4);
 
   return (
     <div className="container-page py-8">

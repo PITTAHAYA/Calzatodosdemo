@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CatalogClient } from "@/components/catalog/CatalogClient";
-import { products, allSizes, allColors, hasAnyPrices } from "@/data/products";
+import { getAllProducts, allSizes, allColors, hasAnyPrices } from "@/data/products";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -12,7 +12,13 @@ export const metadata: Metadata = pageMetadata({
   path: "/catalogo",
 });
 
-export default function CatalogoPage() {
+export default async function CatalogoPage() {
+  const [products, sizes, colors, hasPrices] = await Promise.all([
+    getAllProducts(),
+    allSizes(),
+    allColors(),
+    hasAnyPrices(),
+  ]);
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ name: "Catálogo", path: "/catalogo" }]} />
@@ -32,9 +38,9 @@ export default function CatalogoPage() {
         <Suspense fallback={<div className="text-sm text-graphite-500">Cargando catálogo…</div>}>
           <CatalogClient
             products={products}
-            sizes={allSizes()}
-            colors={allColors()}
-            hasPrices={hasAnyPrices()}
+            sizes={sizes}
+            colors={colors}
+            hasPrices={hasPrices}
           />
         </Suspense>
       </div>

@@ -6,11 +6,16 @@ import { Breadcrumbs, type Crumb } from "@/components/Breadcrumbs";
 import { CatalogClient } from "./CatalogClient";
 import type { Product } from "@/data/products";
 import { allSizes, allColors } from "@/data/products";
+
+async function loadSelectors() {
+  const [sizes, colors] = await Promise.all([allSizes(), allColors()]);
+  return { sizes, colors };
+}
 import { WhatsAppIcon } from "@/components/Icons";
 import { whatsappGeneral } from "@/lib/whatsapp";
 
 // Landing reutilizable para páginas de público/categoría/estilo.
-export function CategoryLanding({
+export async function CategoryLanding({
   title,
   eyebrow,
   description,
@@ -30,6 +35,7 @@ export function CategoryLanding({
   heroImage?: string;
 }) {
   const hasPrices = products.some((p) => typeof p.price === "number");
+  const { sizes, colors } = await loadSelectors();
 
   return (
     <div>
@@ -67,8 +73,8 @@ export function CategoryLanding({
           <Suspense fallback={<div className="text-sm text-graphite-500">Cargando…</div>}>
             <CatalogClient
               products={products}
-              sizes={allSizes()}
-              colors={allColors()}
+              sizes={sizes}
+              colors={colors}
               hasPrices={hasPrices}
               hideAudience={hideAudience}
               hideCategory={hideCategory}

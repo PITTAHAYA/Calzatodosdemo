@@ -216,7 +216,7 @@ const slug = (n: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-export const products: Product[] = seeds.map((s, i) => {
+const seedProducts: Product[] = seeds.map((s, i) => {
   const sl = s.slug ?? slug(s.name);
   const brand = s.brand ?? HOUSE;
   const prefix = brand === HOUSE ? "CG" : brand.slice(0, 2).toUpperCase();
@@ -251,10 +251,27 @@ export const products: Product[] = seeds.map((s, i) => {
   };
 });
 
-// -------------------- Helpers de acceso --------------------
+// -------------------- Superposición del panel /admin --------------------
+// La lista efectiva del catálogo se construye con la semilla + los cambios
+// guardados por el panel /admin (en Vercel KV o en un JSON local). Todas
+// las lecturas son asíncronas para poder usar la nube.
 
-export function getProduct(slugStr: string): Product | undefined {
-  return products.find((p) => p.slug === slugStr);
+import { getOverrides, mergeProducts } from "@/lib/products-store";
+
+export function getSeedProducts(): Product[] {
+  return seedProducts;
+}
+
+export async function getAllProducts(): Promise<Product[]> {
+  const ov = await getOverrides();
+  return mergeProducts(seedProducts, ov);
+}
+
+// -------------------- Helpers de acceso (async) --------------------
+
+export async function getProduct(slugStr: string): Promise<Product | undefined> {
+  const all = await getAllProducts();
+  return all.find((p) => p.slug === slugStr);
 }
 
 // Selección curada de los modelos más atractivos (sneakers coloridos y
@@ -270,38 +287,48 @@ const FEATURED_SLUGS = [
   "dabble",
 ];
 
-export function getFeaturedProducts(limit = 8): Product[] {
-  const curated = FEATURED_SLUGS.map((s) => products.find((p) => p.slug === s)).filter(
+export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
+  const all = await getAllProducts();
+  const curated = FEATURED_SLUGS.map((s) => all.find((p) => p.slug === s)).filter(
     (p): p is Product => Boolean(p)
   );
-  const extra = products.filter(
+  const extra = all.filter(
     (p) => p.isFeatured && !FEATURED_SLUGS.includes(p.slug)
   );
   return [...curated, ...extra].slice(0, limit);
 }
 
-export function getProductsByAudience(audience: Audience): Product[] {
-  return products.filter((p) => p.audience === audience);
+export async function getProductsByAudience(audience: Audience): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter((p) => p.audience === audience);
 }
 
-export function getProductsByCategory(categorySlug: string): Product[] {
-  return products.filter((p) => p.category === categorySlug);
+export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter((p) => p.category === categorySlug);
 }
 
-export function getProductsByStyle(styleSlug: string): Product[] {
-  return products.filter((p) => p.style === styleSlug);
+export async function getProductsByStyle(styleSlug: string): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter((p) => p.style === styleSlug);
 }
 
-export function getProductsByBrand(brandSlug: string): Product[] {
-  return products.filter((p) => p.brand === brandSlug);
+export async function getProductsByBrand(brandSlug: string): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter((p) => p.brand === brandSlug);
 }
 
-export function getSaleProducts(): Product[] {
-  return products.filter((p) => p.isOnSale);
+export async function getSaleProducts(): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter((p) => p.isOnSale);
 }
 
-export function getRelatedProducts(product: Product, limit = 4): Product[] {
-  return products
+export async function getRelatedProducts(
+  product: Product,
+  limit = 4
+): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all
     .filter(
       (p) =>
         p.id !== product.id &&
@@ -310,18 +337,21 @@ export function getRelatedProducts(product: Product, limit = 4): Product[] {
     .slice(0, limit);
 }
 
-export function allSizes(): number[] {
+export async function allSizes(): Promise<number[]> {
+  const all = await getAllProducts();
   const set = new Set<number>();
-  products.forEach((p) => p.availableSizes.forEach((s) => set.add(s)));
+  all.forEach((p) => p.availableSizes.forEach((s) => set.add(s)));
   return Array.from(set).sort((a, b) => a - b);
 }
 
-export function allColors(): string[] {
+export async function allColors(): Promise<string[]> {
+  const all = await getAllProducts();
   const set = new Set<string>();
-  products.forEach((p) => p.colors.forEach((c) => set.add(c)));
+  all.forEach((p) => p.colors.forEach((c) => set.add(c)));
   return Array.from(set).sort();
 }
 
-export function hasAnyPrices(): boolean {
-  return products.some((p) => typeof p.price === "number");
+export async function hasAnyPrices(): Promise<boolean> {
+  const all = await getAllProducts();
+  return all.some((p) => typeof p.price === "number");
 }

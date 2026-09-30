@@ -10,13 +10,14 @@ export const metadata: Metadata = pageMetadata({
   path: "/escolar",
 });
 
-export default function EscolarPage() {
+export default async function EscolarPage() {
+  const products = await getProductsByCategory("escolar");
   return (
     <CategoryLanding
       eyebrow="Regreso a clases"
       title="Calzado Escolar"
       description="Resistencia y comodidad para el día a día en clases. Modelos pensados para niños y niñas."
-      products={getProductsByCategory("escolar")}
+      products={products}
       crumbs={[{ name: "Escolar", path: "/escolar" }]}
       heroImage="/lifestyle/ppl-escolar.jpg"
       hideCategory

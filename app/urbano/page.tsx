@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CategoryLanding } from "@/components/catalog/CategoryLanding";
-import { products } from "@/data/products";
+import { getAllProducts } from "@/data/products";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -10,7 +10,8 @@ export const metadata: Metadata = pageMetadata({
   path: "/urbano",
 });
 
-export default function UrbanoPage() {
+export default async function UrbanoPage() {
+  const products = await getAllProducts();
   const items = products.filter((p) =>
     ["sneakers", "casual"].includes(p.style)
   );

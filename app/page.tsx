@@ -24,8 +24,8 @@ const categoryCards = [
   { name: "Escolar", href: "/escolar", text: "Listos para el regreso a clases.", image: "/lifestyle/ppl-escolar.jpg" },
 ];
 
-export default function HomePage() {
-  const featured = getFeaturedProducts(8);
+export default async function HomePage() {
+  const featured = await getFeaturedProducts(8);
 
   return (
     <>
