@@ -6,6 +6,11 @@ import { JsonLd, organizationJsonLd } from "@/lib/seo";
 import { site } from "@/data/site-content";
 import { siteUrl } from "@/lib/utils";
 
+// Red de seguridad: las páginas públicas se regeneran como máximo cada 60 s,
+// así cualquier versión desactualizada del catálogo se corrige sola. Los
+// cambios del panel igual se publican al instante con revalidatePath().
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {

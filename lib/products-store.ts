@@ -18,6 +18,7 @@
 import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { cache as reactCache } from "react";
 import type { Product } from "@/data/products";
 import { sanitizeProduct } from "@/lib/product-validation";
 
@@ -134,39 +135,47 @@ async function setHistory(list: HistoryEntry[]): Promise<void> {
   }
 }
 
-// -------------------- Cache en memoria --------------------
-// Evita ir a KV en cada renderizado. Se refresca al escribir y cuando
-// caduca el TTL (30 s), para tolerar cambios hechos desde otra instancia.
+// -------------------- Lectura sin caché entre peticiones --------------------
+// Antes había una caché en memoria de 30 s por servidor. En Vercel hay varios
+// servidores: al restaurar/editar, la página pública podía regenerarse en uno
+// que aún tenía la copia vieja, y esa versión vieja quedaba publicada. Ahora
+// cada petición lee el dato real; React cache() solo evita leer dos veces
+// dentro de la MISMA petición. `lastGood` se usa únicamente si KV falla.
 
-const CACHE_TTL_MS = 30_000;
-let cache: { at: number; data: Overrides } | null = null;
+let lastGood: Overrides | null = null;
 
-async function readOverrides(force = false): Promise<Overrides> {
-  if (!force && cache && Date.now() - cache.at < CACHE_TTL_MS) {
-    return cache.data;
-  }
+async function readFresh(): Promise<Overrides> {
   try {
     const data = useKV() ? await kvRead() : await fsRead();
-    cache = { at: Date.now(), data };
+    lastGood = data;
     return data;
   } catch (err) {
     // Si KV no responde, el sitio sigue funcionando con la última copia
     // conocida (o con el catálogo base) en lugar de mostrar un error.
     console.error("[products-store] No se pudo leer el catálogo:", err);
-    if (force) throw err;
-    return cache?.data ?? { ...EMPTY };
+    return lastGood ?? { ...EMPTY };
   }
+}
+
+const readPerRequest = reactCache(readFresh);
+
+async function readOverrides(force = false): Promise<Overrides> {
+  if (force) {
+    const data = useKV() ? await kvRead() : await fsRead();
+    lastGood = data;
+    return data;
+  }
+  return readPerRequest();
 }
 
 async function writeOverrides(next: Overrides): Promise<void> {
   if (useKV()) await kvWrite(next);
   else await fsWrite(next);
-  cache = { at: Date.now(), data: next };
+  lastGood = next;
 }
 
-export function invalidateOverridesCache(): void {
-  cache = null;
-}
+// Se mantiene por compatibilidad: ya no hay caché entre peticiones.
+export function invalidateOverridesCache(): void {}
 
 // -------------------- API pública --------------------
 
