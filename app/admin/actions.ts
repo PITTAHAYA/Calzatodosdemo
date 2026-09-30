@@ -198,6 +198,36 @@ export async function deleteProductAction(id: string) {
   redirect(`/admin?deleted=${id}`);
 }
 
+export async function duplicateProductAction(id: string) {
+  await requireAdmin();
+  const all = await getAllProducts();
+  const source = all.find((p) => p.id === id);
+  if (!source) throw new Error(`Producto ${id} no existe.`);
+
+  const baseSlug = `${source.slug}-copia`;
+  let slug = baseSlug;
+  let n = 2;
+  while (all.some((p) => p.slug === slug)) {
+    slug = `${baseSlug}-${n}`;
+    n += 1;
+  }
+  const newId = nextProductId(all);
+  const copy: Product = {
+    ...source,
+    id: newId,
+    slug,
+    sku: `CG-${slug.toUpperCase()}`,
+    name: `${source.name} (copia)`,
+    isFeatured: false,
+    isNew: false,
+    isOnSale: false,
+  };
+  const ov = await getOverrides();
+  await saveOverrides({ ...ov, created: [...ov.created, copy] });
+  bumpCaches();
+  redirect(`/admin/producto/${newId}?duplicated=1`);
+}
+
 export async function restoreProductAction(id: string) {
   await requireAdmin();
   const ov = await getOverrides();

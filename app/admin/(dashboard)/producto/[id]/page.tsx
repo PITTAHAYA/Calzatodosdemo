@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllProducts } from "@/data/products";
-import { updateProductAction, deleteProductAction } from "../../../actions";
+import {
+  updateProductAction,
+  deleteProductAction,
+  duplicateProductAction,
+} from "../../../actions";
 import { ProductForm } from "../form-client";
+import { ConfirmSubmit } from "../../confirm-submit";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +16,7 @@ export default async function EditProductPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ created?: string }>;
+  searchParams: Promise<{ created?: string; duplicated?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -37,17 +42,33 @@ export default async function EditProductPage({
             Ver en el sitio ↗
           </Link>
         </div>
-        <Link
-          href="/admin"
-          className="text-sm text-neutral-400 hover:text-white"
-        >
-          ← Volver
-        </Link>
+        <div className="flex items-center gap-3">
+          <form action={duplicateProductAction.bind(null, id)}>
+            <button
+              className="rounded-md border border-neutral-700 px-3 py-1.5 text-sm hover:bg-neutral-800"
+              title="Crear una copia (útil para variantes de color)"
+            >
+              Duplicar
+            </button>
+          </form>
+          <Link
+            href="/admin"
+            className="text-sm text-neutral-400 hover:text-white"
+          >
+            ← Volver
+          </Link>
+        </div>
       </div>
 
       {sp.created && (
         <div className="rounded-md border border-emerald-800 bg-emerald-900/30 text-emerald-200 px-4 py-2 text-sm">
           Producto creado. Ya aparece en el catálogo.
+        </div>
+      )}
+      {sp.duplicated && (
+        <div className="rounded-md border border-emerald-800 bg-emerald-900/30 text-emerald-200 px-4 py-2 text-sm">
+          Esta es una copia de otro producto. Cambia el nombre, color y fotos
+          antes de guardar.
         </div>
       )}
 
@@ -62,9 +83,12 @@ export default async function EditProductPage({
           Quita este producto del catálogo público. Podrás restaurarlo después
           desde la lista de productos ocultos.
         </p>
-        <button className="mt-3 rounded-md bg-red-700 hover:bg-red-600 text-white px-4 py-2 text-sm">
+        <ConfirmSubmit
+          message={`¿Quitar "${product.name}" del catálogo público? Podrás restaurarlo después.`}
+          className="mt-3 rounded-md bg-red-700 hover:bg-red-600 text-white px-4 py-2 text-sm"
+        >
           Quitar del catálogo
-        </button>
+        </ConfirmSubmit>
       </form>
     </div>
   );
