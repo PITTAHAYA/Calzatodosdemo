@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { createProductAction } from "../../../actions";
 import { ProductForm } from "../form-client";
+import { getAllBrands, getAllCategories } from "@/lib/taxonomy-store";
 
 export const dynamic = "force-dynamic";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const [brands, categories] = await Promise.all([getAllBrands(), getAllCategories()]);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
@@ -23,6 +25,8 @@ export default function NewProductPage() {
         action={createProductAction}
         submitLabel="Crear producto"
         showSlug
+        brands={brands}
+        categories={categories}
       />
     </div>
   );

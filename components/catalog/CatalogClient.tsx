@@ -105,12 +105,27 @@ export function CatalogClient({
       p.availableSizes.forEach((s) => sizeSet.add(s));
       p.colors.forEach((c) => colorSet.add(c));
     });
+    // Marcas y categorías nuevas (creadas en el panel) no están en los datos
+    // base: su nombre llega en cada producto (brandName / categoryName).
+    const brandNames = new Map(products.map((p) => [p.brand, p.brandName]));
+    const categoryNames = new Map(products.map((p) => [p.category, p.categoryName]));
     const presentBrands = Array.from(brandSet)
-      .map((slug) => getBrand(slug))
-      .filter((b): b is NonNullable<typeof b> => Boolean(b));
+      .map((slug) => {
+        const base = getBrand(slug);
+        if (base) return { slug, name: base.name };
+        const name = brandNames.get(slug);
+        return name ? { slug, name } : null;
+      })
+      .filter((b): b is { slug: string; name: string } => Boolean(b));
+    const extraCategories = Array.from(catSet)
+      .filter((slug) => !categories.some((c) => c.slug === slug) && categoryNames.get(slug))
+      .map((slug) => ({ slug, name: categoryNames.get(slug)! }));
     return {
       audiences: audiences.filter((a) => audienceSet.has(a.value)),
-      categories: categories.filter((c) => catSet.has(c.slug)),
+      categories: [
+        ...categories.filter((c) => catSet.has(c.slug)),
+        ...extraCategories,
+      ],
       styles: styles.filter((s) => styleSet.has(s.slug)),
       brands: presentBrands,
       sizes: Array.from(sizeSet).sort((a, b) => a - b),

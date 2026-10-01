@@ -40,6 +40,11 @@ export interface Product {
   warrantyInformation: string;
   careInstructions: string;
   tags: string[];
+  // Derivados al leer (no se guardan): nombre legible de marca y categoría.
+  // Permiten mostrar marcas/categorías creadas desde el panel también en
+  // componentes de cliente, que no pueden consultar la base de datos.
+  brandName?: string;
+  categoryName?: string;
 }
 
 const HOUSE = "calzatodos";
@@ -257,14 +262,25 @@ const seedProducts: Product[] = seeds.map((s, i) => {
 // las lecturas son asíncronas para poder usar la nube.
 
 import { getOverrides, mergeProducts } from "@/lib/products-store";
+import { getAllBrands, getAllCategories } from "@/lib/taxonomy-store";
 
 export function getSeedProducts(): Product[] {
   return seedProducts;
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  const ov = await getOverrides();
-  return mergeProducts(seedProducts, ov);
+  const [ov, brands, categories] = await Promise.all([
+    getOverrides(),
+    getAllBrands(),
+    getAllCategories(),
+  ]);
+  const brandName = new Map(brands.map((b) => [b.slug, b.name]));
+  const categoryName = new Map(categories.map((c) => [c.slug, c.name]));
+  return mergeProducts(seedProducts, ov).map((p) => ({
+    ...p,
+    brandName: brandName.get(p.brand),
+    categoryName: categoryName.get(p.category),
+  }));
 }
 
 // -------------------- Helpers de acceso (async) --------------------

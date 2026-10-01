@@ -38,3 +38,4 @@ next-env.d.ts
 /data/products-overrides.json
 /public/uploads/
 /data/products-history.json
+/data/taxonomy.json

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getAllProducts, getSeedProducts, type Product } from "@/data/products";
-import { categories } from "@/data/categories";
+import { getAllBrands, getAllCategories } from "@/lib/taxonomy-store";
 import { getHistory, getOverrides } from "@/lib/products-store";
 import { auditProduct, sanitizeProduct, type ProductIssue } from "@/lib/product-validation";
 import { undoAction } from "../actions";
@@ -69,6 +69,7 @@ export default async function AdminHome({
     sort?: string;
     categoria?: string;
     problema?: string;
+    marca?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -80,12 +81,15 @@ export default async function AdminHome({
   const sort = sp.sort ?? "";
   const categoryFilter = sp.categoria ?? "";
   const issueFilter = sp.problema ?? "";
+  const brandFilter = sp.marca ?? "";
+  const [brands, categories] = await Promise.all([getAllBrands(), getAllCategories()]);
+  const known = { brands: brands.map((b) => b.slug), categories: categories.map((c) => c.slug) };
 
   // Auditoría de calidad de cada producto (una sola pasada).
   const issuesById = new Map<string, ProductIssue[]>();
   const issueCounts: Record<string, number> = {};
   for (const p of products) {
-    const issues = auditProduct(p);
+    const issues = auditProduct(p, known);
     issuesById.set(p.id, issues);
     for (const i of issues) issueCounts[i.code] = (issueCounts[i.code] ?? 0) + 1;
   }
@@ -105,6 +109,7 @@ export default async function AdminHome({
         p.tags.some((t) => t.toLowerCase().includes(q))
     );
   }
+  if (brandFilter) list = list.filter((p) => p.brand === brandFilter);
   if (categoryFilter) list = list.filter((p) => p.category === categoryFilter);
   if (issueFilter)
     list = list.filter((p) => issuesById.get(p.id)!.some((i) => i.code === issueFilter));
@@ -140,7 +145,7 @@ export default async function AdminHome({
     problemas: withProblems,
   };
 
-  const hasFilters = Boolean(q || audienceFilter || estadoFilter || categoryFilter || issueFilter);
+  const hasFilters = Boolean(q || audienceFilter || estadoFilter || categoryFilter || issueFilter || brandFilter);
   const issueEntries = Object.entries(issueCounts).sort((a, b) => b[1] - a[1]);
 
   return (
@@ -288,6 +293,18 @@ export default async function AdminHome({
           {categories.map((c) => (
             <option key={c.slug} value={c.slug}>
               {c.name}
+            </option>
+          ))}
+        </select>
+        <select
+          name="marca"
+          defaultValue={brandFilter}
+          className="rounded-md bg-neutral-900 border border-neutral-800 px-3 py-2 text-sm"
+        >
+          <option value="">Todas las marcas</option>
+          {brands.map((b) => (
+            <option key={b.slug} value={b.slug}>
+              {b.name}
             </option>
           ))}
         </select>

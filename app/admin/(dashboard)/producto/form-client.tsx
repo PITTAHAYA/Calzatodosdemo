@@ -3,8 +3,8 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import type { Product } from "@/data/products";
-import { audiences, categories, styles } from "@/data/categories";
-import { brands } from "@/data/brands";
+import { audiences, styles, type Category } from "@/data/categories";
+import type { Brand } from "@/data/brands";
 import { validateProductInput, type FieldErrors } from "@/lib/product-validation";
 import { uploadImageAction, type FormState } from "../../actions";
 
@@ -13,6 +13,9 @@ interface Props {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   submitLabel?: string;
   showSlug?: boolean;
+  // Listas completas (originales + creadas desde el panel).
+  brands: Brand[];
+  categories: Category[];
 }
 
 const SIZE_PRESETS: Record<string, number[]> = {
@@ -52,6 +55,8 @@ export function ProductForm({
   action,
   submitLabel = "Guardar cambios",
   showSlug = false,
+  brands,
+  categories,
 }: Props) {
   const [state, formAction, pending] = useActionState(action, { ok: true });
   const formRef = useRef<HTMLFormElement>(null);
@@ -88,8 +93,8 @@ export function ProductForm({
         previousPrice: toNum(previousPrice),
         images,
         availableSizes: sizes,
-      }),
-    [name, audience, category, brand, description, price, priceMax, previousPrice, images, sizes]
+      }, { brands: brands.map((b) => b.slug), categories: categories.map((c) => c.slug) }),
+    [brands, categories, name, audience, category, brand, description, price, priceMax, previousPrice, images, sizes]
   );
   const errors: FieldErrors = touched ? { ...liveErrors, ...(state.errors ?? {}) } : state.errors ?? {};
   const errorCount = Object.keys(liveErrors).length;
@@ -267,6 +272,7 @@ export function ProductForm({
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
             error={errors.brand}
+            help={<>¿Llegó una marca nueva? <a href="/admin/marcas-categorias#marcas" target="_blank" className="text-sky-400 underline">Créala aquí</a> y recarga.</>}
             options={[
               ...brands.map((b) => [b.slug, b.hidden ? `${b.name} (oculta)` : b.name] as [string, string]),
               ...(brands.some((b) => b.slug === brand) ? [] : [[brand, `${brand} (no existe)`] as [string, string]]),
@@ -286,7 +292,7 @@ export function ProductForm({
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             error={errors.category}
-            help="Solo se muestran las categorías que aplican al público elegido."
+            help={<>Solo se muestran las que aplican al público elegido. <a href="/admin/marcas-categorias#categorias" target="_blank" className="text-sky-400 underline">Crear categoría</a></>}
             options={[
               ...categoryOptions.map((c) => [c.slug, c.name] as [string, string]),
               ...(categories.some((c) => c.slug === category) ? [] : [[category, `${category} (no existe)`] as [string, string]]),
@@ -847,7 +853,7 @@ function Select({
   label: string;
   options: [string, string][];
   error?: string;
-  help?: string;
+  help?: React.ReactNode;
 }) {
   return (
     <label className="block text-sm">

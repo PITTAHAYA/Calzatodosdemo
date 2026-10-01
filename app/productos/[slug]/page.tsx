@@ -28,8 +28,8 @@ export async function generateMetadata({
   // del título por la plantilla del layout); se usa la categoría.
   const qualifier =
     product.brand === "calzatodos"
-      ? getCategory(product.category)?.name ?? product.category
-      : brandDisplayName(product.brand);
+      ? product.categoryName ?? getCategory(product.category)?.name ?? product.category
+      : product.brandName ?? brandDisplayName(product.brand);
   return pageMetadata({
     title: `${product.name} — ${qualifier}`,
     description: product.description,
@@ -46,8 +46,9 @@ export default async function ProductPage({
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const brandName = brandDisplayName(product.brand);
-  const categoryName = getCategory(product.category)?.name ?? product.category;
+  const brandName = product.brandName ?? brandDisplayName(product.brand);
+  const categoryName =
+    product.categoryName ?? getCategory(product.category)?.name ?? product.category;
   const related = await getRelatedProducts(product, 4);
 
   return (

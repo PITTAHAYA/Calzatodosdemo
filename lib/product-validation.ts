@@ -44,7 +44,18 @@ export function slugify(raw: string): string {
 }
 
 /** Reglas duras: si hay errores, NO se guarda. */
-export function validateProductInput(p: Partial<Product>): FieldErrors {
+// Slugs válidos de marca/categoría. Por defecto, solo los base; el panel
+// pasa la lista completa (base + creadas desde el panel).
+export interface KnownSlugs {
+  brands: string[];
+  categories: string[];
+}
+const BASE_SLUGS: KnownSlugs = { brands: BRAND_VALUES, categories: CATEGORY_VALUES };
+
+export function validateProductInput(
+  p: Partial<Product>,
+  known: KnownSlugs = BASE_SLUGS
+): FieldErrors {
   const e: FieldErrors = {};
   const name = (p.name ?? "").trim();
   if (name.length < 2) e.name = "El nombre es obligatorio (mínimo 2 letras).";
@@ -52,9 +63,9 @@ export function validateProductInput(p: Partial<Product>): FieldErrors {
 
   if (p.audience && !AUDIENCE_VALUES.includes(p.audience))
     e.audience = "Público no válido.";
-  if (p.category && !CATEGORY_VALUES.includes(p.category))
+  if (p.category && !known.categories.includes(p.category))
     e.category = "Esa categoría no existe en el sitio.";
-  if (p.brand && !BRAND_VALUES.includes(p.brand))
+  if (p.brand && !known.brands.includes(p.brand))
     e.brand = "Esa marca no existe en el sitio.";
 
   const checkPrice = (v: number | undefined, key: "price" | "priceMax" | "previousPrice") => {
@@ -163,15 +174,15 @@ export function isPlaceholderImage(src: string | undefined): boolean {
 }
 
 /** Avisos que no impiden guardar pero afectan ventas o SEO. */
-export function auditProduct(p: Product): ProductIssue[] {
+export function auditProduct(p: Product, known: KnownSlugs = BASE_SLUGS): ProductIssue[] {
   const out: ProductIssue[] = [];
   if (typeof p.price !== "number")
     out.push({ level: "warn", code: "sin-precio", message: "Sin precio: el cliente tendrá que preguntar." });
   if (isPlaceholderImage(p.images[0]))
     out.push({ level: "error", code: "sin-foto", message: "Sin foto propia." });
-  if (!BRAND_VALUES.includes(p.brand))
+  if (!known.brands.includes(p.brand))
     out.push({ level: "error", code: "marca", message: `La marca "${p.brand}" no existe; su página de marca no lo mostrará.` });
-  if (!CATEGORY_VALUES.includes(p.category))
+  if (!known.categories.includes(p.category))
     out.push({ level: "error", code: "categoria", message: `La categoría "${p.category}" no existe; no aparecerá en los filtros.` });
   if (p.availableSizes.length === 0)
     out.push({ level: "warn", code: "sin-tallas", message: "No tiene tallas marcadas." });

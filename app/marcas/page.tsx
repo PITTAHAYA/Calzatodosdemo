@@ -3,7 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { BrandLogo } from "@/components/BrandLogo";
-import { internationalBrands, ownBrands } from "@/data/brands";
+import type { Brand } from "@/data/brands";
+import { getVisibleBrands } from "@/lib/taxonomy-store";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -13,7 +14,10 @@ export const metadata: Metadata = pageMetadata({
   path: "/marcas",
 });
 
-export default function MarcasPage() {
+export default async function MarcasPage() {
+  const visible = await getVisibleBrands();
+  const internationalBrands = visible.filter((b) => b.type === "internacional");
+  const ownBrands = visible.filter((b) => b.type === "propia");
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ name: "Marcas", path: "/marcas" }]} />
@@ -23,8 +27,12 @@ export default function MarcasPage() {
         distribuidas y desarrollamos marcas propias pensadas para el mercado ecuatoriano.
       </p>
 
-      <BrandSection title="Marcas internacionales" brands={internationalBrands} />
-      <BrandSection title="Marcas propias de Calzatodos Group" brands={ownBrands} />
+      {internationalBrands.length > 0 && (
+        <BrandSection title="Marcas internacionales" brands={internationalBrands} />
+      )}
+      {ownBrands.length > 0 && (
+        <BrandSection title="Marcas propias de Calzatodos Group" brands={ownBrands} />
+      )}
     </div>
   );
 }
@@ -34,7 +42,7 @@ function BrandSection({
   brands,
 }: {
   title: string;
-  brands: typeof internationalBrands;
+  brands: Brand[];
 }) {
   return (
     <section className="mt-12">

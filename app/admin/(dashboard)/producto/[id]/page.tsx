@@ -7,6 +7,7 @@ import {
   duplicateProductAction,
 } from "../../../actions";
 import { ProductForm } from "../form-client";
+import { getAllBrands, getAllCategories } from "@/lib/taxonomy-store";
 import { auditProduct } from "@/lib/product-validation";
 import { ConfirmSubmit } from "../../confirm-submit";
 
@@ -23,7 +24,11 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   const action = updateProductAction.bind(null, id);
-  const issues = auditProduct(product);
+  const [brands, categories] = await Promise.all([getAllBrands(), getAllCategories()]);
+  const issues = auditProduct(product, {
+    brands: brands.map((b) => b.slug),
+    categories: categories.map((c) => c.slug),
+  });
 
   return (
     <div className="space-y-6">
@@ -77,7 +82,7 @@ export default async function EditProductPage({
         </div>
       )}
 
-      <ProductForm key={JSON.stringify(product)} product={product} action={action} />
+      <ProductForm key={JSON.stringify(product)} product={product} action={action} brands={brands} categories={categories} />
 
       <form
         action={deleteProductAction.bind(null, id)}

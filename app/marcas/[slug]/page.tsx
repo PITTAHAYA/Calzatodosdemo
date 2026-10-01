@@ -5,13 +5,16 @@ import Image from "next/image";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WhatsAppIcon, StoreIcon } from "@/components/Icons";
-import { visibleBrands, getBrand } from "@/data/brands";
+import { visibleBrands } from "@/data/brands";
+import { getBrandAsync } from "@/lib/taxonomy-store";
 import { getProductsByBrand } from "@/data/products";
 import { ProductRail } from "@/components/ProductRail";
 import { whatsappBrand } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+// Las marcas base se generan al compilar; las creadas desde el panel se
+// generan en la primera visita (dynamicParams está activo por defecto).
 export function generateStaticParams() {
   return visibleBrands.map((b) => ({ slug: b.slug }));
 }
@@ -28,7 +31,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const brand = getBrand(slug);
+  const brand = await getBrandAsync(slug);
   if (!brand) return { title: "Marca no encontrada" };
   return pageMetadata({
     title: `${brand.name} en Ecuador`,
@@ -43,7 +46,7 @@ export default async function BrandPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const brand = getBrand(slug);
+  const brand = await getBrandAsync(slug);
   // La marca de la casa (hidden) no tiene página pública.
   if (!brand || brand.hidden) notFound();
 

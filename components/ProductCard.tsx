@@ -7,8 +7,9 @@ import { brandDisplayName } from "@/lib/whatsapp";
 import { getCategory } from "@/data/categories";
 
 export function ProductCard({ product }: { product: Product }) {
-  const brand = brandDisplayName(product.brand);
-  const category = getCategory(product.category)?.name ?? product.category;
+  const brand = product.brandName ?? brandDisplayName(product.brand);
+  const category =
+    product.categoryName ?? getCategory(product.category)?.name ?? product.category;
   const colorCount = product.colors.length;
   const onSale =
     typeof product.previousPrice === "number" &&

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
-import { visibleBrands } from "@/data/brands";
+import { getVisibleBrands } from "@/lib/taxonomy-store";
 
 // Marquee de marcas que se desplaza solo (bucle continuo). Se pausa al pasar
 // el cursor; en dispositivos con "reducir movimiento" se puede deslizar.
-export function BrandMarquee() {
+export async function BrandMarquee() {
+  const visibleBrands = await getVisibleBrands();
   const Track = ({ dup = false }: { dup?: boolean }) => (
     <ul
       className="marquee-track flex shrink-0 items-center gap-4 pr-4"

@@ -188,10 +188,10 @@ export function ProductList({
                   </div>
                   <IssueBadge issues={issues[p.id]} />
                 </td>
-                <td className="px-3 py-2">{getBrand(p.brand)?.name ?? p.brand}</td>
+                <td className="px-3 py-2">{p.brandName ?? getBrand(p.brand)?.name ?? p.brand}</td>
                 <td className="px-3 py-2 capitalize">
                   {AUDIENCE_LABEL[p.audience] ?? p.audience} ·{" "}
-                  {getCategory(p.category)?.name ?? p.category}
+                  {p.categoryName ?? getCategory(p.category)?.name ?? p.category}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   <QuickPrice product={p} />
@@ -252,7 +252,7 @@ export function ProductList({
             <div className="flex-1 min-w-0">
               <div className="font-medium truncate">{p.name}</div>
               <div className="text-xs text-neutral-500 capitalize">
-                {AUDIENCE_LABEL[p.audience] ?? p.audience} · {getCategory(p.category)?.name ?? p.category}
+                {AUDIENCE_LABEL[p.audience] ?? p.audience} · {p.categoryName ?? getCategory(p.category)?.name ?? p.category}
               </div>
               <div className="mt-1 flex items-center gap-2 text-sm flex-wrap">
                 <QuickPrice product={p} />

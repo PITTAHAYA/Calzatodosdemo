@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteHeader, SiteFooterAndExtras } from "@/components/layout/SiteChrome";
+import { getCustomTaxonomy } from "@/lib/taxonomy-store";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { JsonLd, organizationJsonLd, defaultOgImage } from "@/lib/seo";
 import { site } from "@/data/site-content";
@@ -53,7 +54,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -71,7 +72,7 @@ export default function RootLayout({
           Saltar al contenido
         </a>
         {/* Barra superior + header (ocultos en /admin) */}
-        <SiteHeader />
+        <SiteHeader extraBrands={(await getCustomTaxonomy()).brands.filter((b) => !b.hidden)} />
         <main id="contenido" className="flex-1">
           {children}
         </main>

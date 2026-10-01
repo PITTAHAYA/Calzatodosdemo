@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllProducts } from "@/data/products";
-import { visibleBrands } from "@/data/brands";
+import { getVisibleBrands } from "@/lib/taxonomy-store";
 import { siteUrl } from "@/lib/utils";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === "" ? 1 : 0.7,
   }));
 
-  const brandRoutes = visibleBrands.map((b) => ({
+  const brandRoutes = (await getVisibleBrands()).map((b) => ({
     url: `${base}/marcas/${b.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

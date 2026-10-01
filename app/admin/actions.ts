@@ -39,6 +39,7 @@ import {
   getSeedProducts,
   type Product,
 } from "@/data/products";
+import { getKnownSlugs } from "@/lib/taxonomy-store";
 
 // -------------------- Guards --------------------
 
@@ -216,7 +217,7 @@ export async function updateProductAction(
 ): Promise<FormState> {
   const user = await requireAdmin();
   const patch = readProductForm(formData);
-  const errors = validateProductInput(patch);
+  const errors = validateProductInput(patch, await getKnownSlugs());
   if (Object.keys(errors).length) return { ok: false, errors };
 
   try {
@@ -360,7 +361,7 @@ export async function quickUpdateAction(
     let patch: Partial<Product>;
     if (field === "price") {
       const v = value === null ? undefined : Number(value);
-      const errors = validateProductInput({ ...product, price: v });
+      const errors = validateProductInput({ ...product, price: v }, await getKnownSlugs());
       const msg = errors.price ?? errors.priceMax ?? errors.previousPrice;
       if (msg) return { ok: false, error: msg };
       patch = { price: v };
@@ -428,7 +429,7 @@ export async function createProductAction(
 ): Promise<FormState> {
   const user = await requireAdmin();
   const patch = readProductForm(formData);
-  const errors = validateProductInput(patch);
+  const errors = validateProductInput(patch, await getKnownSlugs());
 
   const slug = slugify(String(formData.get("slug") ?? "")) || slugify(patch.name ?? "");
   let id = "";

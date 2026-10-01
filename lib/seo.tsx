@@ -103,8 +103,8 @@ export function productJsonLd(product: Product) {
     name: product.name,
     sku: product.sku,
     description: product.description,
-    brand: { "@type": "Brand", name: brandDisplayName(product.brand) },
-    category: getCategory(product.category)?.name ?? product.category,
+    brand: { "@type": "Brand", name: product.brandName ?? brandDisplayName(product.brand) },
+    category: product.categoryName ?? getCategory(product.category)?.name ?? product.category,
     url: absoluteUrl(`/productos/${product.slug}`),
   };
   if (typeof product.price === "number") {

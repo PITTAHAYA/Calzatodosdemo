@@ -13,7 +13,7 @@ import {
   WhatsAppIcon,
 } from "@/components/Icons";
 import { megaMenus } from "@/data/categories";
-import { internationalBrands, ownBrands } from "@/data/brands";
+import { internationalBrands, ownBrands, type Brand } from "@/data/brands";
 import { site } from "@/data/site-content";
 import { whatsappGeneral } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,8 @@ const primaryLinks = [
   { label: "Nosotros", href: "/nosotros", menu: null },
 ];
 
-export function Header() {
+// `extraBrands`: marcas creadas desde el panel (vienen del servidor).
+export function Header({ extraBrands = [] }: { extraBrands?: Brand[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const [openMenu, setOpenMenu] = useState<MenuKey>(null);
@@ -199,7 +200,7 @@ export function Header() {
             >
               <div className="container-page py-8">
                 {openMenu === "marcas" ? (
-                  <MarcasMenu />
+                  <MarcasMenu extraBrands={extraBrands} />
                 ) : (
                   <CategoriaMenu menuKey={openMenu} />
                 )}
@@ -264,13 +265,15 @@ function CategoriaMenu({ menuKey }: { menuKey: "mujer" | "hombre" | "ninos" }) {
 }
 
 // ------------------- Mega menú de marcas -------------------
-function MarcasMenu() {
+function MarcasMenu({ extraBrands }: { extraBrands: Brand[] }) {
+  const intl = [...internationalBrands, ...extraBrands.filter((b) => b.type === "internacional")];
+  const own = [...ownBrands, ...extraBrands.filter((b) => b.type === "propia")];
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
       <div>
         <h3 className="eyebrow mb-3">Marcas internacionales</h3>
         <ul className="grid grid-cols-2 gap-1.5">
-          {internationalBrands.map((b) => (
+          {intl.map((b) => (
             <li key={b.slug}>
               <Link
                 href={`/marcas/${b.slug}`}
@@ -285,7 +288,7 @@ function MarcasMenu() {
       <div>
         <h3 className="eyebrow mb-3">Marcas propias</h3>
         <ul className="grid grid-cols-2 gap-1.5">
-          {ownBrands.map((b) => (
+          {own.map((b) => (
             <li key={b.slug}>
               <Link
                 href={`/marcas/${b.slug}`}
