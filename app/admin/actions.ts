@@ -39,7 +39,12 @@ import {
   getSeedProducts,
   type Product,
 } from "@/data/products";
-import { getKnownSlugs, saveCustomTaxonomy, type Taxonomy } from "@/lib/taxonomy-store";
+import {
+  getCustomTaxonomyForWrite,
+  getKnownSlugs,
+  saveCustomTaxonomy,
+  type Taxonomy,
+} from "@/lib/taxonomy-store";
 
 // -------------------- Guards --------------------
 
@@ -572,7 +577,7 @@ function r2Config() {
 async function uploadToR2(
   cfg: NonNullable<ReturnType<typeof r2Config>>,
   key: string,
-  file: File
+  file: File | { body: Buffer; type: string }
 ): Promise<string> {
   const { AwsClient } = await import("aws4fetch");
   const client = new AwsClient({
@@ -584,7 +589,7 @@ async function uploadToR2(
   const endpoint = `https://${cfg.accountId}.r2.cloudflarestorage.com/${cfg.bucket}/${key}`;
   const res = await client.fetch(endpoint, {
     method: "PUT",
-    body: Buffer.from(await file.arrayBuffer()),
+    body: new Uint8Array(file instanceof File ? await file.arrayBuffer() : file.body),
     headers: {
       "Content-Type": file.type,
       // Los nombres llevan sello de tiempo: nunca cambian, se pueden cachear.
@@ -661,4 +666,61 @@ export async function uploadImageAction(
   const buf = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(path.join(dir, filename), buf);
   return { ok: true, url: `/uploads/products/${filename}` };
+}
+
+// -------------------- Migración Vercel Blob -> Cloudflare R2 --------------------
+
+const BLOB_URL_RE = /https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\/[^"\s\\]+/gi;
+
+/** Direcciones de Vercel Blob que aún usan productos o marcas. */
+export async function findBlobUrls(): Promise<string[]> {
+  await requireAdmin();
+  const [ov, tax] = await Promise.all([getOverrides(), getCustomTaxonomyForWrite()]);
+  const json = JSON.stringify({ ov, tax });
+  return Array.from(new Set(json.match(BLOB_URL_RE) ?? []));
+}
+
+export async function migrateBlobToR2Action(): Promise<void> {
+  const user = await requireAdmin();
+  const r2 = r2Config();
+  if (!r2) redirect("/admin/actividad?migrate=sin-r2");
+
+  const [ov, tax] = await Promise.all([getOverrides(), getCustomTaxonomyForWrite()]);
+  const json = JSON.stringify({ ov, tax });
+  const urls = Array.from(new Set(json.match(BLOB_URL_RE) ?? []));
+  if (urls.length === 0) redirect("/admin/actividad?migrate=0");
+
+  // Copia cada foto. Si una falla, se deja la dirección vieja (sigue
+  // funcionando mientras Blob exista) y se puede reintentar después.
+  const mapping = new Map<string, string>();
+  let failed = 0;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const type = res.headers.get("content-type") ?? "image/jpeg";
+      const name = decodeURIComponent(new URL(url).pathname.split("/").pop() || "imagen");
+      const safe = name.toLowerCase().replace(/[^a-z0-9.-]+/g, "-").slice(0, 80);
+      const key = `products/blob-${Date.now().toString(36)}-${safe}`;
+      const body = Buffer.from(await res.arrayBuffer());
+      mapping.set(url, await uploadToR2(r2, key, { body, type }));
+    } catch (err) {
+      console.error("[admin] migrar foto", url, err);
+      failed += 1;
+    }
+  }
+
+  if (mapping.size > 0) {
+    let next = json;
+    for (const [from, to] of mapping) next = next.split(from).join(to);
+    const parsed = JSON.parse(next) as { ov: Overrides; tax: Taxonomy };
+    await saveCustomTaxonomy(parsed.tax);
+    await saveOverrides(parsed.ov, {
+      user,
+      summary: `Movió ${mapping.size} foto${mapping.size === 1 ? "" : "s"} de Vercel Blob a Cloudflare`,
+    });
+    bumpCaches();
+    revalidatePath("/", "layout");
+  }
+  redirect(`/admin/actividad?migrate=${mapping.size}&fallidas=${failed}`);
 }

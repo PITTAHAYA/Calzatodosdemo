@@ -1,5 +1,5 @@
 import { getHistory } from "@/lib/products-store";
-import { undoAction } from "../../actions";
+import { findBlobUrls, migrateBlobToR2Action, undoAction } from "../../actions";
 import { ImportBackup } from "./import-backup";
 import { ConfirmSubmit } from "../confirm-submit";
 
@@ -11,8 +11,18 @@ const fmt = new Intl.DateTimeFormat("es-EC", {
   timeZone: "America/Guayaquil",
 });
 
-export default async function ActivityPage() {
-  const history = await getHistory();
+export default async function ActivityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ migrate?: string; fallidas?: string }>;
+}) {
+  const sp = await searchParams;
+  const [history, blobUrls] = await Promise.all([getHistory(), findBlobUrls()]);
+  const r2Ready = Boolean(
+    process.env.R2_ACCOUNT_ID && process.env.R2_ACCESS_KEY_ID &&
+    process.env.R2_SECRET_ACCESS_KEY && process.env.R2_BUCKET && process.env.R2_PUBLIC_URL
+  );
+  const failed = Number(sp.fallidas ?? 0);
 
   return (
     <div className="space-y-8">
@@ -57,6 +67,45 @@ export default async function ActivityPage() {
         <p className="text-xs text-neutral-600 mt-3">
           Se guardan los últimos 30 cambios. “Deshacer” los revierte de uno en uno, del más reciente al más antiguo.
         </p>
+      </section>
+
+      <section className="border border-neutral-800 rounded-lg p-4 space-y-3">
+        <h2 className="font-semibold">Fotos en la nube</h2>
+        {sp.migrate === "sin-r2" && (
+          <p className="text-sm text-red-400">Cloudflare R2 no está configurado en este servidor.</p>
+        )}
+        {sp.migrate && sp.migrate !== "sin-r2" && (
+          <p className={`text-sm ${failed ? "text-amber-400" : "text-emerald-400"}`}>
+            Se movieron {sp.migrate} foto(s) a Cloudflare.
+            {failed > 0 && ` ${failed} no se pudieron copiar: vuelve a intentarlo.`}
+          </p>
+        )}
+        {blobUrls.length === 0 ? (
+          <p className="text-sm text-neutral-400">
+            ✓ Ninguna foto del catálogo depende de Vercel Blob. Ya puedes
+            desconectar y borrar el almacenamiento Blob en Vercel.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-neutral-400">
+              Hay <strong className="text-white">{blobUrls.length}</strong> foto(s)
+              guardadas todavía en Vercel Blob. Muévelas a Cloudflare antes de
+              borrar Blob, o se verán rotas en la página.
+            </p>
+            {r2Ready ? (
+              <form action={migrateBlobToR2Action}>
+                <ConfirmSubmit
+                  message={`¿Copiar ${blobUrls.length} foto(s) a Cloudflare y actualizar los productos?`}
+                  className="rounded-md bg-white text-neutral-900 font-semibold px-4 py-2 text-sm hover:bg-neutral-200"
+                >
+                  Mover fotos a Cloudflare
+                </ConfirmSubmit>
+              </form>
+            ) : (
+              <p className="text-sm text-amber-400">Configura Cloudflare R2 primero.</p>
+            )}
+          </>
+        )}
       </section>
 
       <section className="border border-neutral-800 rounded-lg p-4 space-y-4">
