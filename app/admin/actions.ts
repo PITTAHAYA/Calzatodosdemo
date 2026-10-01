@@ -549,6 +549,46 @@ function useBlob(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+// Cloudflare R2 (compatible con S3). Tiene prioridad sobre Vercel Blob.
+function r2Config() {
+  const accountId = process.env.R2_ACCOUNT_ID;
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
+  const bucket = process.env.R2_BUCKET;
+  const publicUrl = process.env.R2_PUBLIC_URL?.replace(/\/+$/, "");
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicUrl) return null;
+  return { accountId, accessKeyId, secretAccessKey, bucket, publicUrl };
+}
+
+async function uploadToR2(
+  cfg: NonNullable<ReturnType<typeof r2Config>>,
+  key: string,
+  file: File
+): Promise<string> {
+  const { AwsClient } = await import("aws4fetch");
+  const client = new AwsClient({
+    accessKeyId: cfg.accessKeyId,
+    secretAccessKey: cfg.secretAccessKey,
+    service: "s3",
+    region: "auto",
+  });
+  const endpoint = `https://${cfg.accountId}.r2.cloudflarestorage.com/${cfg.bucket}/${key}`;
+  const res = await client.fetch(endpoint, {
+    method: "PUT",
+    body: Buffer.from(await file.arrayBuffer()),
+    headers: {
+      "Content-Type": file.type,
+      // Los nombres llevan sello de tiempo: nunca cambian, se pueden cachear.
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
+  if (!res.ok) {
+    console.error("[admin] R2 upload", res.status, await res.text().catch(() => ""));
+    throw new Error(`R2 respondió ${res.status}`);
+  }
+  return `${cfg.publicUrl}/${key}`;
+}
+
 export async function uploadImageAction(
   formData: FormData
 ): Promise<{ ok: true; url: string } | { ok: false; error: string }> {
@@ -583,6 +623,18 @@ export async function uploadImageAction(
       .slice(0, 40) || "imagen";
   const stamp = Date.now().toString(36);
   const filename = `${safeBase}-${stamp}${ext}`;
+
+  const r2 = r2Config();
+  if (r2) {
+    try {
+      return { ok: true, url: await uploadToR2(r2, `products/${filename}`, file) };
+    } catch {
+      return {
+        ok: false,
+        error: "No se pudo subir la foto a la nube. Inténtalo de nuevo en unos segundos.",
+      };
+    }
+  }
 
   if (useBlob()) {
     const { put } = await import("@vercel/blob");

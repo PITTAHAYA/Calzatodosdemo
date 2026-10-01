@@ -62,6 +62,8 @@ const nextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       // Vercel Blob (fotos subidas desde el panel /admin en producción)
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+      // Cloudflare R2 (dominio público r2.dev del bucket)
+      { protocol: "https", hostname: "*.r2.dev" },
     ],
   },
   async headers() {
