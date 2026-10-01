@@ -5,6 +5,7 @@ import { StoreCoverflow } from "@/components/stores/StoreCoverflow";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { KineticMarquee } from "@/components/home/KineticMarquee";
 import { WholesalePitch } from "@/components/home/WholesalePitch";
+import { HeroVideo } from "@/components/home/HeroVideo";
 import { RevealText } from "@/components/motion/RevealText";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
@@ -31,34 +32,12 @@ export default async function HomePage() {
     <>
       {/* ============ 1. HERO (video con los muñecos reales) ============ */}
       <section className="relative isolate flex min-h-[560px] items-center overflow-hidden bg-graphite-950 text-white sm:min-h-[82vh]">
-        {/* Video vertical para móvil */}
-        <video
-          className="absolute inset-0 h-full w-full object-cover sm:hidden"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/hero/hero-mobile-poster.jpg"
-        >
-          <source src="/hero/hero-mobile.webm" type="video/webm" />
-          <source src="/hero/hero-mobile.mp4" type="video/mp4" />
-        </video>
-        {/* Video horizontal para tablet/desktop */}
-        <video
-          className="absolute inset-0 hidden h-full w-full object-cover sm:block"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/hero/hero-poster.jpg"
-        >
-          <source src="/hero/hero.webm" type="video/webm" />
-          <source src="/hero/hero.mp4" type="video/mp4" />
-        </video>
+        {/* Video vertical (móvil) u horizontal (tablet/desktop), con póster */}
+        <HeroVideo />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/15" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+        {/* En móvil el texto ocupa todo el ancho: oscurecer más para que se lea */}
+        <div className="absolute inset-0 bg-black/30 sm:hidden" />
         <Grain />
 
         <div className="container-page relative py-20 sm:py-28">
@@ -91,13 +70,18 @@ export default async function HomePage() {
                 </a>
               </Magnetic>
             </div>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-graphite-200">
-              <span>Distribuidores autorizados</span>
-              <span aria-hidden>•</span>
-              <span>Productos con garantía</span>
-              <span aria-hidden>•</span>
-              <span>4 locales en Ecuador</span>
-            </div>
+            {/* Sin separadores sueltos: cada sello lleva su propio punto, así
+                al pasar de línea en móvil no queda un "•" colgando. */}
+            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-graphite-200">
+              {["Distribuidores autorizados", "Productos con garantía", "4 locales en Ecuador"].map(
+                (t) => (
+                  <li key={t} className="flex items-center gap-2">
+                    <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                    {t}
+                  </li>
+                )
+              )}
+            </ul>
           </div>
         </div>
       </section>
@@ -111,7 +95,7 @@ export default async function HomePage() {
           />
           <ExpandingCategories panels={categoryCards} />
           <p className="mt-4 text-center text-xs uppercase tracking-widest text-graphite-400 sm:hidden">
-            Toca una categoría para explorar
+            Desliza para ver todas las categorías
           </p>
         </div>
       </section>
@@ -261,7 +245,7 @@ function SectionHeader({
   hrefLabel?: string;
 }) {
   return (
-    <div className="mb-8 flex items-end justify-between gap-4">
+    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
       <div>
         <p className="eyebrow">{eyebrow}</p>
         <RevealText as="h2" text={title} className="section-title mt-2 block" />
@@ -269,7 +253,7 @@ function SectionHeader({
       {href && hrefLabel && (
         <Link
           href={href}
-          className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-brand-700 hover:underline sm:inline-flex"
+          className="inline-flex shrink-0 items-center gap-1 self-start text-sm font-semibold text-brand-700 hover:underline sm:self-auto"
         >
           {hrefLabel}
           <ArrowRightIcon className="h-4 w-4" />

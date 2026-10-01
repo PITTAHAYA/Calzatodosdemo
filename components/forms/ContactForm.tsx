@@ -20,6 +20,7 @@ function SubmitButton() {
 export function ContactForm() {
   const [state, formAction] = useActionState(submitContact, initial);
   const errors = state.fieldErrors ?? {};
+  const v = state.values ?? {};
 
   if (state.status === "success") {
     return (
@@ -31,7 +32,7 @@ export function ContactForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-4" noValidate>
+    <form key={state.submissionId ?? 0} action={formAction} className="space-y-4" noValidate>
       {/* Honeypot anti-spam (oculto para humanos) */}
       <div className="hidden" aria-hidden>
         <label htmlFor="company">No completar</label>
@@ -46,19 +47,19 @@ export function ContactForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Nombre" name="name" required error={errors.name}>
-          <input id="name" name="name" type="text" className={inputClass(!!errors.name)} />
+          <input id="name" name="name" type="text" autoComplete="name" defaultValue={v.name} className={inputClass(!!errors.name)} />
         </Field>
         <Field label="Correo electrónico" name="email" required error={errors.email}>
-          <input id="email" name="email" type="email" className={inputClass(!!errors.email)} />
+          <input id="email" name="email" type="email" autoComplete="email" defaultValue={v.email} className={inputClass(!!errors.email)} />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Teléfono" name="phone" error={errors.phone}>
-          <input id="phone" name="phone" type="tel" className={inputClass(!!errors.phone)} />
+          <input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={v.phone} className={inputClass(!!errors.phone)} />
         </Field>
         <Field label="Local de interés" name="store" error={errors.store}>
-          <select id="store" name="store" className={inputClass(!!errors.store)} defaultValue="">
+          <select id="store" name="store" className={inputClass(!!errors.store)} defaultValue={v.store ?? ""}>
             <option value="">Selecciona un local (opcional)</option>
             {stores.map((s) => (
               <option key={s.slug} value={s.name}>
@@ -74,12 +75,13 @@ export function ContactForm() {
           id="message"
           name="message"
           rows={5}
+          defaultValue={v.message}
           className={inputClass(!!errors.message)}
           placeholder="¿En qué podemos ayudarte?"
         />
       </Field>
 
-      <ConsentField error={errors.consent} />
+      <ConsentField error={errors.consent} defaultChecked={v.consent === "on"} />
 
       <SubmitButton />
     </form>

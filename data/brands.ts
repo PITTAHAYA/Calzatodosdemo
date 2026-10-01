@@ -33,7 +33,7 @@ export const brands: Brand[] = [
     tagline: "Diversión para los más pequeños",
     description:
       "Calzado infantil pensado para el juego, el confort y el crecimiento sano de los niños.",
-    logo: "/brands/bubble-gummers.gif",
+    logo: "/brands/bubble-gummers.png",
     gallery: [
       "/brand-gallery/bubble-gummers-2.jpg",
       "/brand-gallery/bubble-gummers-3.jpg",

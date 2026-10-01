@@ -20,7 +20,7 @@ const benefits = [
   { icon: "badge-check", title: "Marcas internacionales y propias", text: "Variedad de marcas para tu clientela." },
   { icon: "truck", title: "Experiencia en distribución", text: "Trayectoria abasteciendo comercios." },
   { icon: "shield-check", title: "Garantía de producto", text: "Respaldo según las condiciones de cada categoría." },
-  { icon: "shield-check", title: "Cobertura nacional", text: "Presencia y despacho a nivel nacional." },
+  { icon: "map-pin", title: "Cobertura nacional", text: "Presencia y despacho a nivel nacional." },
 ];
 
 export default function MayoristasPage() {

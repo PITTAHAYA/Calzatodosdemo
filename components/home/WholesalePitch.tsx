@@ -23,7 +23,7 @@ const BARS = [0.3, 0.45, 0.38, 0.6, 0.76, 1];
 
 const STATS = [
   { value: 8, prefix: "", suffix: "", label: "Marcas" },
-  { value: 20, prefix: "+", suffix: "", label: "Años" },
+  { value: 30, prefix: "+", suffix: "", label: "Años" },
   { value: 50, prefix: "+", suffix: "", label: "Modelos" },
   { value: 3, prefix: "", suffix: "", label: "Provincias" },
 ];

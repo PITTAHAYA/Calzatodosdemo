@@ -40,37 +40,49 @@ export function CatalogClient({
 }: Props) {
   const params = useSearchParams();
 
-  // --- Estado de filtros (inicializado desde la URL) ---
-  const [query, setQuery] = useState("");
-  const [selAudiences, setSelAudiences] = useState<string[]>([]);
-  const [selCategories, setSelCategories] = useState<string[]>([]);
-  const [selBrands, setSelBrands] = useState<string[]>([]);
+  // --- Estado de filtros (inicializado desde la URL desde el primer render,
+  // así no hay un parpadeo con todo el catálogo antes de filtrar) ---
+  const one = (key: string) => {
+    const v = params.get(key);
+    return v ? [v] : [];
+  };
+  const [query, setQuery] = useState(() => params.get("q") ?? "");
+  const [selAudiences, setSelAudiences] = useState<string[]>(() => one("audience"));
+  const [selCategories, setSelCategories] = useState<string[]>(() => one("categoria"));
+  const [selBrands, setSelBrands] = useState<string[]>(() => one("marca"));
   const [selSizes, setSelSizes] = useState<number[]>([]);
   const [selColors, setSelColors] = useState<string[]>([]);
-  const [selStyles, setSelStyles] = useState<string[]>([]);
-  const [onlyNew, setOnlyNew] = useState(false);
-  const [onlySale, setOnlySale] = useState(false);
+  const [selStyles, setSelStyles] = useState<string[]>(() => one("estilo"));
+  const [onlyNew, setOnlyNew] = useState(() => params.get("nuevos") === "1");
+  const [onlySale, setOnlySale] = useState(() => params.get("ofertas") === "1");
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [sort, setSort] = useState<SortKey>("recomendados");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // Inicializar desde los search params una sola vez.
+  // Drawer de filtros móvil: bloquear el scroll de fondo y cerrar con Escape.
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileFiltersOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileFiltersOpen]);
+
+  // Re-sincronizar si cambia la URL estando en la página (p. ej. una nueva
+  // búsqueda desde el header).
   useEffect(() => {
     setQuery(params.get("q") ?? "");
-    const a = params.get("audience");
-    setSelAudiences(a ? [a] : []);
-    const c = params.get("categoria");
-    setSelCategories(c ? [c] : []);
-    const b = params.get("marca");
-    setSelBrands(b ? [b] : []);
-    const st = params.get("estilo");
-    setSelStyles(st ? [st] : []);
+    setSelAudiences(one("audience"));
+    setSelCategories(one("categoria"));
+    setSelBrands(one("marca"));
+    setSelStyles(one("estilo"));
     setOnlyNew(params.get("nuevos") === "1");
     setOnlySale(params.get("ofertas") === "1");
-    // Pequeño skeleton inicial para percepción de velocidad.
-    const t = setTimeout(() => setLoading(false), 150);
-    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
@@ -83,6 +95,7 @@ export function CatalogClient({
 
   // Facetas derivadas de los productos presentes (evita filtros vacíos).
   const facets = useMemo(() => {
+    const audienceSet = new Set(products.map((p) => p.audience));
     const catSet = new Set(products.map((p) => p.category));
     const styleSet = new Set(products.map((p) => p.style));
     const brandSet = new Set(products.map((p) => p.brand));
@@ -96,6 +109,7 @@ export function CatalogClient({
       .map((slug) => getBrand(slug))
       .filter((b): b is NonNullable<typeof b> => Boolean(b));
     return {
+      audiences: audiences.filter((a) => audienceSet.has(a.value)),
       categories: categories.filter((c) => catSet.has(c.slug)),
       styles: styles.filter((s) => styleSet.has(s.slug)),
       brands: presentBrands,
@@ -203,9 +217,9 @@ export function CatalogClient({
   // --- Panel de filtros (compartido desktop/móvil) ---
   const FiltersPanel = (
     <div className="space-y-6">
-      {!hideAudience && (
+      {!hideAudience && facets.audiences.length > 1 && (
         <FilterGroup title="Público">
-          {audiences.map((a) => (
+          {facets.audiences.map((a) => (
             <CheckRow
               key={a.value}
               label={a.label}
@@ -326,7 +340,7 @@ export function CatalogClient({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nombre, marca, código, color…"
+            placeholder="Buscar modelo, marca, color…"
             className="w-full rounded-full border border-graphite-200 bg-white py-2.5 pl-9 pr-4 text-sm outline-none focus:border-brand-500"
             aria-label="Buscar en el catálogo"
           />
@@ -379,23 +393,11 @@ export function CatalogClient({
 
         {/* Resultados */}
         <div className="min-w-0 flex-1">
-          <p className="mb-4 text-sm text-graphite-500">
-            {loading
-              ? "Cargando…"
-              : `${filtered.length} ${filtered.length === 1 ? "producto" : "productos"}`}
+          <p className="mb-4 text-sm text-graphite-500" aria-live="polite">
+            {filtered.length} {filtered.length === 1 ? "producto" : "productos"}
           </p>
 
-          {loading ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-square rounded-xl bg-graphite-100" />
-                  <div className="mt-3 h-3 w-1/2 rounded bg-graphite-100" />
-                  <div className="mt-2 h-3 w-3/4 rounded bg-graphite-100" />
-                </div>
-              ))}
-            </div>
-          ) : filtered.length > 0 ? (
+          {filtered.length > 0 ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
@@ -414,7 +416,12 @@ export function CatalogClient({
             className="absolute inset-0 bg-graphite-900/50"
             onClick={() => setMobileFiltersOpen(false)}
           />
-          <div className="absolute right-0 top-0 flex h-full w-[86%] max-w-sm flex-col bg-white shadow-xl">
+          <div
+            className="absolute right-0 top-0 flex h-full w-[86%] max-w-sm flex-col bg-white shadow-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filtros"
+          >
             <div className="flex items-center justify-between border-b border-graphite-100 px-4 py-3">
               <h2 className="text-base font-bold">Filtros</h2>
               <button
@@ -427,16 +434,16 @@ export function CatalogClient({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4">{FiltersPanel}</div>
-            <div className="flex gap-2 border-t border-graphite-100 p-4">
+            <div className="flex gap-2 border-t border-graphite-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <button type="button" onClick={clearAll} className="btn-outline flex-1">
                 Limpiar
               </button>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="btn-primary flex-1"
+                className="btn-primary flex-1 whitespace-nowrap !px-3"
               >
-                Ver {filtered.length} resultados
+                Ver {filtered.length} {filtered.length === 1 ? "resultado" : "resultados"}
               </button>
             </div>
           </div>
@@ -466,7 +473,7 @@ function CheckRow({
   onChange: () => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 text-sm text-graphite-700">
+    <label className="flex cursor-pointer items-center gap-2 py-0.5 text-sm text-graphite-700">
       <input
         type="checkbox"
         checked={checked}

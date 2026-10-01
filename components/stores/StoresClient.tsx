@@ -7,6 +7,11 @@ import { StoreCard } from "@/components/StoreCard";
 import { SearchIcon, MapPinIcon } from "@/components/Icons";
 import { cn } from "@/lib/utils";
 
+// Búsqueda sin distinguir mayúsculas ni tildes ("garcia" encuentra "García").
+function normalize(s: string): string {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 export function StoresClient({ stores }: { stores: Store[] }) {
   const [query, setQuery] = useState("");
   const [view, setView] = useState<"lista" | "mapa">("lista");
@@ -18,15 +23,20 @@ export function StoresClient({ stores }: { stores: Store[] }) {
   );
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = normalize(query.trim());
     if (!q) return stores;
     return stores.filter(
       (s) =>
-        s.city.toLowerCase().includes(q) ||
-        s.name.toLowerCase().includes(q) ||
-        s.address.toLowerCase().includes(q)
+        normalize(s.city).includes(q) ||
+        normalize(s.name).includes(q) ||
+        normalize(s.address).includes(q)
     );
   }, [stores, query]);
+
+  // El mapa siempre muestra un local de la lista filtrada.
+  const mapStore = filtered.some((s) => s.slug === activeStore.slug)
+    ? activeStore
+    : filtered[0] ?? activeStore;
 
   return (
     <div>
@@ -44,9 +54,9 @@ export function StoresClient({ stores }: { stores: Store[] }) {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Chips de ciudad */}
-          <div className="hidden gap-2 sm:flex">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setQuery("")}
@@ -113,9 +123,10 @@ export function StoresClient({ stores }: { stores: Store[] }) {
                 key={s.slug}
                 type="button"
                 onClick={() => setActiveStore(s)}
+                aria-pressed={mapStore.slug === s.slug}
                 className={cn(
                   "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition",
-                  activeStore.slug === s.slug
+                  mapStore.slug === s.slug
                     ? "border-brand-500 bg-brand-50"
                     : "border-graphite-100 bg-white hover:border-graphite-300"
                 )}
@@ -130,12 +141,13 @@ export function StoresClient({ stores }: { stores: Store[] }) {
             ))}
           </div>
 
-          {/* Mapa (carga diferida vía iframe) */}
-          <div className="min-h-[320px] overflow-hidden rounded-2xl border border-graphite-100">
+          {/* Mapa (carga diferida vía iframe). En móvil va arriba para que
+              se vea el cambio al tocar un local de la lista. */}
+          <div className="order-first min-h-[320px] overflow-hidden rounded-2xl border border-graphite-100 lg:order-last">
             <iframe
-              key={activeStore.slug}
-              title={`Mapa de ${activeStore.name}`}
-              src={storeMapsEmbedUrl(activeStore)}
+              key={mapStore.slug}
+              title={`Mapa de ${mapStore.name}`}
+              src={storeMapsEmbedUrl(mapStore)}
               className="h-full min-h-[320px] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

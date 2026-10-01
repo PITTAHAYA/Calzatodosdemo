@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { WhatsAppIcon, CloseIcon } from "@/components/Icons";
 import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,26 @@ import { cn } from "@/lib/utils";
 // a WhatsApp (el botón principal es un enlace directo con clic derecho / medio).
 export function WhatsAppFloat() {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+
+  // Cerrar al navegar, con Escape o al tocar fuera del menú.
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open]);
 
   const options = [
     { label: "Consultar un producto", href: "/catalogo", internal: true },
@@ -20,11 +41,14 @@ export function WhatsAppFloat() {
   ];
 
   return (
-    <div className="fixed bottom-0 right-0 z-40 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pr-[max(1rem,env(safe-area-inset-right))]">
+    <div
+      ref={rootRef}
+      className="pointer-events-none fixed bottom-0 right-0 z-40 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pr-[max(1rem,env(safe-area-inset-right))]"
+    >
       {/* Modal de accesos rápidos */}
       {open && (
         <div
-          className="mb-3 w-64 overflow-hidden rounded-2xl border border-graphite-100 bg-white shadow-card-hover animate-fade-in"
+          className="pointer-events-auto mb-3 w-64 overflow-hidden rounded-2xl border border-graphite-100 bg-white shadow-card-hover animate-fade-in"
           role="dialog"
           aria-label="Opciones de contacto por WhatsApp"
         >
@@ -84,7 +108,8 @@ export function WhatsAppFloat() {
       <div className="group flex items-center justify-end gap-2">
         <span
           className={cn(
-            "pointer-events-none hidden rounded-full bg-graphite-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow transition-opacity group-hover:opacity-100 sm:block"
+            "pointer-events-none hidden rounded-full bg-graphite-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow transition-opacity group-hover:opacity-100 sm:block",
+            open && "!opacity-0"
           )}
           aria-hidden
         >
@@ -93,11 +118,11 @@ export function WhatsAppFloat() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Consultar por WhatsApp"
+          aria-label={open ? "Cerrar opciones de WhatsApp" : "Consultar por WhatsApp"}
           aria-expanded={open}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:bg-[#1ebe5b] active:scale-95"
+          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:bg-[#1ebe5b] active:scale-95"
         >
-          <WhatsAppIcon className="h-7 w-7" />
+          {open ? <CloseIcon className="h-6 w-6" /> : <WhatsAppIcon className="h-7 w-7" />}
         </button>
       </div>
     </div>

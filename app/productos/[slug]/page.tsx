@@ -24,8 +24,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) return { title: "Producto no encontrado" };
+  // Para la marca de la casa no se repite "Calzatodos Group" (ya va al final
+  // del título por la plantilla del layout); se usa la categoría.
+  const qualifier =
+    product.brand === "calzatodos"
+      ? getCategory(product.category)?.name ?? product.category
+      : brandDisplayName(product.brand);
   return pageMetadata({
-    title: `${product.name} — ${brandDisplayName(product.brand)}`,
+    title: `${product.name} — ${qualifier}`,
     description: product.description,
     path: `/productos/${product.slug}`,
   });

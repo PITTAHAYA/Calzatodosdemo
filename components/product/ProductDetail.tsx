@@ -38,7 +38,8 @@ export function ProductDetail({
     url: productUrl,
   });
 
-  const gallerySlots = product.images.length > 0 ? product.images : [null, null, null];
+  // Las miniaturas solo tienen sentido con más de una foto.
+  const showThumbs = product.images.length > 1;
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
@@ -61,28 +62,30 @@ export function ProductDetail({
           </div>
         </div>
         {/* Miniaturas */}
-        <div className="mt-3 grid grid-cols-4 gap-3">
-          {gallerySlots.map((img, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setActiveImage(i)}
-              className={cn(
-                "relative aspect-square overflow-hidden rounded-lg border transition",
-                activeImage === i ? "border-brand-600 ring-1 ring-brand-600" : "border-graphite-100"
-              )}
-              aria-label={`Ver imagen ${i + 1}`}
-            >
-              <ProductImage
-                images={img ? [img] : []}
-                name={product.name}
-                className="h-full w-full"
-                fit="contain"
-                sizes="120px"
-              />
-            </button>
-          ))}
-        </div>
+        {showThumbs && (
+          <div className="mt-3 grid grid-cols-4 gap-3">
+            {product.images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setActiveImage(i)}
+                className={cn(
+                  "relative aspect-square overflow-hidden rounded-lg border transition",
+                  activeImage === i ? "border-brand-600 ring-1 ring-brand-600" : "border-graphite-100"
+                )}
+                aria-label={`Ver imagen ${i + 1}`}
+              >
+                <ProductImage
+                  images={[img]}
+                  name={product.name}
+                  className="h-full w-full"
+                  fit="contain"
+                  sizes="120px"
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Información */}
@@ -90,7 +93,7 @@ export function ProductDetail({
         <p className="text-sm font-bold uppercase tracking-wider text-brand-600">
           {brandName}
         </p>
-        <h1 className="mt-1 text-3xl font-bold text-graphite-900">{product.name}</h1>
+        <h1 className="mt-1 text-3xl font-bold text-graphite-900 sm:text-4xl">{product.name}</h1>
         <p className="mt-1 text-sm text-graphite-500">
           {categoryName} · Código {product.sku}
         </p>

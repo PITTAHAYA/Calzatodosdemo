@@ -9,6 +9,13 @@ import { whatsappWholesale } from "@/lib/whatsapp";
 
 const initial: FormState = { status: "idle", message: "" };
 
+const PROVINCES = [
+  "Azuay", "Bolívar", "Cañar", "Carchi", "Chimborazo", "Cotopaxi", "El Oro",
+  "Esmeraldas", "Galápagos", "Guayas", "Imbabura", "Loja", "Los Ríos", "Manabí",
+  "Morona Santiago", "Napo", "Orellana", "Pastaza", "Pichincha", "Santa Elena",
+  "Santo Domingo de los Tsáchilas", "Sucumbíos", "Tungurahua", "Zamora Chinchipe",
+];
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -21,6 +28,7 @@ function SubmitButton() {
 export function WholesaleForm() {
   const [state, formAction] = useActionState(submitWholesale, initial);
   const errors = state.fieldErrors ?? {};
+  const v = state.values ?? {};
 
   if (state.status === "success") {
     return (
@@ -40,7 +48,7 @@ export function WholesaleForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-4" noValidate>
+    <form key={state.submissionId ?? 0} action={formAction} className="space-y-4" noValidate>
       <div className="hidden" aria-hidden>
         <label htmlFor="company-w">No completar</label>
         <input id="company-w" name="company" type="text" tabIndex={-1} autoComplete="off" />
@@ -54,28 +62,41 @@ export function WholesaleForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Nombre completo" name="fullName" required error={errors.fullName}>
-          <input id="fullName" name="fullName" type="text" className={inputClass(!!errors.fullName)} />
+          <input id="fullName" name="fullName" type="text" autoComplete="name" defaultValue={v.fullName} className={inputClass(!!errors.fullName)} />
         </Field>
         <Field label="Nombre del negocio" name="businessName" required error={errors.businessName}>
-          <input id="businessName" name="businessName" type="text" className={inputClass(!!errors.businessName)} />
+          <input id="businessName" name="businessName" type="text" autoComplete="organization" defaultValue={v.businessName} className={inputClass(!!errors.businessName)} />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Ciudad" name="city" required error={errors.city}>
-          <input id="city" name="city" type="text" className={inputClass(!!errors.city)} />
+          <input id="city" name="city" type="text" autoComplete="address-level2" defaultValue={v.city} className={inputClass(!!errors.city)} />
         </Field>
         <Field label="Provincia" name="province" required error={errors.province}>
-          <input id="province" name="province" type="text" className={inputClass(!!errors.province)} />
+          <select
+            id="province"
+            name="province"
+            autoComplete="address-level1"
+            defaultValue={v.province ?? ""}
+            className={inputClass(!!errors.province)}
+          >
+            <option value="">Selecciona tu provincia</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Teléfono" name="phone" required error={errors.phone}>
-          <input id="phone" name="phone" type="tel" className={inputClass(!!errors.phone)} />
+          <input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={v.phone} className={inputClass(!!errors.phone)} />
         </Field>
         <Field label="Correo electrónico" name="email" required error={errors.email}>
-          <input id="email" name="email" type="email" className={inputClass(!!errors.email)} />
+          <input id="email" name="email" type="email" autoComplete="email" defaultValue={v.email} className={inputClass(!!errors.email)} />
         </Field>
       </div>
 
@@ -84,8 +105,9 @@ export function WholesaleForm() {
           <input
             id="businessType"
             name="businessType"
+            defaultValue={v.businessType}
             type="text"
-            placeholder="Ej.: tienda de calzado, bazar, distribuidor"
+            placeholder="Ej.: tienda, bazar, distribuidor"
             className={inputClass(!!errors.businessType)}
           />
         </Field>
@@ -93,6 +115,7 @@ export function WholesaleForm() {
           <input
             id="quantity"
             name="quantity"
+            defaultValue={v.quantity}
             type="text"
             placeholder="Ej.: 50 pares por mes"
             className={inputClass(!!errors.quantity)}
@@ -104,6 +127,7 @@ export function WholesaleForm() {
         <input
           id="interests"
           name="interests"
+          defaultValue={v.interests}
           type="text"
           placeholder="Ej.: infantil, deportivo, North Star…"
           className={inputClass(!!errors.interests)}
@@ -111,10 +135,10 @@ export function WholesaleForm() {
       </Field>
 
       <Field label="Mensaje" name="message" error={errors.message}>
-        <textarea id="message" name="message" rows={4} className={inputClass(!!errors.message)} />
+        <textarea id="message" name="message" rows={4} defaultValue={v.message} className={inputClass(!!errors.message)} />
       </Field>
 
-      <ConsentField error={errors.consent} />
+      <ConsentField error={errors.consent} defaultChecked={v.consent === "on"} />
 
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <SubmitButton />

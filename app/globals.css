@@ -97,6 +97,16 @@
   }
 }
 
+/* iOS Safari hace zoom al enfocar campos con letra menor a 16px (buscadores,
+   formularios). En móvil se fuerza 16px para evitar ese salto. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* Marquee de la barra superior (ticker en movimiento continuo). */
 @keyframes marquee {
   0% {

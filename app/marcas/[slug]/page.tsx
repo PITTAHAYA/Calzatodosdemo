@@ -44,7 +44,8 @@ export default async function BrandPage({
 }) {
   const { slug } = await params;
   const brand = getBrand(slug);
-  if (!brand) notFound();
+  // La marca de la casa (hidden) no tiene página pública.
+  if (!brand || brand.hidden) notFound();
 
   const gallery = brand.gallery ?? [];
   const cover = gallery[0];
@@ -131,8 +132,8 @@ export default async function BrandPage({
         <section className="section">
           <div className="container-page">
             <div className="mx-auto mb-8 max-w-2xl text-center">
-              <p className="eyebrow">Modelos</p>
-              <h2 className="section-title mt-2">Disponibles de {brand.name}</h2>
+              <p className="eyebrow">Disponibles en tienda</p>
+              <h2 className="section-title mt-2">Modelos {brand.name}</h2>
               <p className="mt-3 text-graphite-600">
                 Consulta tallas y disponibilidad por WhatsApp o en tu local más cercano.
               </p>

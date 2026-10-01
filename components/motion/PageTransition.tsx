@@ -1,6 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+
+// En la primera carga NO se muestra la cortina: el HTML del servidor debe
+// verse de inmediato (si no, la página queda roja/invisible hasta que carga
+// el JavaScript). La cortina solo acompaña las navegaciones internas.
+let isFirstLoad = true;
 
 // Transición de página: una cortina roja se levanta revelando el contenido.
 // Se anima solo la entrada (App Router remonta en cada navegación).
@@ -8,7 +14,13 @@ import { motion, useReducedMotion } from "framer-motion";
 // elementos position:fixed (drawers, modales).
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const reduce = useReducedMotion();
-  if (reduce) return <>{children}</>;
+  const skip = isFirstLoad;
+
+  useEffect(() => {
+    isFirstLoad = false;
+  }, []);
+
+  if (reduce || skip) return <>{children}</>;
 
   return (
     <>

@@ -52,8 +52,9 @@ export function whatsappProductDetailed(opts: {
 
 // Mensaje mayorista.
 export function whatsappWholesale(city?: string): string {
-  const cityText = city && city.trim() ? city.trim() : "[CIUDAD]";
-  const msg = `Hola Calzatodos Group, estoy interesado en realizar compras al por mayor. Mi negocio se encuentra en ${cityText} y quisiera conocer sus marcas, condiciones y catálogo mayorista.`;
+  const cityText = city?.trim();
+  const location = cityText ? ` Mi negocio se encuentra en ${cityText}.` : "";
+  const msg = `Hola Calzatodos Group, estoy interesado en realizar compras al por mayor.${location} Quisiera conocer sus marcas, condiciones y catálogo mayorista.`;
   return buildUrl(msg);
 }
 

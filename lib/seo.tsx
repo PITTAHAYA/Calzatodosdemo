@@ -8,6 +8,14 @@ import type { Product } from "@/data/products";
 import { brandDisplayName } from "@/lib/whatsapp";
 import { getCategory } from "@/data/categories";
 
+// Imagen por defecto al compartir enlaces (WhatsApp, Facebook, etc.).
+export const defaultOgImage = {
+  url: "/og-image.jpg",
+  width: 1200,
+  height: 630,
+  alt: "Mascotas de Bumixgumer y Bubble Gummers en una tienda Calzatodos Group",
+};
+
 // Metadata base reutilizable por página.
 export function pageMetadata(opts: {
   title: string;
@@ -27,13 +35,13 @@ export function pageMetadata(opts: {
       siteName: site.name,
       locale: "es_EC",
       type: "website",
-      images: opts.images,
+      images: opts.images ?? [defaultOgImage],
     },
     twitter: {
       card: "summary_large_image",
       title: opts.title,
       description: opts.description,
-      images: opts.images,
+      images: opts.images ?? [defaultOgImage.url],
     },
   };
 }

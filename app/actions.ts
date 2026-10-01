@@ -10,6 +10,19 @@ export interface FormState {
   message: string;
   // Errores por campo (para mostrar junto a cada input).
   fieldErrors?: Record<string, string>;
+  // Lo que escribió el usuario: React 19 vacía el formulario tras cada envío,
+  // así que si hay un error se devuelve para volver a rellenarlo.
+  values?: Record<string, string>;
+  // Cambia en cada respuesta de error para remontar el formulario con esos valores.
+  submissionId?: number;
+}
+
+// Valores enviados (sin el honeypot) para repoblar el formulario.
+function keepValues(raw: Record<string, string>): Record<string, string> {
+  const { company: _company, ...rest } = raw;
+  return Object.fromEntries(
+    Object.entries(rest).filter(([k, v]) => typeof v === "string" && !k.startsWith("$"))
+  );
 }
 
 // Sello de fecha/hora (Ecuador) para dejar constancia del consentimiento.
@@ -53,6 +66,8 @@ export async function submitContact(
       status: "error",
       message: "Revisa los campos marcados e inténtalo de nuevo.",
       fieldErrors,
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 
@@ -60,7 +75,9 @@ export async function submitContact(
   if (!limited.allowed) {
     return {
       status: "error",
-      message: `Demasiadas solicitudes. Inténtalo de nuevo en ${limited.retryAfter}s.`,
+      message: `Demasiadas solicitudes. Inténtalo de nuevo en ${limited.retryAfter} s.`,
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 
@@ -88,6 +105,8 @@ export async function submitContact(
       status: "error",
       message:
         "No pudimos enviar tu mensaje en este momento. Intenta por WhatsApp o vuelve a intentarlo.",
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 
@@ -119,6 +138,8 @@ export async function submitWholesale(
       status: "error",
       message: "Revisa los campos marcados e inténtalo de nuevo.",
       fieldErrors,
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 
@@ -126,7 +147,9 @@ export async function submitWholesale(
   if (!limited.allowed) {
     return {
       status: "error",
-      message: `Demasiadas solicitudes. Inténtalo de nuevo en ${limited.retryAfter}s.`,
+      message: `Demasiadas solicitudes. Inténtalo de nuevo en ${limited.retryAfter} s.`,
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 
@@ -159,6 +182,8 @@ export async function submitWholesale(
       status: "error",
       message:
         "No pudimos enviar tu solicitud en este momento. Intenta por WhatsApp o vuelve a intentarlo.",
+      values: keepValues(raw),
+      submissionId: Date.now(),
     };
   }
 

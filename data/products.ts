@@ -114,8 +114,8 @@ const seeds: Seed[] = [
 
   // ---------- NIÑO (escolar) ----------
   { name: "Rafael", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino, isFeatured: true },
-  { name: "Joaquin", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino },
-  { name: "Adrian", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino },
+  { name: "Joaquín", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino },
+  { name: "Adrián", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino },
   { name: "Tadeo", audience: "nino", category: "escolar", style: "escolar", color: "Negro", price: 29, priceMax: 33, desc: DESC.escolarNino },
 
   // ---------- MUJER NEGRO (formal / colegial) ----------
@@ -134,7 +134,7 @@ const seeds: Seed[] = [
   { name: "Maite", audience: "nina", category: "escolar", style: "escolar", color: "Negro", price: 26, priceMax: 30, desc: DESC.escolarNina, isFeatured: true },
   { name: "Claudia", audience: "nina", category: "escolar", style: "escolar", color: "Negro", price: 26, priceMax: 30, desc: DESC.escolarNina },
   { name: "Ana", audience: "nina", category: "escolar", style: "escolar", color: "Negro", price: 26, priceMax: 30, desc: DESC.escolarNina },
-  { name: "Domenica", audience: "nina", category: "escolar", style: "escolar", color: "Negro", price: 26, priceMax: 30, desc: DESC.escolarNina },
+  { name: "Doménica", audience: "nina", category: "escolar", style: "escolar", color: "Negro", price: 26, priceMax: 30, desc: DESC.escolarNina },
 
   // =====================================================================
   // NORTH STAR — sneakers urbanos
@@ -168,7 +168,7 @@ const seeds: Seed[] = [
   { name: "Terry", slug: "terry", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Azul", extraColors: ["Café"], price: 64.99, desc: DESC.nsSkate },
   { name: "Fizz 300", slug: "fizz-300", brand: "power", audience: "mujer", category: "deportivo", style: "deportivo", color: "Blanco", price: 64.99, desc: DESC.powerRun, isFeatured: true },
   { name: "Guida", slug: "guida", brand: "power", audience: "hombre", category: "deportivo", style: "deportivo", color: "Negro", price: 54.99, desc: DESC.powerRun },
-  { name: "Atletico", slug: "atletico", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Gris"], price: 54.99, desc: DESC.nsUrban },
+  { name: "Atlético", slug: "atletico", brand: "north-star", audience: "hombre", category: "sneakers", style: "sneakers", color: "Blanco", extraColors: ["Gris"], price: 54.99, desc: DESC.nsUrban },
 
   // ===================== BUBBLE GUMMERS — infantil (2) =====================
   { name: "Util", slug: "util", brand: "bubble-gummers", audience: "infantil", category: "casual", style: "casual", color: "Beige", price: 24.99, desc: DESC.bgToddler, sizes: [19, 20, 21, 22, 23, 24, 25] },

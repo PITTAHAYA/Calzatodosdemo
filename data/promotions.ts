@@ -88,8 +88,12 @@ export function isPromotionExpired(promo: Promotion, now: Date = new Date()): bo
 }
 
 // Promociones visibles según su comportamiento al vencer.
+// Las de demostración (demo: true) nunca se publican: mostrar "(ejemplo)" o
+// descuentos ficticios en el sitio real confunde al cliente. Para publicar
+// una promoción real, quita "demo" (o ponlo en false) y ajusta sus datos.
 export function getVisiblePromotions(now: Date = new Date()): Promotion[] {
   return promotions.filter((p) => {
+    if (p.demo) return false;
     if (isPromotionExpired(p, now) && p.expiredBehavior === "auto") return false;
     return true;
   });

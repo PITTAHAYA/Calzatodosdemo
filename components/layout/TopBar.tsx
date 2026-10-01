@@ -13,10 +13,11 @@ function Message({ text }: { text: string }) {
 export function TopBar() {
   return (
     <div className="bg-graphite-900 py-2 text-xs font-medium text-white">
-      {/* MÓVIL: ticker deslizante continuo (dos copias idénticas para un
-          bucle sin cortes). Se pausa al mantener presionado. */}
-      <div className="marquee-wrap sm:hidden">
-        <ul className="marquee-track flex shrink-0 items-center gap-8 pl-4 pr-8">
+      {/* MÓVIL y TABLET: ticker deslizante continuo (dos copias idénticas
+          para un bucle sin cortes). Se pausa al mantener presionado.
+          Los 4 mensajes solo caben en una fila desde pantallas grandes. */}
+      <div className="marquee-wrap lg:hidden">
+        <ul className="marquee-track flex shrink-0 items-center gap-8 pr-8">
           {topBarMessages.map((m, i) => (
             <li key={i}>
               <Message text={m} />
@@ -33,7 +34,7 @@ export function TopBar() {
       </div>
 
       {/* DESKTOP: distribución estática. */}
-      <div className="container-page hidden w-full items-center justify-between sm:flex">
+      <div className="container-page hidden w-full items-center justify-between lg:flex">
         {topBarMessages.map((m, i) => (
           <Message key={i} text={m} />
         ))}

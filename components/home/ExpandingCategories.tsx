@@ -66,7 +66,16 @@ export function ExpandingCategories({ panels }: { panels: CategoryPanel[] }) {
               {/* Contenido */}
               <div className="absolute inset-x-0 bottom-0 flex flex-col p-5 text-white sm:p-7">
                 <div className="flex items-end justify-between gap-3">
-                  <h3 className="text-xl font-black leading-none tracking-tight sm:text-2xl lg:text-3xl">
+                  {/* Colapsado: nombre en vertical para que nunca se corte
+                      ("Depor…", "Homb…") en paneles angostos. */}
+                  <h3
+                    className={cn(
+                      "font-black leading-none tracking-tight",
+                      isActive
+                        ? "text-2xl lg:text-3xl"
+                        : "rotate-180 whitespace-nowrap text-lg [writing-mode:vertical-rl] lg:text-xl"
+                    )}
+                  >
                     {p.name}
                   </h3>
                   <span

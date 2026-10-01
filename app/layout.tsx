@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteHeader, SiteFooterAndExtras } from "@/components/layout/SiteChrome";
 import { ScrollProgress } from "@/components/ScrollProgress";
-import { JsonLd, organizationJsonLd } from "@/lib/seo";
+import { JsonLd, organizationJsonLd, defaultOgImage } from "@/lib/seo";
 import { site } from "@/data/site-content";
 import { siteUrl } from "@/lib/utils";
 
@@ -36,11 +36,13 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: `${site.name} — ${site.slogan}`,
     description: site.description,
+    images: [defaultOgImage],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.name} — ${site.slogan}`,
     description: site.description,
+    images: [defaultOgImage.url],
   },
   robots: { index: true, follow: true },
 };

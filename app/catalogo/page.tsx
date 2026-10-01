@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { CatalogSkeleton } from "@/components/catalog/CatalogSkeleton";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CatalogClient } from "@/components/catalog/CatalogClient";
@@ -35,7 +36,7 @@ export default async function CatalogoPage() {
       </div>
 
       <div className="mt-8">
-        <Suspense fallback={<div className="text-sm text-graphite-500">Cargando catálogo…</div>}>
+        <Suspense fallback={<CatalogSkeleton />}>
           <CatalogClient
             products={products}
             sizes={sizes}

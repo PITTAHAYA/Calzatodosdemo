@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { CatalogSkeleton } from "@/components/catalog/CatalogSkeleton";
 import Link from "next/link";
 import Image from "next/image";
 import { ParallaxImage } from "@/components/motion/ParallaxImage";
@@ -70,7 +71,7 @@ export async function CategoryLanding({
 
       <div className="container-page py-8">
         {products.length > 0 ? (
-          <Suspense fallback={<div className="text-sm text-graphite-500">Cargando…</div>}>
+          <Suspense fallback={<CatalogSkeleton />}>
             <CatalogClient
               products={products}
               sizes={sizes}

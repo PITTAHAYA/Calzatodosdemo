@@ -68,7 +68,7 @@ function BrandSection({
                           width={120}
                           height={40}
                           unoptimized={b.logo.endsWith(".gif")}
-                          className="h-6 w-auto object-contain"
+                          className="h-8 w-auto object-contain"
                         />
                       </div>
                     )}

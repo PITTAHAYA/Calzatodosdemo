@@ -2,7 +2,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 // Casilla de consentimiento de datos (LOPDP). Requerida para enviar.
-export function ConsentField({ error }: { error?: string }) {
+export function ConsentField({
+  error,
+  defaultChecked,
+}: {
+  error?: string;
+  defaultChecked?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-graphite-200 bg-graphite-50 p-3.5">
       <label htmlFor="consent" className="flex items-start gap-2.5 text-sm text-graphite-700">
@@ -11,6 +17,7 @@ export function ConsentField({ error }: { error?: string }) {
           name="consent"
           type="checkbox"
           value="on"
+          defaultChecked={defaultChecked}
           className={cn(
             "mt-0.5 h-4 w-4 shrink-0 rounded border-graphite-300 text-brand-600 accent-brand-600 focus:ring-brand-500",
             error && "ring-2 ring-brand-400"

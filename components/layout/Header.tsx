@@ -128,7 +128,19 @@ export function Header() {
 
             {/* Derecha: acciones (el WhatsApp vive en el botón flotante para no duplicarlo) */}
             <div className="flex items-center gap-2">
-              <Link href="/tiendas" className="btn-outline !px-3">
+              {/* Búsqueda en móvil: abre el menú con el buscador enfocado */}
+              <button
+                type="button"
+                className="btn-ghost !px-2 md:hidden"
+                onClick={() => {
+                  setMobileOpen(true);
+                  setTimeout(() => document.getElementById("mobile-search")?.focus(), 320);
+                }}
+                aria-label="Buscar productos"
+              >
+                <SearchIcon className="h-5 w-5" />
+              </button>
+              <Link href="/tiendas" className="btn-outline !px-3" aria-label="Tiendas">
                 <StoreIcon className="h-4 w-4" />
                 <span className="hidden lg:inline">Tiendas</span>
               </Link>
@@ -310,6 +322,16 @@ function MobileDrawer({
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // Cerrar con Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   return (
     <div
       className={cn(
@@ -317,6 +339,8 @@ function MobileDrawer({
         open ? "pointer-events-auto" : "pointer-events-none"
       )}
       aria-hidden={!open}
+      // Cerrado: fuera del orden de tabulación y de lectores de pantalla.
+      inert={!open}
     >
       {/* Overlay */}
       <div

@@ -102,13 +102,13 @@ export default function NosotrosPage() {
       {/* ===== Misión / Visión ===== */}
       <section className="section">
         <div className="container-page grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-graphite-100 bg-white p-8 shadow-card sm:p-10">
+          <div className="rounded-3xl border border-graphite-100 bg-white p-6 shadow-card sm:p-10">
             <p className="eyebrow">Misión</p>
-            <p className="mt-3 text-lg leading-relaxed text-graphite-700">{about.mission}</p>
+            <p className="mt-3 leading-relaxed text-graphite-700 sm:text-lg">{about.mission}</p>
           </div>
-          <div className="rounded-3xl border border-graphite-100 bg-white p-8 shadow-card sm:p-10">
+          <div className="rounded-3xl border border-graphite-100 bg-white p-6 shadow-card sm:p-10">
             <p className="eyebrow">Visión</p>
-            <p className="mt-3 text-lg leading-relaxed text-graphite-700">{about.vision}</p>
+            <p className="mt-3 leading-relaxed text-graphite-700 sm:text-lg">{about.vision}</p>
           </div>
         </div>
       </section>

@@ -152,7 +152,9 @@ export function Footer() {
 
       {/* Barra inferior */}
       <div className="border-t border-graphite-800">
-        <div className="container-page flex flex-col items-center justify-between gap-3 py-5 text-xs text-graphite-400 sm:flex-row">
+        {/* Espacio extra abajo (móvil) y a la derecha (desktop) para que el
+            botón flotante de WhatsApp no tape el "Arriba". */}
+        <div className="container-page flex flex-col items-center justify-between gap-3 pb-24 pt-5 text-center text-xs text-graphite-400 sm:flex-row sm:pb-5 sm:pr-24 sm:text-left">
           <p>
             © {year} {site.legalName}. Todos los derechos reservados.
           </p>

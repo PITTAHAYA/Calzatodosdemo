@@ -172,6 +172,8 @@ export function IconByName({ name, className }: { name: string; className?: stri
       return <TruckIcon className={className} />;
     case "store":
       return <StoreIcon className={className} />;
+    case "map-pin":
+      return <MapPinIcon className={className} />;
     default:
       return <SparkleIcon className={className} />;
   }

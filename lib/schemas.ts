@@ -31,7 +31,7 @@ export const wholesaleSchema = z.object({
   fullName: z.string().min(2, "Ingresa tu nombre completo.").max(120),
   businessName: z.string().min(2, "Ingresa el nombre de tu negocio.").max(160),
   city: z.string().min(2, "Ingresa tu ciudad.").max(80),
-  province: z.string().min(2, "Ingresa tu provincia.").max(80),
+  province: z.string().min(2, "Selecciona tu provincia.").max(80),
   phone: z.string().min(7, "Ingresa un teléfono válido.").max(30),
   email: z.string().email("Ingresa un correo válido."),
   businessType: z.string().min(2, "Indica el tipo de negocio.").max(120),

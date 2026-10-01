@@ -150,22 +150,29 @@ export function StoreCoverflow({ stores }: { stores: Store[] }) {
       </div>
 
       {/* Puntos / dots */}
-      <div className="mt-6 flex items-center justify-center gap-2">
+      <div className="mt-4 flex items-center justify-center">
         {stores.map((s, i) => (
           <button
             key={s.slug}
             type="button"
             onClick={() => setActive(i)}
             aria-label={`Ir a ${s.name}`}
-            className={cn(
-              "h-2 rounded-full transition-all",
-              active === i ? "w-7 bg-brand-600" : "w-2 bg-graphite-300 hover:bg-graphite-400"
-            )}
-          />
+            aria-current={active === i ? "true" : undefined}
+            // Área táctil amplia (el punto visible es pequeño).
+            className="group p-2"
+          >
+            <span
+              className={cn(
+                "block h-2 rounded-full transition-all",
+                active === i ? "w-7 bg-brand-600" : "w-2 bg-graphite-300 group-hover:bg-graphite-400"
+              )}
+            />
+          </button>
         ))}
       </div>
-      <p className="mt-3 text-center text-xs uppercase tracking-widest text-graphite-400">
-        Desliza · toca para ver el mapa
+      <p className="mt-1 text-center text-xs uppercase tracking-widest text-graphite-400">
+        <span className="sm:hidden">Desliza · toca para ver el mapa</span>
+        <span className="hidden sm:inline">Usa las flechas · haz clic para ver el mapa</span>
       </p>
 
       {/* Modal de mapa */}
