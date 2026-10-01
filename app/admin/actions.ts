@@ -39,7 +39,7 @@ import {
   getSeedProducts,
   type Product,
 } from "@/data/products";
-import { getKnownSlugs } from "@/lib/taxonomy-store";
+import { getKnownSlugs, saveCustomTaxonomy, type Taxonomy } from "@/lib/taxonomy-store";
 
 // -------------------- Guards --------------------
 
@@ -523,12 +523,21 @@ export async function importBackupAction(
   }
   // Se descartan productos creados que no pasen el saneamiento.
   const created = p.created.map(sanitizeProduct).filter((x): x is Product => Boolean(x));
+  // Respaldo v2: también trae marcas y categorías creadas en el panel.
+  const taxonomy = (data as { taxonomy?: Partial<Taxonomy> })?.taxonomy;
   try {
+    if (taxonomy && typeof taxonomy === "object") {
+      await saveCustomTaxonomy({
+        brands: Array.isArray(taxonomy.brands) ? taxonomy.brands : [],
+        categories: Array.isArray(taxonomy.categories) ? taxonomy.categories : [],
+      });
+    }
     await saveOverrides(
       { patches: p.patches, deleted: p.deleted.map(String), created },
-      { user, summary: "Restauró un respaldo" }
+      { user, summary: taxonomy ? "Restauró un respaldo (con marcas y categorías)" : "Restauró un respaldo" }
     );
     bumpCaches();
+    if (taxonomy) revalidatePath("/", "layout");
   } catch (err) {
     return friendlyError(err);
   }

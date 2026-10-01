@@ -63,7 +63,7 @@ export default async function ActivityPage() {
         <h2 className="font-semibold">Respaldo del catálogo</h2>
         <p className="text-sm text-neutral-400">
           Descarga una copia de todos los cambios hechos desde el panel
-          (precios, fotos, productos nuevos y ocultos). Recomendado antes de
+          (precios, fotos, productos nuevos y ocultos, marcas y categorías nuevas). Recomendado antes de
           cambios grandes, como actualizar toda la lista de precios.
         </p>
         <a

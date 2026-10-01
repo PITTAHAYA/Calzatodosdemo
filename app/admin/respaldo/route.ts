@@ -3,16 +3,17 @@
 import { NextResponse } from "next/server";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { getOverrides } from "@/lib/products-store";
+import { getCustomTaxonomyForWrite } from "@/lib/taxonomy-store";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const user = await getCurrentAdmin();
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  const overrides = await getOverrides();
+  const [overrides, taxonomy] = await Promise.all([getOverrides(), getCustomTaxonomyForWrite()]);
   const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
   return new NextResponse(
-    JSON.stringify({ app: "calzatodos-admin", version: 1, exportedAt: new Date().toISOString(), exportedBy: user, overrides }, null, 2),
+    JSON.stringify({ app: "calzatodos-admin", version: 2, exportedAt: new Date().toISOString(), exportedBy: user, overrides, taxonomy }, null, 2),
     {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
