@@ -128,7 +128,7 @@ export default async function HomePage() {
         <ParallaxImage
           src="/lifestyle/editorial-family.jpg"
           alt="Familia en una tienda Calzatodos Group"
-          objectPosition="center 15%"
+          objectPosition="center top"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="container-page relative py-20 text-white">
@@ -173,6 +173,7 @@ export default async function HomePage() {
         <ParallaxImage
           src="/lifestyle/ppl-friends.jpg"
           alt="Amigos luciendo su calzado Calzatodos Group"
+          objectPosition="center top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/40" />
         <div className="container-page relative py-20 text-white">

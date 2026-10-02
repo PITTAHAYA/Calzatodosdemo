@@ -24,13 +24,13 @@ export function ParallaxImage({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const y = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   return (
     <div ref={ref} className="absolute inset-0 overflow-hidden">
       <motion.div
         style={{ y: reduce ? 0 : y }}
-        className="absolute inset-x-0 -inset-y-[12%]"
+        className="absolute inset-x-0 -inset-y-[6%]"
       >
         <Image
           src={src}
