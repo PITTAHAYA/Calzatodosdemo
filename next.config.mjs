@@ -12,12 +12,12 @@ const isDev = process.env.NODE_ENV !== "production";
 // En desarrollo se añaden 'unsafe-eval' y websockets para el HMR.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
-  "frame-src 'self' https://www.instagram.com https://maps.google.com https://www.google.com",
+  "frame-src 'self' https://challenges.cloudflare.com https://www.instagram.com https://maps.google.com https://www.google.com",
   "media-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",

@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { contactSchema, wholesaleSchema } from "@/lib/schemas";
 import { sendEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 export interface FormState {
   status: "idle" | "success" | "error";
@@ -19,7 +20,7 @@ export interface FormState {
 
 // Valores enviados (sin el honeypot) para repoblar el formulario.
 function keepValues(raw: Record<string, string>): Record<string, string> {
-  const { company: _company, ...rest } = raw;
+  const { company: _company, "cf-turnstile-response": _captcha, ...rest } = raw;
   return Object.fromEntries(
     Object.entries(rest).filter(([k, v]) => typeof v === "string" && !k.startsWith("$"))
   );
@@ -66,6 +67,16 @@ export async function submitContact(
       status: "error",
       message: "Revisa los campos marcados e inténtalo de nuevo.",
       fieldErrors,
+      values: keepValues(raw),
+      submissionId: Date.now(),
+    };
+  }
+
+  const human = await verifyTurnstile(raw["cf-turnstile-response"], (await clientKey("ip")).slice(3));
+  if (!human) {
+    return {
+      status: "error",
+      message: "Confirma que no eres un robot (marca la casilla) e inténtalo de nuevo.",
       values: keepValues(raw),
       submissionId: Date.now(),
     };
@@ -138,6 +149,16 @@ export async function submitWholesale(
       status: "error",
       message: "Revisa los campos marcados e inténtalo de nuevo.",
       fieldErrors,
+      values: keepValues(raw),
+      submissionId: Date.now(),
+    };
+  }
+
+  const human = await verifyTurnstile(raw["cf-turnstile-response"], (await clientKey("ip")).slice(3));
+  if (!human) {
+    return {
+      status: "error",
+      message: "Confirma que no eres un robot (marca la casilla) e inténtalo de nuevo.",
       values: keepValues(raw),
       submissionId: Date.now(),
     };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Turnstile } from "./Turnstile";
 import { useFormStatus } from "react-dom";
 import { submitWholesale, type FormState } from "@/app/actions";
 import { Field, ConsentField, inputClass } from "./FormField";
@@ -139,6 +140,8 @@ export function WholesaleForm() {
       </Field>
 
       <ConsentField error={errors.consent} defaultChecked={v.consent === "on"} />
+
+      <Turnstile />
 
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <SubmitButton />

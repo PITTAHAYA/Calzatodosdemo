@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Turnstile } from "./Turnstile";
 import { useFormStatus } from "react-dom";
 import { submitContact, type FormState } from "@/app/actions";
 import { Field, ConsentField, inputClass } from "./FormField";
@@ -83,6 +84,7 @@ export function ContactForm() {
 
       <ConsentField error={errors.consent} defaultChecked={v.consent === "on"} />
 
+      <Turnstile />
       <SubmitButton />
     </form>
   );
