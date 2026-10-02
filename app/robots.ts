@@ -7,6 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      // El panel no debe aparecer en Google.
+      disallow: ["/admin"],
     },
     sitemap: `${base}/sitemap.xml`,
     host: base,

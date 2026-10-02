@@ -46,6 +46,10 @@ export const metadata: Metadata = {
     images: [defaultOgImage.url],
   },
   robots: { index: true, follow: true },
+  // Código de Google Search Console (método "Etiqueta HTML"), opcional.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {

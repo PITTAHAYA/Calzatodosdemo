@@ -30,10 +30,23 @@ export async function generateMetadata({
     product.brand === "calzatodos"
       ? product.categoryName ?? getCategory(product.category)?.name ?? product.category
       : product.brandName ?? brandDisplayName(product.brand);
+  // Descripción para Google y vista previa al compartir (WhatsApp, Facebook):
+  // si el producto no tiene descripción, se arma una con sus datos.
+  const category = product.categoryName ?? getCategory(product.category)?.name ?? "";
+  const price = typeof product.price === "number" ? ` Desde $${product.price}.` : "";
+  const description = (
+    product.description.trim().length >= 40
+      ? product.description
+      : `${product.name}: ${category.toLowerCase()} ${qualifier !== category ? qualifier : ""} en Calzatodos Group.${price} Consulta tallas y disponibilidad por WhatsApp.`
+  )
+    .replace(/\s+/g, " ")
+    .slice(0, 300);
+  const mainImage = product.images.find((src) => !src.startsWith("/logo/"));
   return pageMetadata({
     title: `${product.name} — ${qualifier}`,
-    description: product.description,
+    description,
     path: `/productos/${product.slug}`,
+    images: mainImage ? [mainImage] : undefined,
   });
 }
 

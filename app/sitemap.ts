@@ -49,6 +49,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.6,
+    // Las fotos ayudan a aparecer en Google Imágenes.
+    images: p.images
+      .filter((src) => !src.startsWith("/logo/"))
+      .slice(0, 5)
+      .map((src) => (src.startsWith("http") ? src : `${base}${src}`)),
   }));
 
   return [...staticRoutes, ...brandRoutes, ...productRoutes];
