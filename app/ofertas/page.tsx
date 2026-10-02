@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PromoCard } from "@/components/PromoCard";
 import { ProductRail } from "@/components/ProductRail";
+import { ProductGrid } from "@/components/ProductGrid";
 import { WhatsAppIcon, ArrowRightIcon } from "@/components/Icons";
 import Link from "next/link";
 import { getVisiblePromotions, isPromotionExpired } from "@/data/promotions";
-import { getFeaturedProducts } from "@/data/products";
+import { getFeaturedProducts, getSaleProducts } from "@/data/products";
 import { whatsappGeneral } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
 
@@ -21,7 +22,9 @@ export default async function OfertasPage() {
   const visible = getVisiblePromotions(now);
   const active = visible.filter((p) => !isPromotionExpired(p, now));
   const finished = visible.filter((p) => isPromotionExpired(p, now));
-  const featured = active.length === 0 ? await getFeaturedProducts(8) : [];
+  const saleProducts = await getSaleProducts();
+  const nothingOnSale = active.length === 0 && saleProducts.length === 0;
+  const featured = nothingOnSale ? await getFeaturedProducts(8) : [];
 
   return (
     <div className="container-page py-8">
@@ -45,6 +48,13 @@ export default async function OfertasPage() {
         </section>
       )}
 
+      {saleProducts.length > 0 && (
+        <section className="mt-10">
+          <h2 className="section-title mb-6">Productos en oferta</h2>
+          <ProductGrid products={saleProducts} />
+        </section>
+      )}
+
       {finished.length > 0 && (
         <section className="mt-14">
           <h2 className="section-title mb-6">Promociones finalizadas</h2>
@@ -58,7 +68,7 @@ export default async function OfertasPage() {
         </section>
       )}
 
-      {active.length === 0 && (
+      {nothingOnSale && (
         <>
           <div className="mt-10 rounded-2xl border border-dashed border-graphite-200 bg-graphite-50 px-6 py-14 text-center">
             <h2 className="text-lg font-bold text-graphite-900">
