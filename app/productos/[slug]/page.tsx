@@ -8,7 +8,7 @@ import { StoreCard } from "@/components/StoreCard";
 import { getAllProducts, getProduct, getRelatedProducts } from "@/data/products";
 import { getCategory } from "@/data/categories";
 import { brandDisplayName } from "@/lib/whatsapp";
-import { stores } from "@/data/stores";
+import { getStores } from "@/lib/store-hours-store";
 import { pageMetadata, JsonLd, productJsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -62,7 +62,7 @@ export default async function ProductPage({
   const brandName = product.brandName ?? brandDisplayName(product.brand);
   const categoryName =
     product.categoryName ?? getCategory(product.category)?.name ?? product.category;
-  const related = await getRelatedProducts(product, 4);
+  const [related, stores] = await Promise.all([getRelatedProducts(product, 4), getStores()]);
 
   return (
     <div className="container-page py-8">

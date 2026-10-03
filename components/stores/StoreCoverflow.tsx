@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Store } from "@/data/stores";
 import { storeMapsEmbedUrl, storeMapsUrl } from "@/data/stores";
 import { getOpenState } from "@/lib/store-hours";
+import { SpecialHours } from "./SpecialHours";
 import { whatsappStore } from "@/lib/whatsapp";
 import {
   MapPinIcon,
@@ -295,6 +296,7 @@ function MapModal({ store, onClose }: { store: Store; onClose: () => void }) {
               <ClockIcon className="h-4 w-4 text-graphite-400" />
               {store.hoursLabel}
             </p>
+            <SpecialHours store={store} className="mt-2" />
           </div>
           <button
             type="button"

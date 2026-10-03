@@ -27,6 +27,36 @@ export interface Store {
   lng?: number;
   // Foto del local (/public/stores/...).
   photo?: string;
+  // Días especiales (feriados, cierres) cargados desde el panel /admin/horarios.
+  exceptions?: StoreException[];
+}
+
+export interface StoreException {
+  date: string; // "2026-11-02" (hora de Ecuador)
+  closed: boolean;
+  opensAt?: string;
+  closesAt?: string;
+  note?: string; // "Feriado", "Cerrado por motivos personales"...
+}
+
+const DAY_NAMES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// "Lunes a domingo, 09:00 a 19:30" a partir del horario estructurado.
+export function buildHoursLabel(days: number[], opensAt: string, closesAt: string): string {
+  const sorted = [...new Set(days)].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7));
+  if (sorted.length === 0) return "Cerrado temporalmente";
+  const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+  const order = sorted.map((d) => (d + 6) % 7); // 0 = lunes
+  const consecutive = order.every((v, i) => i === 0 || v === order[i - 1] + 1);
+  const range =
+    sorted.length === 7
+      ? "Lunes a domingo"
+      : sorted.length === 1
+        ? cap(DAY_NAMES[sorted[0]])
+        : consecutive
+          ? `${cap(DAY_NAMES[sorted[0]])} a ${DAY_NAMES[sorted[sorted.length - 1]]}`
+          : cap(sorted.map((d) => DAY_NAMES[d]).join(", "));
+  return `${range}, ${opensAt} a ${closesAt}`;
 }
 
 export const stores: Store[] = [

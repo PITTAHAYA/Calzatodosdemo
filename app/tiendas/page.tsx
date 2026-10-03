@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { StoresClient } from "@/components/stores/StoresClient";
-import { stores } from "@/data/stores";
+import { getStores } from "@/lib/store-hours-store";
 import { pageMetadata, JsonLd, storeJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -11,7 +11,8 @@ export const metadata: Metadata = pageMetadata({
   path: "/tiendas",
 });
 
-export default function TiendasPage() {
+export default async function TiendasPage() {
+  const stores = await getStores();
   return (
     <div className="container-page py-8">
       {stores.map((s) => (

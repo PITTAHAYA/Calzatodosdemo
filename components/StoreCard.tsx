@@ -8,6 +8,7 @@ import { getOpenState } from "@/lib/store-hours";
 import { whatsappStore } from "@/lib/whatsapp";
 import { MapPinIcon, ClockIcon, WhatsAppIcon } from "@/components/Icons";
 import { cn } from "@/lib/utils";
+import { SpecialHours } from "@/components/stores/SpecialHours";
 
 export function StoreCard({ store }: { store: Store }) {
   // El estado abierto/cerrado se calcula en el cliente para evitar desajustes
@@ -85,6 +86,7 @@ export function StoreCard({ store }: { store: Store }) {
           <ClockIcon className="mt-0.5 h-4 w-4 shrink-0 text-graphite-400" />
           <span>{store.hoursLabel}</span>
         </p>
+        <SpecialHours store={store} />
       </div>
 
       <div className="mt-5 flex gap-2">

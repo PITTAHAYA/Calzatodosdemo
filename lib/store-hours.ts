@@ -1,8 +1,8 @@
-// Cálculo de estado abierto/cerrado según horario del local.
-// Nota: usa la hora local del navegador/servidor. Para máxima fiabilidad,
-// idealmente se calcularía en zona horaria de Ecuador (America/Guayaquil).
+// Cálculo de estado abierto/cerrado según horario del local, en hora de
+// Ecuador (America/Guayaquil, UTC-5 sin cambio de horario). Tiene en cuenta
+// los días especiales (feriados, cierres) definidos desde el panel.
 
-import type { Store } from "@/data/stores";
+import type { Store, StoreException } from "@/data/stores";
 
 function toMinutes(hhmm: string): number {
   const [h, m] = hhmm.split(":").map(Number);
@@ -14,23 +14,47 @@ export interface OpenState {
   label: string;
 }
 
-// Calcula el estado usando la zona horaria de Ecuador (UTC-5, sin DST).
+/** Fecha "YYYY-MM-DD" en Ecuador. */
+export function ecuadorDate(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Guayaquil" }).format(now);
+}
+
+/** Día especial de hoy, si lo hay. */
+export function todayException(store: Store, now: Date = new Date()): StoreException | undefined {
+  const today = ecuadorDate(now);
+  return store.exceptions?.find((e) => e.date === today);
+}
+
 export function getOpenState(store: Store, now: Date = new Date()): OpenState {
-  // Convertir "now" a hora de Ecuador (America/Guayaquil = UTC-5 fijo).
-  const ecuador = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/Guayaquil" })
-  );
+  const ecuador = new Date(now.toLocaleString("en-US", { timeZone: "America/Guayaquil" }));
   const day = ecuador.getDay(); // 0=Dom
   const minutes = ecuador.getHours() * 60 + ecuador.getMinutes();
 
-  const opensAt = toMinutes(store.opensAt);
-  const closesAt = toMinutes(store.closesAt);
+  const special = todayException(store, now);
+  if (special?.closed) return { open: false, label: "Cerrado hoy" };
 
-  const isOpenDay = store.days.includes(day);
+  const opensAt = toMinutes(special?.opensAt ?? store.opensAt);
+  const closesAt = toMinutes(special?.closesAt ?? store.closesAt);
+  const isOpenDay = special ? true : store.days.includes(day);
   const isOpen = isOpenDay && minutes >= opensAt && minutes < closesAt;
 
-  return {
-    open: isOpen,
-    label: isOpen ? "Abierto ahora" : "Cerrado ahora",
-  };
+  return { open: isOpen, label: isOpen ? "Abierto ahora" : "Cerrado ahora" };
+}
+
+/** "Cerrado" o "10:00 a 14:00", más el motivo si existe. */
+export function exceptionText(e: StoreException): string {
+  const base = e.closed ? "Cerrado" : `${e.opensAt} a ${e.closesAt}`;
+  return e.note ? `${base} · ${e.note}` : base;
+}
+
+/** "Lunes 2 de noviembre" */
+export function exceptionDateLabel(date: string): string {
+  const d = new Date(`${date}T12:00:00-05:00`);
+  const t = new Intl.DateTimeFormat("es-EC", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "America/Guayaquil",
+  }).format(d);
+  return t.charAt(0).toUpperCase() + t.slice(1);
 }

@@ -10,7 +10,7 @@ import {
   MapPinIcon,
 } from "@/components/Icons";
 import { site } from "@/data/site-content";
-import { stores } from "@/data/stores";
+import { getStores } from "@/lib/store-hours-store";
 import { whatsappGeneral } from "@/lib/whatsapp";
 import { pageMetadata } from "@/lib/seo";
 
@@ -21,7 +21,8 @@ export const metadata: Metadata = pageMetadata({
   path: "/contacto",
 });
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  const stores = await getStores();
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ name: "Contacto", path: "/contacto" }]} />

@@ -13,7 +13,7 @@ import { Grain } from "@/components/motion/Grain";
 import { Spotlight } from "@/components/motion/Spotlight";
 import { WhatsAppIcon, ArrowRightIcon, StoreIcon } from "@/components/Icons";
 import { getFeaturedProducts } from "@/data/products";
-import { stores } from "@/data/stores";
+import { getStores } from "@/lib/store-hours-store";
 import { brandCopy } from "@/data/site-content";
 import { whatsappGeneral } from "@/lib/whatsapp";
 
@@ -26,6 +26,7 @@ const categoryCards = [
 ];
 
 export default async function HomePage() {
+  const stores = await getStores();
   const featured = await getFeaturedProducts(8);
 
   return (
