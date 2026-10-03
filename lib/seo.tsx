@@ -77,21 +77,49 @@ export function organizationJsonLd() {
   };
 }
 
-// LocalBusiness/ShoeStore individual por tienda.
+// LocalBusiness/ShoeStore individual por tienda (con horario y días especiales).
+const SCHEMA_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 export function storeJsonLd(store: (typeof stores)[number]) {
   return {
     "@context": "https://schema.org",
     "@type": "ShoeStore",
+    "@id": absoluteUrl(`/tiendas#${store.slug}`),
     name: `${site.name} — ${store.name}`,
+    image: store.photo ? absoluteUrl(store.photo) : undefined,
     address: {
       "@type": "PostalAddress",
       streetAddress: store.address,
       addressLocality: store.city,
       addressCountry: "EC",
     },
+    geo:
+      typeof store.lat === "number"
+        ? { "@type": "GeoCoordinates", latitude: store.lat, longitude: store.lng }
+        : undefined,
     telephone: `+${site.whatsapp.number}`,
     url: absoluteUrl("/tiendas"),
-    openingHours: `Mo-Su ${store.opensAt}-${store.closesAt}`,
+    priceRange: "$$",
+    parentOrganization: { "@type": "Organization", name: site.name, url: siteUrl() },
+    openingHoursSpecification: store.days.length
+      ? [
+          {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: store.days.map((d) => SCHEMA_DAYS[d]),
+            opens: store.opensAt,
+            closes: store.closesAt,
+          },
+        ]
+      : undefined,
+    specialOpeningHoursSpecification: store.exceptions?.length
+      ? store.exceptions.map((e) => ({
+          "@type": "OpeningHoursSpecification",
+          validFrom: e.date,
+          validThrough: e.date,
+          opens: e.closed ? "00:00" : e.opensAt,
+          closes: e.closed ? "00:00" : e.closesAt,
+        }))
+      : undefined,
   };
 }
 
@@ -106,6 +134,9 @@ export function productJsonLd(product: Product) {
     brand: { "@type": "Brand", name: product.brandName ?? brandDisplayName(product.brand) },
     category: product.categoryName ?? getCategory(product.category)?.name ?? product.category,
     url: absoluteUrl(`/productos/${product.slug}`),
+    image: product.images.length
+      ? product.images.map((src) => (src.startsWith("http") ? src : absoluteUrl(src)))
+      : undefined,
   };
   if (typeof product.price === "number") {
     data.offers = {
