@@ -9,7 +9,7 @@
 //   ADMIN_SESSION_SECRET    cadena larga y aleatoria (mín. 32 chars)
 //
 // El token es "<payloadB64>.<hmacB64>" y expira en 8 horas. Se guarda en la
-// cookie `admin_session` con flags HttpOnly / Secure (en prod) / SameSite=Lax.
+// cookie `admin_session` con flags HttpOnly / Secure (en prod) / SameSite=Strict.
 // =========================================================================
 
 import "server-only";
@@ -129,7 +129,7 @@ export async function setSessionCookie(username: string): Promise<void> {
   const store = await cookies();
   store.set(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge,
@@ -140,7 +140,7 @@ export async function clearSessionCookie(): Promise<void> {
   const store = await cookies();
   store.set(COOKIE_NAME, "", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: 0,

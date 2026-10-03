@@ -13,6 +13,8 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   checkCredentials,
   clearSessionCookie,
@@ -82,7 +84,21 @@ export async function loginAction(formData: FormData) {
   const username = String(formData.get("username") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
-  const safeNext = next.startsWith("/admin") ? next : "/admin";
+  // Solo rutas internas del panel (evita redirecciones a otros sitios).
+  const safeNext = /^\/admin(\/[\w\-/?=&%.]*)?$/.test(next) ? next : "/admin";
+
+  // Anti fuerza bruta: máx. 5 intentos por minuto y 20 por hora por IP.
+  const h = await headers();
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "anon";
+  const perMin = rateLimit({ key: `login-min:${ip}`, limit: 5, windowMs: 60_000 });
+  const perHour = rateLimit({ key: `login-hour:${ip}`, limit: 20, windowMs: 60 * 60_000 });
+  if (!perMin.allowed || !perHour.allowed) {
+    redirect(
+      `/admin/login?error=${encodeURIComponent(
+        "Demasiados intentos. Espera unos minutos e inténtalo de nuevo."
+      )}&next=${encodeURIComponent(safeNext)}`
+    );
+  }
   if (!username || !password) {
     redirect(
       `/admin/login?error=${encodeURIComponent(
@@ -559,6 +575,22 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/avif": ".avif",
 };
 
+function hasImageSignature(b: Uint8Array, type: string): boolean {
+  const ascii = (from: number, to: number) => String.fromCharCode(...b.slice(from, to));
+  switch (type) {
+    case "image/jpeg":
+      return b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff;
+    case "image/png":
+      return b[0] === 0x89 && ascii(1, 4) === "PNG";
+    case "image/webp":
+      return ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP";
+    case "image/avif":
+      return ascii(4, 8) === "ftyp" && ["avif", "avis"].includes(ascii(8, 12));
+    default:
+      return false;
+  }
+}
+
 function useBlob(): boolean {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
@@ -624,6 +656,10 @@ export async function uploadImageAction(
       ok: false,
       error: `Tipo no permitido (${file.type}). Usa JPG, PNG, WEBP o AVIF.`,
     };
+  }
+  // El tipo lo declara el navegador: se confirma leyendo la firma real del archivo.
+  if (!hasImageSignature(new Uint8Array(await file.slice(0, 16).arrayBuffer()), file.type)) {
+    return { ok: false, error: "El archivo no es una imagen válida." };
   }
 
   const safeBase =
