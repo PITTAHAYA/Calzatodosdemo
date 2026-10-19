@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { contactSchema, wholesaleSchema } from "@/lib/schemas";
 import { sendEmail } from "@/lib/email";
+import { renderFormEmail } from "@/lib/email-template";
 import { rateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -98,6 +99,19 @@ export async function submitContact(
     to,
     replyTo: d.email,
     subject: `Nuevo mensaje de contacto — ${d.name}`,
+    html: renderFormEmail({
+      badge: "Nuevo mensaje de contacto",
+      title: d.name,
+      fields: [
+        ["Correo", d.email],
+        ["Teléfono", d.phone],
+        ["Local de interés", d.store],
+      ],
+      message: d.message,
+      replyEmail: d.email,
+      phone: d.phone,
+      footer: `Aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+    }),
     text: [
       `Nombre: ${d.name}`,
       `Correo: ${d.email}`,
@@ -180,6 +194,23 @@ export async function submitWholesale(
     to,
     replyTo: d.email,
     subject: `Solicitud mayorista — ${d.businessName} (${d.city})`,
+    html: renderFormEmail({
+      badge: "Nueva solicitud mayorista",
+      title: d.businessName,
+      fields: [
+        ["Contacto", d.fullName],
+        ["Ciudad", `${d.city}, ${d.province}`],
+        ["Teléfono", d.phone],
+        ["Correo", d.email],
+        ["Tipo de negocio", d.businessType],
+        ["Cantidad aproximada", d.quantity],
+        ["Marcas / categorías", d.interests],
+      ],
+      message: d.message,
+      replyEmail: d.email,
+      phone: d.phone,
+      footer: `Aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+    }),
     text: [
       `Nombre: ${d.fullName}`,
       `Negocio: ${d.businessName}`,

@@ -17,6 +17,7 @@ interface EmailPayload {
   to: string;
   subject: string;
   text: string;
+  html?: string;
   replyTo?: string;
 }
 
@@ -40,6 +41,7 @@ export async function sendEmail(payload: EmailPayload): Promise<SendResult> {
           to: [payload.to],
           subject: payload.subject,
           text: payload.text,
+          html: payload.html,
           reply_to: payload.replyTo,
         }),
       });
