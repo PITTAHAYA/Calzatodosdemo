@@ -111,7 +111,7 @@ export async function submitContact(
       message: d.message,
       replyEmail: d.email,
       phone: d.phone,
-      footer: `Aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+      footer: `Aceptó Términos y Condiciones y Política de Privacidad (LOPDP) — ${consentStamp()}`,
     }),
     text: [
       `Nombre: ${d.name}`,
@@ -122,7 +122,7 @@ export async function submitContact(
       "Mensaje:",
       d.message,
       "",
-      `Consentimiento: aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+      `Consentimiento: aceptó los Términos y Condiciones y la Política de Privacidad (LOPDP) — ${consentStamp()}`,
     ].join("\n"),
   });
 
@@ -224,7 +224,7 @@ export async function submitWholesale(
       message: d.message,
       replyEmail: d.email,
       phone: d.phone,
-      footer: `Aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+      footer: `Aceptó Términos y Condiciones y Política de Privacidad (LOPDP) — ${consentStamp()}`,
     }),
     text: [
       `Nombre: ${d.fullName}`,
@@ -240,7 +240,7 @@ export async function submitWholesale(
       "Mensaje:",
       d.message || "-",
       "",
-      `Consentimiento: aceptó la Política de Privacidad (LOPDP) — ${consentStamp()}`,
+      `Consentimiento: aceptó los Términos y Condiciones y la Política de Privacidad (LOPDP) — ${consentStamp()}`,
     ].join("\n"),
   });
 

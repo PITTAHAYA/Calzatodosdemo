@@ -24,7 +24,15 @@ export function ConsentField({
           )}
         />
         <span>
-          He leído y acepto la{" "}
+          He leído y acepto los{" "}
+          <Link
+            href="/terminos-y-condiciones"
+            target="_blank"
+            className="font-semibold text-brand-700 underline underline-offset-2"
+          >
+            Términos y Condiciones
+          </Link>{" "}
+          y la{" "}
           <Link
             href="/politica-de-privacidad"
             target="_blank"

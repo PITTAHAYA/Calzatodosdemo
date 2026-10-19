@@ -17,7 +17,7 @@ export const contactSchema = z.object({
   // Consentimiento de datos (LOPDP): la casilla debe estar marcada.
   consent: z.literal("on", {
     errorMap: () => ({
-      message: "Debes aceptar la Política de Privacidad para continuar.",
+      message: "Debes aceptar los Términos y Condiciones y la Política de Privacidad para continuar.",
     }),
   }),
   // Honeypot anti-spam: debe llegar vacío.
@@ -41,7 +41,7 @@ export const wholesaleSchema = z.object({
   // Consentimiento de datos (LOPDP): la casilla debe estar marcada.
   consent: z.literal("on", {
     errorMap: () => ({
-      message: "Debes aceptar la Política de Privacidad para continuar.",
+      message: "Debes aceptar los Términos y Condiciones y la Política de Privacidad para continuar.",
     }),
   }),
   // Honeypot anti-spam.
