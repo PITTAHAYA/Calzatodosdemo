@@ -3,7 +3,8 @@
 import { headers } from "next/headers";
 import { contactSchema, wholesaleSchema } from "@/lib/schemas";
 import { sendEmail } from "@/lib/email";
-import { renderFormEmail } from "@/lib/email-template";
+import { renderFormEmail, renderConfirmationEmail } from "@/lib/email-template";
+import { whatsappGeneral, whatsappWholesale } from "@/lib/whatsapp";
 import { rateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -135,6 +136,20 @@ export async function submitContact(
     };
   }
 
+  // Confirmación automática a quien escribió (si falla, el mensaje ya llegó igual).
+  await sendEmail({
+    to: d.email,
+    replyTo: to,
+    subject: "Recibimos tu mensaje — Calzatodos Group",
+    text: `Hola ${d.name}, recibimos tu mensaje. Un asesor de Calzatodos Group te contactará muy pronto. Si es urgente, escríbenos por WhatsApp: ${whatsappGeneral()}`,
+    html: renderConfirmationEmail({
+      name: d.name,
+      intro: "Recibimos tu mensaje y ya está en manos de nuestro equipo.",
+      message: d.message,
+      whatsappUrl: whatsappGeneral(),
+    }),
+  }).catch(() => undefined);
+
   return {
     status: "success",
     message: "¡Gracias! Recibimos tu mensaje y te responderemos pronto.",
@@ -238,6 +253,19 @@ export async function submitWholesale(
       submissionId: Date.now(),
     };
   }
+
+  await sendEmail({
+    to: d.email,
+    replyTo: to,
+    subject: "Recibimos tu solicitud mayorista — Calzatodos Group",
+    text: `Hola ${d.fullName}, recibimos tu solicitud mayorista para ${d.businessName}. Un asesor de ventas al por mayor te contactará muy pronto. Si es urgente, escríbenos por WhatsApp: ${whatsappWholesale(d.city)}`,
+    html: renderConfirmationEmail({
+      name: d.fullName,
+      intro: `Recibimos tu solicitud mayorista para ${d.businessName}. Nuestro equipo de ventas al por mayor la está revisando.`,
+      message: d.message,
+      whatsappUrl: whatsappWholesale(d.city),
+    }),
+  }).catch(() => undefined);
 
   return {
     status: "success",

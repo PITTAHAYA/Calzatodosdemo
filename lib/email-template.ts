@@ -71,3 +71,46 @@ export function renderFormEmail(opts: {
   </table>
 </body></html>`;
 }
+
+// Confirmación automática para la persona que llenó el formulario.
+export function renderConfirmationEmail(opts: {
+  name: string;
+  intro: string; // "Recibimos tu mensaje…"
+  message?: string;
+  whatsappUrl: string;
+}): string {
+  const first = opts.name.trim().split(/\s+/)[0] || opts.name;
+  return `<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f3f3f4;font-family:Arial,Helvetica,sans-serif">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f3f4;padding:24px 12px">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
+        <tr><td style="background:#111;padding:20px 28px">
+          <img src="${absoluteUrl("/logo/calzatodos-group.png")}" width="140" alt="Calzatodos Group" style="display:block;border:0">
+        </td></tr>
+        <tr><td style="height:4px;background:#dc2626;line-height:4px;font-size:0">&nbsp;</td></tr>
+        <tr><td style="padding:28px;color:#111">
+          <h1 style="margin:0 0 16px;font-size:24px;line-height:1.25">¡Hola, ${esc(first)}! 👋</h1>
+          <p style="margin:0 0 14px;font-size:15px;line-height:1.6">${esc(opts.intro)}</p>
+          <p style="margin:0 0 20px;font-size:15px;line-height:1.6">Un asesor de <strong>Calzatodos Group</strong> te contactará muy pronto. Si es urgente, escríbenos por WhatsApp y te atendemos al instante.</p>
+          ${
+            opts.message
+              ? `<p style="margin:0 0 8px;color:#777;font-size:13px">Tu mensaje</p>
+          <div style="background:#f7f7f8;border-left:4px solid #dc2626;border-radius:8px;padding:16px;font-size:14px;line-height:1.55;white-space:pre-wrap;color:#333">${esc(opts.message)}</div>`
+              : ""
+          }
+          <div style="margin-top:24px">
+            <a href="${esc(opts.whatsappUrl)}" style="display:inline-block;margin:4px 6px 4px 0;padding:12px 20px;border-radius:999px;background:#16a34a;color:#fff;font-size:14px;font-weight:700;text-decoration:none">Escribir por WhatsApp</a>
+            <a href="${absoluteUrl("/catalogo")}" style="display:inline-block;margin:4px 6px 4px 0;padding:12px 20px;border-radius:999px;background:#111;color:#fff;font-size:14px;font-weight:700;text-decoration:none">Ver catálogo</a>
+          </div>
+          <p style="margin:24px 0 0;font-size:14px;line-height:1.6">Gracias por confiar en nosotros,<br><strong>Equipo Calzatodos Group</strong></p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;background:#fafafa;color:#999;font-size:11px;line-height:1.5">
+          Recibiste este correo porque escribiste en calzatodos.com. Es una respuesta automática; si respondes a este correo, también nos llega.
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
